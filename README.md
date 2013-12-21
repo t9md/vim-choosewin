@@ -1,3 +1,7 @@
+# Animation GIF
+
+![Movie](http://gifzo.net/fko2nB8V2R.gif)
+
 # Choose window with number key
 Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
 
@@ -13,8 +17,6 @@ example Configuration
 ```Vim
 nmap  -  <Plug>(choosewin)
 ```
-
-![Movie](http://gifzo.net/fko2nB8V2R.gif)
 
 # Note
 This plugin use `&statusline` to display window label.
