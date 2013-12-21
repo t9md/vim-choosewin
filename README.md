@@ -14,7 +14,7 @@ example Configuration
 nmap  -  <Plug>(choosewin)
 ```
 
-[Animation](http://gifzo.net/fko2nB8V2R.gif)
+![Movie](http://gifzo.net/fko2nB8V2R.gif)
 
 # Note
 This plugin use `&statusline` to display window label.
