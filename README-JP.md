@@ -11,27 +11,27 @@ tmux の `display-pane` 機能を模倣しようと思い、作りました。
 このプラグインはウィンドウを渡り歩く作業を少し楽にしてくれるでしょう。
 
 1. ウィンドウラベルをステータラインに表示
-NOTE: this is not what this plugin does, use `&statusline` feature. or use statusline plugin.
+NOTE: これはこのプラグインでは提供しません。`&statusline` を使うか、ステータスラインプラグインで行います。
 
-2. read input from user
-3. you can land window you choose
+2. ウィンドウ番号を読み取る
+3. 選択したウィンドウに移動
 
-example Configuration
+設定例
 ```Vim
 nmap  -  <Plug>(choosewin)
 ```
 
-# Statusline update example
-Easiest way is that setting `&statusline` to display window number.
+# ステータスラインのアップデート例
+最も簡単な方法はウィンドウ番号を常に表示するように `&statusline` を設定することです。
 
 ```Vim
 let &statusline .= '%{winnr()}'
 ```
 
-Or with statusline pluglin like [ezbar](https://github.com/t9md/vim-ezbar),
-dynamically show window number when choosewin is activated.
+あるいは、[ezbar](https://github.com/t9md/vim-ezbar) の様なステータスラインプラグインを使用して
+chooswin が有効になった時に動的にウィンドウ番号を表示しても良いでしょう。
 
-here is example configuration for ezbar.
+以下は、ezbar を使用した例です。
 
 ```Vim
 let g:ezbar = {}
