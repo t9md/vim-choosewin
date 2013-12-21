@@ -1,17 +1,16 @@
-[日本語はこちら](https://github.com/t9md/vim-choosewin/blob/master/README-JP.md)
-
-# Animation GIF
+# アニメーションGIF
 
 ![Movie](http://gifzo.net/fko2nB8V2R.gif)
 
-# Choose window with number key
-Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
+# 数字でウィンドウを選択する
+tmux の `display-pane` 機能を模倣しようと思い、作りました。  
+`display-pane` はウィンドウ(tmux用語ではpane)を対話的に数字で選択できる機能です。  
 
-Its should be useful especially when you are working on high resolution wide display.  
-Since with wide display, you are likely to open multiple window and moving around window is a little bit tiresome.  
-This plugin help this window excursion simplify with  
+このプラグインは、高解像度の広いディスプレイで作業している時に、特に効果を発揮するでしょう。
+広いディスプレイでは沢山のウィンドウを開きますが、ウインドウを渡り歩く作業は退屈で面倒です。
+このプラグインはウィンドウを渡り歩く作業を少し楽にしてくれるでしょう。
 
-1. display window label on statusbar
+1. ウィンドウラベルをステータラインに表示
 NOTE: this is not what this plugin does, use `&statusline` feature. or use statusline plugin.
 
 2. read input from user
