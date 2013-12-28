@@ -19,12 +19,13 @@ Changelog				    |choowsewin-changelog|
 ==============================================================================
 INTRODUCTION					*choowsewin-introduction*
 
-What's this?~
+Land to window you choose~
+
 Aiming to mimic tmux's `display-pane` feature, which enables you to choose
 window interactively.
 
-Its should be useful especially when you are working on high resolution wide
-display.
+This plugin should be useful especially when you are working on high
+resolution wide display.
 Since with wide display, you are likely to open multiple window and
 moving around window is a little bit tiresome.
 
