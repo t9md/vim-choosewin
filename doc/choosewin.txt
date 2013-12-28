@@ -48,10 +48,10 @@ VARIABLES						*choowsewin-variables*
 	Become active while choosewin is activated, for use in &statusline
 
 *g:choosewin_statusline_replace*
-	Default: 0
+	Default: 1
 	Type: Number
 
-*g:choosewin_color*
+*g:choosewin_mark_color*
 	Default: { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] }
 	Type: |Dictionary|
 
@@ -60,6 +60,24 @@ VARIABLES						*choowsewin-variables*
 	  'gui': [ {guibg}, {guifg}, {gui} ],
 	  'cterm': [ {ctermbg}, {ctermfg}, {cterm}]
 	}
+
+*g:choosewin_other_color*
+	Default: { 'gui': ['gray20', 'black'], 'cterm': [ 0, 0] }
+	Type: |Dictionary|
+
+*g:choosewin_mark_align*
+	Default: 'right'
+	One of 'right', 'center', 'left'
+
+*g:choosewin_mark_padding*
+	Default: 3
+	Type: |Number|
+	Controll padding concatanated around mark.
+
+*g:choosewin_mark_fill*
+	Default: 0
+	Type: |Number|
+	Set 1 to fill statusline
 
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*

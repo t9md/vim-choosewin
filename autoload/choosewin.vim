@@ -5,7 +5,6 @@ function! s:cw.setup() "{{{1
     return
   endif
   let self.highlighter = choosewin#highlighter#new('ChooseWin')
-  let self.color = self.highlighter.register(g:choosewin_color)
 endfunction
 
 function! s:cw.update_status(num) "{{{1
@@ -28,14 +27,35 @@ endfunction
 
 function! s:cw.statusline_replace() "{{{1
   for win in self.winnums
-    let s = printf('%%#%s# %s ', self.color, win)
+    let s = self.prepare_statusline(win, g:choosewin_mark_align)
     call setwinvar(win, '&statusline', s)
   endfor
   redraw
 endfunction
 
+function! s:cw.prepare_statusline(win, align)
+  let pad = repeat(' ', g:choosewin_mark_padding)
+  let win_s = pad . a:win . pad
+
+  if a:align ==# 'left'
+    return printf('%%#%s# %s %%#%s# %%= ', self.color_mark, win_s, self.color_other)
+  elseif a:align ==# 'right'
+    return  printf('%%#%s# %%= %%#%s# %s ', self.color_other, self.color_mark, win_s)
+  elseif a:align ==# 'center'
+    let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
+    return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
+          \ self.color_other, padding, self.color_mark, win_s, self.color_other)
+  endif
+endfunction
+
 function! s:cw.start(...) "{{{1
   call self.setup()
+  let self.color_mark  = self.highlighter.register(g:choosewin_mark_color)
+  let self.color_other = self.highlighter.register(g:choosewin_other_color)
+
+  if g:choosewin_mark_fill
+    let self.color_other = self.color_mark
+  endif
 
   let self.wins = {}
   let self.winnums = range(1, winnr('$'))
@@ -65,11 +85,11 @@ function! s:cw.start(...) "{{{1
   endtry
 endfunction
 
-function! choosewin#start()
+function! choosewin#start() "{{{1
   call s:cw.start()
 endfunction
 
-function! choosewin#set_color()
+function! choosewin#set_color() "{{{1
   call s:cw.setup()
   call s:cw.highlighter.refresh()
 endfunction
