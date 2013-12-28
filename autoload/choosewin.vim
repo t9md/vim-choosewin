@@ -47,14 +47,16 @@ function! s:cw.statusline_replace() "{{{1
   redraw
 endfunction
 
-function! s:cw.prepare_statusline(win, align)
+function! s:cw.prepare_statusline(win, align) "{{{1
   let pad = repeat(' ', g:choosewin_label_padding)
   let win_s = pad . a:win . pad
 
   if a:align ==# 'left'
     return printf('%%#%s# %s %%#%s# %%= ', self.color_label, win_s, self.color_other)
+
   elseif a:align ==# 'right'
-    return  printf('%%#%s# %%= %%#%s# %s ', self.color_other, self.color_label, win_s)
+    return printf('%%#%s# %%= %%#%s# %s ', self.color_other, self.color_label, win_s)
+
   elseif a:align ==# 'center'
     let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
     return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
@@ -64,7 +66,7 @@ endfunction
 
 function! s:cw.start(...) "{{{1
   call self.setup()
-  let self.color_label  = self.highlighter.register(g:choosewin_label_color)
+  let self.color_label = self.highlighter.register(g:choosewin_label_color)
   let self.color_other = self.highlighter.register(g:choosewin_other_color)
 
   if g:choosewin_label_fill
@@ -79,7 +81,7 @@ function! s:cw.start(...) "{{{1
     call s:hide_cursor()
     call self.update_status(1)
     echohl PreProc
-    echon 'select-window > '
+    echon 'choose > '
     echohl Normal
 
     if g:choosewin_statusline_replace
