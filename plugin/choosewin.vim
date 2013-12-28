@@ -43,6 +43,9 @@ endfunction
 " KeyMap:
 nnoremap <silent> <Plug>(choosewin)  :<C-u>call <SID>choosewin()<CR>
 
+" Command
+command! ChooseWin call <SID>choosewin()
+
 " Finish:
 let &cpo = s:old_cpo
 " vim: foldmethod=marker
