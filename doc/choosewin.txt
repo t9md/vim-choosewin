@@ -57,8 +57,8 @@ VARIABLES						*choowsewin-variables*
 	Default: 1
 	Type: Number
 
-*g:choosewin_label_color*
-	Default: { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] }
+*g:choosewin_color_label*
+	Default: See plugin/choosewin.vim
 	Type: |Dictionary|
 
 	Set color with collowing fomrat.
@@ -67,8 +67,35 @@ VARIABLES						*choowsewin-variables*
 	  'cterm': [ {ctermbg}, {ctermfg}, {cterm}]
 	}
 
-*g:choosewin_other_color*
-	Default: { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] }
+	You can omit unused color, means if you use vim only GUI, you don't
+	need to configure 'cterm' field.
+	And if you want set {guifg} but not {guibg}, use empty string('') like
+>
+	let g:choosewin_color_label = { 'gui': ['', 'white'] }
+<
+
+	Exeample~
+>
+	let g:choosewin_color_label = {
+	      \ 'gui': ['ForestGreen', 'white', 'bold'],
+	      \ 'cterm': [ 9, 16]
+	      \ }
+	let g:choosewin_color_other = {
+	      \ 'gui': ['gray20', 'black'],
+	      \ 'cterm': [ 240, 0]
+	      \ }
+	let g:choosewin_color_cursor = {
+	      \ 'gui': ['bg', 'fg', 'underline'],
+	      \ 'cterm': [ 'bg', 'fg', 'underline']
+	      \ }
+<
+
+*g:choosewin_color_other*
+	Default: See plugin/choosewin.vim
+	Type: |Dictionary|
+
+*g:choosewin_color_cursor*
+	Default: See plugin/choosewin.vim
 	Type: |Dictionary|
 
 *g:choosewin_label_align*
@@ -84,6 +111,11 @@ VARIABLES						*choowsewin-variables*
 	Default: 0
 	Type: |Number|
 	Set 1 to fill statusline
+
+*g:choosewin_return_on_single_win*
+	Default: 0
+	Type: |Number|
+	Set 1 to return immediately when number of window is 1.
 
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*

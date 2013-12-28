@@ -3,6 +3,7 @@ let s:h = {}
 function! s:h.init() "{{{1
   let self.hls       = {}
   let self.match_ids = []
+  let self.run_mode = has('gui_running') ? 'gui' : 'cterm'
   return self
 endfunction
 
@@ -20,7 +21,6 @@ function! s:h.register(color) "{{{1
     return a:color
   endif
   let defstr = self.hl_defstr(a:color)
-
   let hlname = self.hlname_for(defstr)
   if empty(hlname)
     let hlname = get(a:color, 'name', self.next_color())
@@ -107,15 +107,12 @@ endfunction
 
 function! s:h.hl_defstr(color) "{{{1
   let r = []
-  for key in ["gui", "term", "cterm"]
-    if empty(get(a:color, key))
-      continue
-    endif
-    let color = a:color[key]
-    if !empty(color[0])      | call add(r, key . 'bg=' . color[0]) | endif
-    if !empty(color[1])      | call add(r, key . 'fg=' . color[1]) | endif
-    if !empty(get(color, 2)) | call add(r, key . '='   . color[2]) | endif
-  endfor
+  if !empty(get(a:color, self.run_mode))
+    let color = a:color[self.run_mode]
+    if !empty(color[0])      | call add(r, self.run_mode . 'bg=' . color[0]) | endif
+    if !empty(color[1])      | call add(r, self.run_mode . 'fg=' . color[1]) | endif
+    if !empty(get(color, 2)) | call add(r, self.run_mode . '='   . color[2]) | endif
+  endif
   return join(r)
 endfunction "}}}
 

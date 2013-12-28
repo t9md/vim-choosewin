@@ -16,11 +16,13 @@ let s:options = {
       \ 'g:choosewin_label_align':         'center',
       \ 'g:choosewin_label_padding':       3,
       \ 'g:choosewin_label_fill':          0,
-      \ 'g:choosewin_label_color':  { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
-      \ 'g:choosewin_other_color': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
+      \ 'g:choosewin_color_label': { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
+      \ 'g:choosewin_color_other': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
+      \ 'g:choosewin_color_cursor': { 'gui': ['bg', 'fg', 'underline'], 'cterm': [ 'bg', 'fg', 'underline'] },
+      \ 'g:choosewin_return_on_single_win': 0,
       \ }
 
-function! s:set_options(options) "{{{
+function! s:options_set(options) "{{{
   for [varname, value] in items(a:options)
     if !exists(varname)
       let {varname} = value
@@ -28,11 +30,11 @@ function! s:set_options(options) "{{{
     unlet value
   endfor
 endfunction "}}}
-call s:set_options(s:options)
+call s:options_set(s:options)
 
 augroup plugin-choosewin
   autocmd!
-  autocmd ColorScheme,SessionLoadPost * call choosewin#set_color()
+  autocmd ColorScheme,SessionLoadPost * call choosewin#color_set()
 augroup END
 
 " KeyMap:

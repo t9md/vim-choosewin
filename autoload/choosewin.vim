@@ -1,3 +1,6 @@
+function! s:plog(msg) "{{{1
+  call vimproc#system('echo "' . PP(a:msg) . '" >> ~/vim.log')
+endfunction
 
 function! s:highlight_preserve(hlname) "{{{1
   redir => HL_SAVE
@@ -7,23 +10,50 @@ function! s:highlight_preserve(hlname) "{{{1
         \  substitute(matchstr(HL_SAVE, 'xxx \zs.*'), "\n", ' ', 'g')
 endfunction
 
-function! s:hide_cursor() "{{{1
-  highlight Cursor ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE
+function! s:echohl(hlname) "{{{1
+  execute 'echohl' a:hlname
 endfunction
 "}}}
 
 let s:cw = {}
+function! s:cw.cursor_hide() "{{{1
+  let self._hl_cursor_cmd = s:highlight_preserve('Cursor')
+  let self._t_ve_save = &t_ve
 
-function! s:cw.setup() "{{{1
-  if has_key(self, 'highlighter')
-    return
-  endif
-  let self.highlighter = choosewin#highlighter#new('ChooseWin')
+  highlight Cursor NONE
+  let &t_ve=''
 endfunction
 
-function! s:cw.update_status(num) "{{{1
-  let g:choosewin_active = a:num
+function! s:cw.cursor_restore() "{{{1
+  execute self._hl_cursor_cmd
+  let &t_ve = self._t_ve_save
+endfunction
+
+function! s:cw.setup() "{{{1
+  if !has_key(self, 'highlighter')
+    let self.highlighter = choosewin#highlighter#new('ChooseWin')
+  endif
+
+  let self.color_label = self.highlighter.register(g:choosewin_color_label)
+  let self.color_other = g:choosewin_label_fill
+        \ ? self.color_label
+        \ : self.highlighter.register(g:choosewin_color_other)
+  let self.color_cursor = self.highlighter.register(g:choosewin_color_cursor)
+endfunction
+
+function! s:cw.statusline_update(active) "{{{1
+  let g:choosewin_active = a:active
   let &ro = &ro
+
+  if g:choosewin_statusline_replace
+    if a:active
+      call self.statusline_save()
+      call self.statusline_replace()
+    else
+      call self.statusline_restore()
+    endif
+  endif
+
   redraw
 endfunction
 
@@ -44,7 +74,6 @@ function! s:cw.statusline_replace() "{{{1
     let s = self.prepare_statusline(win, g:choosewin_label_align)
     call setwinvar(win, '&statusline', s)
   endfor
-  redraw
 endfunction
 
 function! s:cw.prepare_statusline(win, align) "{{{1
@@ -64,43 +93,36 @@ function! s:cw.prepare_statusline(win, align) "{{{1
   endif
 endfunction
 
+function! s:cw.show_prompt() "{{{1
+  call s:echohl('PreProc')         | echon 'choose > '
+  call s:echohl(self.color_cursor) | echon ' '
+  call s:echohl('Normal')
+endfunction
+
 function! s:cw.start(...) "{{{1
-  call self.setup()
-  let self.color_label = self.highlighter.register(g:choosewin_label_color)
-  let self.color_other = self.highlighter.register(g:choosewin_other_color)
-
-  if g:choosewin_label_fill
-    let self.color_other = self.color_label
-  endif
-
   let self.wins = {}
   let self.winnums = range(1, winnr('$'))
 
+  if g:choosewin_return_on_single_win && len(self.winnums) ==# 1
+    return
+  endif
+
+  call self.setup()
+
   try
-    let hl_cursor_cmd = s:highlight_preserve('Cursor')
-    call s:hide_cursor()
-    call self.update_status(1)
-    echohl PreProc
-    echon 'choose > '
-    echohl Normal
+    call self.cursor_hide()
+    call self.statusline_update(1)
+    call self.show_prompt()
 
-    if g:choosewin_statusline_replace
-      call self.statusline_save()
-      call self.statusline_replace()
-    endif
-
-    let num = str2nr(nr2char(getchar()))
-    if index(self.winnums, num) ==# -1
+    let win = str2nr(nr2char(getchar()))
+    if index(self.winnums, win) ==# -1
       return
     endif
-    silent execute  num . 'wincmd w'
+    silent execute win . 'wincmd w'
   finally
     echo ''
-    call self.update_status(0)
-    if g:choosewin_statusline_replace
-      call self.statusline_restore()
-    endif
-    execute hl_cursor_cmd
+    call self.statusline_update(0)
+    call self.cursor_restore()
   endtry
 endfunction
 
@@ -108,7 +130,7 @@ function! choosewin#start() "{{{1
   call s:cw.start()
 endfunction
 
-function! choosewin#set_color() "{{{1
+function! choosewin#color_set() "{{{1
   call s:cw.setup()
   call s:cw.highlighter.refresh()
 endfunction
