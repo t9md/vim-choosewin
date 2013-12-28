@@ -1,6 +1,6 @@
-*choowsewin.txt* statusline configuration helper for minimalist.
+*choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 0.1
+Version: 0.6
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -102,7 +102,11 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
-2013-12-28: initial release
+2013-12-28: v0.6
+	- cleanup
+	- now independent from &statusline plugin( such as ezbar )
+2013-12-21: v0.1
+	- initial release
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
