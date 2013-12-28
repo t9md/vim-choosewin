@@ -1,6 +1,9 @@
 let s:cw = {}
 
 function! s:cw.setup() "{{{1
+  if has_key(self, 'highlighter')
+    return
+  endif
   let self.highlighter = choosewin#highlighter#new('ChooseWin')
   let self.color = self.highlighter.register(g:choosewin_color)
 endfunction
@@ -32,9 +35,7 @@ function! s:cw.statusline_replace() "{{{1
 endfunction
 
 function! s:cw.start(...) "{{{1
-  if !has_key(self, 'highlighter')
-    call self.setup()
-  endif
+  call self.setup()
 
   let self.wins = {}
   let self.winnums = range(1, winnr('$'))
@@ -69,6 +70,7 @@ function! choosewin#start()
 endfunction
 
 function! choosewin#set_color()
+  call s:cw.setup()
   call s:cw.highlighter.refresh()
 endfunction
 
@@ -76,7 +78,7 @@ if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
 
-call s:cw.setup()
+" call s:cw.setup()
 " echo s:cw.color
 
 " vim: foldmethod=marker
