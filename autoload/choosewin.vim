@@ -42,9 +42,6 @@ function! s:cw.setup() "{{{1
 endfunction
 
 function! s:cw.statusline_update(active) "{{{1
-  let g:choosewin_active = a:active
-  let &ro = &ro
-
   if g:choosewin_statusline_replace
     if a:active
       call self.statusline_save()
@@ -54,6 +51,9 @@ function! s:cw.statusline_update(active) "{{{1
     endif
   endif
 
+  echo ''
+  let g:choosewin_active = a:active
+  let &ro = &ro
   redraw
 endfunction
 
@@ -101,6 +101,7 @@ endfunction
 
 function! s:cw.start(...) "{{{1
   let self.wins = {}
+  let self.win_dest = ''
   let self.winnums = range(1, winnr('$'))
 
   if g:choosewin_return_on_single_win && len(self.winnums) ==# 1
@@ -114,15 +115,16 @@ function! s:cw.start(...) "{{{1
     call self.statusline_update(1)
     call self.show_prompt()
 
-    let win = str2nr(nr2char(getchar()))
-    if index(self.winnums, win) ==# -1
+    let self.win_dest = str2nr(nr2char(getchar()))
+    if index(self.winnums, self.win_dest) ==# -1
       return
     endif
-    silent execute win . 'wincmd w'
   finally
-    echo ''
-    call self.statusline_update(0)
     call self.cursor_restore()
+    call self.statusline_update(0)
+    if !empty('self.win_dest')
+      silent execute self.win_dest 'wincmd w'
+    endif
   endtry
 endfunction
 
