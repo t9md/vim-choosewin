@@ -24,10 +24,15 @@ Aiming to mimic tmux's `display-pane` feature, which enables you to choose
 window interactively.
 
 Its should be useful especially when you are working on high resolution wide
-display.  Since with wide display, you are likely to open multiple window and
-moving around window is a little bit tiresome.  This plugin help this window
-excursion simplify with  
+display.
+Since with wide display, you are likely to open multiple window and
+moving around window is a little bit tiresome.
 
+This plugin make window excursion simplify.
+
+	1. display window label on statusbar
+	2. read input from user
+	3. you can land window you choose
 
 ==============================================================================
 MAPPINGS					*choowsewin-mappings*
@@ -51,7 +56,7 @@ VARIABLES						*choowsewin-variables*
 	Default: 1
 	Type: Number
 
-*g:choosewin_mark_color*
+*g:choosewin_label_color*
 	Default: { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] }
 	Type: |Dictionary|
 
@@ -62,19 +67,19 @@ VARIABLES						*choowsewin-variables*
 	}
 
 *g:choosewin_other_color*
-	Default: { 'gui': ['gray20', 'black'], 'cterm': [ 0, 0] }
+	Default: { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] }
 	Type: |Dictionary|
 
-*g:choosewin_mark_align*
-	Default: 'right'
+*g:choosewin_label_align*
+	Default: 'center'
 	One of 'right', 'center', 'left'
 
-*g:choosewin_mark_padding*
+*g:choosewin_label_padding*
 	Default: 3
 	Type: |Number|
-	Controll padding concatanated around mark.
+	Controll padding concatanated around window label.
 
-*g:choosewin_mark_fill*
+*g:choosewin_label_fill*
 	Default: 0
 	Type: |Number|
 	Set 1 to fill statusline
@@ -84,16 +89,19 @@ FUNCTIONS						*choowsewin-functions*
 
 ==============================================================================
 CONFIGURATION EXAMPLE				    *choowsewin-example*
-
+>
+	nmap  -  <Plug>(choosewin)
+<
 ==============================================================================
 BUG							    *choowsewin-bug*
 
 ==============================================================================
 TODO							    *choowsewin-todo*
 
-
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
+
 2013-12-28: initial release
+
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:

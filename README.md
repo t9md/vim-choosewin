@@ -4,61 +4,18 @@
 
 ![Movie](http://gifzo.net/fko2nB8V2R.gif)
 
-# Choose window with number key
+# Land to window you choose.
 Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
 
 Its should be useful especially when you are working on high resolution wide display.  
 Since with wide display, you are likely to open multiple window and moving around window is a little bit tiresome.  
-This plugin help this window excursion simplify with  
+This plugin make window excursion simplify.
 
-1. display window label on statusbar
-NOTE: this is not what this plugin does, use `&statusline` feature. or use statusline plugin.
-
-2. read input from user
-3. you can land window you choose
+  1. display window label on statusbar
+  2. read input from user
+  3. you can land window you choose
 
 example Configuration
 ```Vim
 nmap  -  <Plug>(choosewin)
-```
-
-# Statusline update example
-Easiest way is that setting `&statusline` to display window number.
-
-```Vim
-let &statusline .= '%{winnr()}'
-```
-
-Or with statusline pluglin like [ezbar](https://github.com/t9md/vim-ezbar),
-dynamically show window number when choosewin is activated.
-
-here is example configuration for ezbar.
-
-```Vim
-let g:ezbar = {}
-let g:ezbar.active = [
-     " .... other status line parts here ...
-      \ 'choosewin',
-      \ ]
-let g:ezbar.inactive = [
-     " .... other status line parts here ...
-      \ 'choosewin',
-      \ ]
-
-function! s:u.choosewin(_) "{{{3
-  if !g:choosewin_active
-    return
-  endif
-  return {
-        \ 's': '    '. a:_ . '    ',
-        \ 'c': { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
-        \ }
-endfunction
-
-function! s:u._filter(layout) "{{{3
-  if g:choosewin_active
-    return filter(a:layout, 'v:val.name =~ "choosewin\\|__SEP__"')
-  endif
-  return a:layout
-endfunction
 ```
