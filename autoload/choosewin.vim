@@ -76,7 +76,7 @@ if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
 
-" call s:cw.setup()
+call s:cw.setup()
 " echo s:cw.color
 
 " vim: foldmethod=marker
