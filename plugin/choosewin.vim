@@ -39,7 +39,7 @@ augroup END
 nnoremap <silent> <Plug>(choosewin)  :<C-u>call choosewin#start()<CR>
 
 " Command
-command! ChooseWin call choosewin#start()
+command! -bar ChooseWin call choosewin#start()
 
 " Finish:
 let &cpo = s:old_cpo
