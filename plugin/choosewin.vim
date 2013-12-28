@@ -11,40 +11,31 @@ set cpo&vim
 
 " Main:
 let g:choosewin_active = 0
+let s:options = {
+      \ 'g:choosewin_statusline_replace': 0,
+      \ 'g:choosewin_color': { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
+      \ }
 
-function! s:update_status(num) "{{{1
-  let g:choosewin_active = a:num
-  let &ro = &ro
-  redraw
-endfunction
-
-function! s:choosewin(...) "{{{1
-  call s:update_status(1)
-
-  let winnums = range(1, winnr('$'))
-
-  echohl PreProc
-  echon 'select-window > '
-  echohl Normal
-
-  try
-    let num = str2nr(nr2char(getchar()))
-    if index(winnums, num) ==# -1
-      return
+function! s:set_options(options) "{{{
+  for [varname, value] in items(a:options)
+    if !exists(varname)
+      let {varname} = value
     endif
-    silent execute  num . 'wincmd w'
-  finally
-    echo ''
-    call s:update_status(0)
-  endtry
-endfunction
-"}}}
+    unlet value
+  endfor
+endfunction "}}}
+call s:set_options(s:options)
+
+augroup plugin-choosewin
+  autocmd!
+  autocmd ColorScheme,SessionLoadPost * call choosewin#set_color()
+augroup END
 
 " KeyMap:
-nnoremap <silent> <Plug>(choosewin)  :<C-u>call <SID>choosewin()<CR>
+nnoremap <silent> <Plug>(choosewin)  :<C-u>call choosewin#start()<CR>
 
 " Command
-command! ChooseWin call <SID>choosewin()
+command! ChooseWin call choosewin#start()
 
 " Finish:
 let &cpo = s:old_cpo

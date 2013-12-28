@@ -1,0 +1,81 @@
+*choowsewin.txt* statusline configuration helper for minimalist.
+
+Version: 0.1
+Author : t9md <taqumd@gmail.com>
+GitHub : https://github.com/t9md/vim-choowsewin
+==============================================================================
+CONTENTS					*choowsewin-contents*
+
+Introduction				    |choowsewin-introduction|
+Mapping					    |choowsewin-mapping|
+Commands				    |choowsewin-commands|
+Variables				    |choowsewin-variables|
+Functions				    |choowsewin-functions|
+Configuration Example			    |choowsewin-example|
+Bug					    |choowsewin-bug|
+Todo					    |choowsewin-todo|
+Changelog				    |choowsewin-changelog|
+
+==============================================================================
+INTRODUCTION					*choowsewin-introduction*
+
+What's this?~
+Aiming to mimic tmux's `display-pane` feature, which enables you to choose
+window interactively.
+
+Its should be useful especially when you are working on high resolution wide
+display.  Since with wide display, you are likely to open multiple window and
+moving around window is a little bit tiresome.  This plugin help this window
+excursion simplify with  
+
+
+==============================================================================
+MAPPINGS					*choowsewin-mappings*
+
+<Plug>(choosewin)
+
+==============================================================================
+COMMANDS						*choowsewin-commands*
+
+*:ChooseWin*
+
+==============================================================================
+VARIABLES						*choowsewin-variables*
+
+*g:choosewin_active*
+	Default: 0
+	Type:    |Number|
+	Become active while choosewin is activated, for use in &statusline
+
+*g:choosewin_statusline_replace*
+	Default: 0
+	Type: Number
+
+*g:choosewin_color*
+	Default: { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] }
+	Type: |Dictionary|
+
+	Set color with collowing fomrat.
+	{
+	  'gui': [ {guibg}, {guifg}, {gui} ],
+	  'cterm': [ {ctermbg}, {ctermfg}, {cterm}]
+	}
+
+==============================================================================
+FUNCTIONS						*choowsewin-functions*
+
+==============================================================================
+CONFIGURATION EXAMPLE				    *choowsewin-example*
+
+==============================================================================
+BUG							    *choowsewin-bug*
+
+==============================================================================
+TODO							    *choowsewin-todo*
+
+
+==============================================================================
+CHANGELOG						*choowsewin-changelog*
+2013-12-28: initial release
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
