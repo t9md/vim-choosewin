@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 0.6
+Version: 0.8
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -99,6 +99,10 @@ VARIABLES						*choowsewin-variables*
 *g:choosewin_label*
 	Default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	Type: |String|
+
+	[CAUNTION] You need to manage to avoid conflict to
+	|g:choosewin_tablabel| or you can't choose label you want.
+
 	[NOTE] choosewin ignore case you input so that you don't need to
 	press Shift. This is for show label with upper case to standout and
 	choose label with minimal key stroke.
@@ -110,6 +114,9 @@ VARIABLES						*choowsewin-variables*
 *g:choosewin_tablabel*
 	Default: '1234567890'
 	Type: |String|
+	[CAUNTION] You need to manage to avoid conflict to
+	|g:choosewin_label| or you can't choose label you want.
+
 	[NOTE] choosewin ignore case you input so that you don't need to
 	press Shift. This is for show label with upper case to standout and
 	choose label with minimal key stroke.
@@ -163,6 +170,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2013-12-28: v0.8
+	- now can choose tab inspired number of advice by manga-osyo
 2013-12-28: v0.6
 	- cleanup
 	- now independent from &statusline plugin( such as ezbar )
