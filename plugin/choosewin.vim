@@ -22,6 +22,9 @@ let s:options = {
       \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
       \ 'g:choosewin_color_other':
       \      { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
+      \ 'g:choosewin_color_land':
+      \   { 'gui':[ 'LawnGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
+      \ 'g:choosewin_blink_on_land': 1,
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       \ 'g:choosewin_tablabel': '1234567890',

@@ -96,6 +96,17 @@ VARIABLES						*choowsewin-variables*
 	Type: |Dictionary|
 	Used for background color around window/tab label.
 
+*g:choosewin_color_land*
+	Default: See plugin/choosewin.vim
+	Type: |Dictionary|
+	Used to blink cursor word when landing to window.
+
+*g:choosewin_blink_on_land*
+	Default: 1
+	Type: |Number| 0 or 1
+	Control whether blinking cursor word when landing window.
+	Set 0 to disable blinking.
+
 *g:choosewin_label*
 	Default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	Type: |String|

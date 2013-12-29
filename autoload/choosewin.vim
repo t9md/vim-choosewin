@@ -1,10 +1,3 @@
-function! s:highlight_preserve(hlname) "{{{1
-  redir => HL_SAVE
-  execute 'silent! highlight ' . a:hlname
-  redir END
-  return 'highlight ' . a:hlname . ' ' .
-        \  substitute(matchstr(HL_SAVE, 'xxx \zs.*'), "\n", ' ', 'g')
-endfunction
 
 function! s:dict_invert(dict) "{{{1
   let R = {}
@@ -61,11 +54,24 @@ function! s:cw.hl_set() "{{{1
         \ : self.highlighter.register(g:choosewin_color_other)
   let self.color_label_current =
         \ self.highlighter.register(g:choosewin_color_label_current)
+  let self.color_land =
+        \ self.highlighter.register(g:choosewin_color_land)
 endfunction
 
 function! s:cw.statusline_save(winnums) "{{{1
   for win in a:winnums
     let self.statusline[win] = getwinvar(win, '&statusline')
+  endfor
+endfunction
+
+function! s:cw.blink_cword() "{{{1
+  if !g:choosewin_blink_on_land
+    return
+  endif
+  let pat = '\k*\%#\k*' 
+  for i in range(2)
+    let id = matchadd(self.color_land, pat) | redraw | sleep 80m
+    call matchdelete(id)                    | redraw | sleep 80m
   endfor
 endfunction
 
@@ -138,7 +144,6 @@ function! s:cw.label2num(nums, label) "{{{1
   return R
 endfunction
 
-
 function! s:cw.winlabel_init(winnums, label) "{{{1
   let self.label2win  = self.label2num(a:winnums, a:label)
   let self.win2label  = s:dict_invert(self.label2win)
@@ -165,6 +170,11 @@ function! s:cw.read_input() "{{{1
   call self.prompt_show('choose > ')
   return nr2char(getchar())
 endfunction
+
+function! s:cw.land_win(winnum) "{{{1
+  silent execute a:winnum 'wincmd w'
+  call self.blink_cword()
+endfunction
 "}}}
 
 let s:vim_options = {
@@ -174,16 +184,17 @@ let s:vim_options = {
 
 function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1 | return | endif
-  if get(a:000, 0, 0) && len(a:winnums) ==# 1
-     silent execute a:winnums[0] 'wincmd w'
-     return
-  endif
 
   try
     let NOT_FOUND = -1
     let winlabel = get(a:000, 1, g:choosewin_label)
     let winnums  = a:winnums
     call self.init()
+    if get(a:000, 0, 0) && len(a:winnums) ==# 1
+      call self.land_win(a:winnums[0])
+      return
+    endif
+
     let self.options = s:options_replace(s:vim_options)
 
     while 1
@@ -212,7 +223,7 @@ function! s:cw.start(winnums, ...) "{{{1
     call s:options_restore(self.options)
     echo '' | redraw
     if !empty(self.win_dest)
-      silent execute self.win_dest 'wincmd w'
+      call self.land_win(self.win_dest)
     endif
   endtry
 endfunction
