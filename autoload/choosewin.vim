@@ -99,7 +99,8 @@ function! s:cw.c2w_create(winnums, label) "{{{1
   let winnums = copy(a:winnums)
   let R = {}
   for c in split(a:label, '\zs')
-    let R[c] = remove(winnums, 0)
+    let wn = remove(winnums, 0)
+    let R[c] = wn
     if empty(winnums)
       break
     endif
@@ -115,30 +116,34 @@ function! s:cw.w2c_create(c2w)
   return R
 endfunction
 
+function! s:cw.get_win(char)
+  return get(self.c2w, a:char, 
+        \  get(self.c2w, tolower(a:char),  
+        \    get(self.c2w, toupper(a:char), -1))) 
+endfunction
+
 function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1
     return
   endif
   let label = !empty(a:0) ? a:1 : g:choosewin_label
 
-  let self.options = {}
-  let self.win_dest = ''
-  let self.winnums = a:winnums
-  let self.c2w = self.c2w_create(a:winnums, label)
-  let self.w2c = self.w2c_create(self.c2w)
+  let self.options    = {}
+  let self.win_dest   = ''
+  let self.winnums    = a:winnums
+  let self.c2w        = self.c2w_create(a:winnums, label)
+  let self.w2c        = self.w2c_create(self.c2w)
 
   call self.setup()
   try
     call self.statusline_update(1)
     echohl PreProc  | echon self.prompt | echohl Normal
 
-    let char = toupper(nr2char(getchar()))
-    " call s:plog(self.c2w)
-    " call s:plog(self.w2c)
-    if !has_key(self.c2w, char)
+    let dest = self.get_win(nr2char(getchar()))
+    if dest ==# -1
       return
     endif
-    let self.win_dest = self.c2w[char]
+    let self.win_dest = dest
   finally
     call self.statusline_update(0)
     if !empty(self.win_dest)
