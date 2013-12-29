@@ -224,6 +224,7 @@ endfunction
 function! choosewin#tabline() "{{{1
   return s:cw.tabline()
 endfunction
+"}}}
 
 if expand("%:p") !=# expand("<sfile>:p")
   finish

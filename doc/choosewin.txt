@@ -153,7 +153,7 @@ choosewin#start({winnum-list}, {label-string})
 
 	Exeample: show label for specific window~
 >
-	" win3 => d, win4 => e, silently ignored.
+	" win3 => d, win4 => e, char 'f' is silently ignored.
 	call choosewin#start([3,4], 'def')
 <
 ==============================================================================
