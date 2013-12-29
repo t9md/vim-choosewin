@@ -24,7 +24,6 @@ endfunction
 "}}}
 
 let s:cw = {}
-let s:cw.prompt = 'choose-win > '
 
 function! s:cw.setup() "{{{1
   if !has_key(self, 'highlighter')
@@ -39,13 +38,13 @@ function! s:cw.setup() "{{{1
         \ self.highlighter.register(g:choosewin_color_label_current)
 endfunction
 
-function! s:cw.statusline_update(active) "{{{1
+function! s:cw.statusline_update(active, winnums) "{{{1
   if g:choosewin_statusline_replace
     if a:active
-      call self.statusline_save()
-      call self.statusline_replace()
+      call self.statusline_save(a:winnums)
+      call self.statusline_replace(a:winnums)
     else
-      call self.statusline_restore()
+      call self.statusline_restore(a:winnums)
     endif
   endif
 
@@ -55,31 +54,34 @@ function! s:cw.statusline_update(active) "{{{1
   redraw
 endfunction
 
-function! s:cw.statusline_save() "{{{1
-  for win in self.winnums
+function! s:cw.statusline_save(winnums) "{{{1
+  for win in a:winnums
     let self.options[win] = getwinvar(win, '&statusline')
   endfor
 endfunction
 
-function! s:cw.statusline_restore() "{{{1
-  for win in self.winnums
+function! s:cw.statusline_restore(winnums) "{{{1
+  for win in a:winnums
     call setwinvar(win, '&statusline', self.options[win])
   endfor
 endfunction
 
-function! s:cw.statusline_replace() "{{{1
-  for win in self.winnums
+function! s:cw.statusline_replace(winnums) "{{{1
+  " call s:plog(self.win2label)
+  for win in a:winnums
     let s = self.prepare_label(win, g:choosewin_label_align)
     call setwinvar(win, '&statusline', s)
   endfor
 endfunction
 
 function! s:cw.tabline_save() "{{{1
-  let self.options['&tabline'] = &tabline
+  let self.options['&tabline']     = &tabline
+  let self.options['&guitablabel'] = &guitablabel
 endfunction
 
 function! s:cw.tabline_restore() "{{{1
-  let &tabline = self.options['&tabline']
+  let &tabline     = self.options['&tabline']
+  let &guitablabel = self.options['&guitablabel']
 endfunction
 
 function! s:cw.tabline_replace() "{{{1
@@ -88,6 +90,7 @@ endfunction
 
 function! s:cw.prepare_label(win, align) "{{{1
   let pad = repeat(' ', g:choosewin_label_padding)
+  " call s:plog(a:win)
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
   let color = winnr() ==# a:win
@@ -127,8 +130,8 @@ function! s:cw.tabline() "{{{1
 endfunction
 
 function! s:cw.label2num(nums, label) "{{{1
-  let nums = copy(a:nums)
   let R = {}
+  let nums = copy(a:nums)
   for c in split(a:label, '\zs')
     let n = remove(nums, 0)
     let R[c] = n
@@ -139,52 +142,29 @@ function! s:cw.label2num(nums, label) "{{{1
   return R
 endfunction
 
-function! s:cw.get(table, char)
+function! s:cw.get(table, char) "{{{1
   return get(a:table, a:char, 
         \  get(a:table, tolower(a:char),  
         \    get(a:table, toupper(a:char), -1))) 
 endfunction
 
-function! s:cw.start_tab(tabnums, ...) "{{{1
-  let tablabel = !empty(a:0) ? a:1 : g:choosewin_tablabel
-  let self.options    = {}
-  let self.tabnums    = a:tabnums
-  let self.label2tab  = self.label2num(a:tabnums, tablabel)
-  let self.tab2label  = s:dict_invert(self.label2tab)
-
-  call self.setup()
-
-  try
-    call self.tabline_save()
-    let &tabline = '%!choosewin#tabline()'
-    while 1
-      echohl PreProc  | echon 'choose-tab > ' | echohl Normal
-      redraw
-      let tabn = self.get(self.label2tab, nr2char(getchar()))
-      if index(self.tabnums, tabn) != -1
-        silent execute 'tabnext ' tabn
-      else
-        break
-      endif
-    endwhile
-  finally
-    call self.tabline_restore()
-  endtry
+function! s:cw.winlabel_init(label)
+  let self.label2win  = self.label2num(self.winnums, a:label)
+  let self.win2label  = s:dict_invert(self.label2win)
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1
     return
   endif
-  let label    = !empty(a:0) ? a:1 : g:choosewin_label
+  let winlabel    = !empty(a:0) ? a:1 : g:choosewin_label
 
   let self.options    = {}
   let self.win_dest   = ''
   let self.winnums    = a:winnums
   let self.tabnums    = range(1, tabpagenr('$'))
 
-  let self.label2win  = self.label2num(self.winnums, label)
-  let self.win2label  = s:dict_invert(self.label2win)
+  call self.winlabel_init(winlabel)
 
   let tablabel = g:choosewin_tablabel
   let self.label2tab  = self.label2num(self.tabnums, tablabel)
@@ -192,24 +172,30 @@ function! s:cw.start(winnums, ...) "{{{1
 
   call self.setup()
   try
-    call self.statusline_update(1)
+    call self.statusline_update(1, self.winnums)
     call self.tabline_save()
-    let &tabline = '%!choosewin#tabline()'
+    let &tabline     = '%!choosewin#tabline()'
+    let &guitablabel = '%{g:choosewin_tablabel[v:lnum-1]}'
 
     while 1
-      echohl PreProc  | echon 'choose > ' | echohl Normal
       redraw
-      let label = nr2char(getchar())
-      let tabn = self.get(self.label2tab, label)
+      echohl PreProc  | echon 'choose > ' | echohl Normal
+
+      let input = nr2char(getchar())
+      let tabn = self.get(self.label2tab, input)
+
       if tabn != -1
-        if tabpagenr() ==# tabn
+        if tabn ==# tabpagenr()
           continue
         endif
-        call self.statusline_update(0)
+        call self.statusline_update(0, self.winnums)
         silent execute 'tabnext ' tabn
-        call self.statusline_update(1)
+
+        let self.winnums  = range(1, winnr('$'))
+        call self.winlabel_init(winlabel)
+        call self.statusline_update(1, self.winnums)
       else
-        let winn = self.get(self.label2win, label)
+        let winn = self.get(self.label2win, input)
         if winn !=# -1
           let self.win_dest = winn
         endif
@@ -217,7 +203,7 @@ function! s:cw.start(winnums, ...) "{{{1
       endif
     endwhile
   finally
-    call self.statusline_update(0)
+    call self.statusline_update(0, self.winnums)
     call self.tabline_restore()
     if !empty(self.win_dest)
       silent execute self.win_dest 'wincmd w'
@@ -240,7 +226,8 @@ endfunction
   " call self.setup()
   " try
     " call self.statusline_update(1)
-    " echohl PreProc  | echon self.prompt | echohl Normal
+    " echohl PreProc  | echon 'choose-win > ' | echohl Normal
+    " " redraw
 
     " let dest = self.get(self.label2win, nr2char(getchar()))
     " if dest ==# -1
@@ -259,10 +246,6 @@ function! choosewin#start(...) "{{{1
   call call(s:cw.start, a:000, s:cw)
 endfunction
 
-function! choosewin#start_tab(...) "{{{1
-  call call(s:cw.start_tab, a:000, s:cw)
-endfunction
-
 function! choosewin#color_set() "{{{1
   call s:cw.setup()
   call s:cw.highlighter.refresh()
@@ -270,10 +253,6 @@ endfunction
 
 function! choosewin#tabline() "{{{1
   return s:cw.tabline()
-endfunction
-
-function! choosewin#mogemoge() "{{{1
-  return s:cw.mogemoge()
 endfunction
 
 if expand("%:p") !=# expand("<sfile>:p")
