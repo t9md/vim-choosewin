@@ -43,11 +43,11 @@ augroup END
 
 " KeyMap:
 nnoremap <silent> <Plug>(choosewin)     :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
-nnoremap <silent> <Plug>(choosewin-tab) :<C-u>call choosewin#start_tab(range(1, tabpagenr('$')))<CR>
+" nnoremap <silent> <Plug>(choosewin-tab) :<C-u>call choosewin#start_tab(range(1, tabpagenr('$')))<CR>
 
 " Command
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
-command! -bar ChooseTab call choosewin#start_tab(range(1, tabpagenr('$')))
+" command! -bar ChooseTab call choosewin#start_tab(range(1, tabpagenr('$')))
 
 " Finish:
 let &cpo = s:old_cpo
