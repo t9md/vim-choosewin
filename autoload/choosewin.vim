@@ -16,18 +16,7 @@ endfunction
 "}}}
 
 let s:cw = {}
-function! s:cw.cursor_hide() "{{{1
-  let self._hl_cursor_cmd = s:highlight_preserve('Cursor')
-  let self._t_ve_save = &t_ve
-
-  highlight Cursor NONE
-  let &t_ve=''
-endfunction
-
-function! s:cw.cursor_restore() "{{{1
-  execute self._hl_cursor_cmd
-  let &t_ve = self._t_ve_save
-endfunction
+let s:cw.prompt = 'choose > '
 
 function! s:cw.setup() "{{{1
   if !has_key(self, 'highlighter')
@@ -38,7 +27,7 @@ function! s:cw.setup() "{{{1
   let self.color_other = g:choosewin_label_fill
         \ ? self.color_label
         \ : self.highlighter.register(g:choosewin_color_other)
-  let self.color_cursor = self.highlighter.register(g:choosewin_color_cursor)
+  " let self.color_cursor = self.highlighter.register(g:choosewin_color_cursor)
 endfunction
 
 function! s:cw.statusline_update(active) "{{{1
@@ -93,12 +82,6 @@ function! s:cw.prepare_statusline(win, align) "{{{1
   endif
 endfunction
 
-function! s:cw.show_prompt() "{{{1
-  call s:echohl('PreProc')         | echon 'choose > '
-  call s:echohl(self.color_cursor) | echon ' '
-  call s:echohl('Normal')
-endfunction
-
 function! s:cw.start(...) "{{{1
   let self.wins = {}
   let self.win_dest = ''
@@ -111,18 +94,17 @@ function! s:cw.start(...) "{{{1
   call self.setup()
 
   try
-    call self.cursor_hide()
     call self.statusline_update(1)
-    call self.show_prompt()
+    echohl PreProc  | echon self.prompt | echohl Normal
 
-    let self.win_dest = str2nr(nr2char(getchar()))
-    if index(self.winnums, self.win_dest) ==# -1
+    let win = str2nr(nr2char(getchar()))
+    if index(self.winnums, win) ==# -1
       return
     endif
+    let self.win_dest = win
   finally
-    call self.cursor_restore()
     call self.statusline_update(0)
-    if !empty('self.win_dest')
+    if !empty(self.win_dest)
       silent execute self.win_dest 'wincmd w'
     endif
   endtry

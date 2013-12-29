@@ -18,9 +18,9 @@ let s:options = {
       \ 'g:choosewin_label_fill':          0,
       \ 'g:choosewin_color_label': { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
       \ 'g:choosewin_color_other': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
-      \ 'g:choosewin_color_cursor': { 'gui': ['bg', 'fg', 'underline'], 'cterm': [ 'bg', 'fg', 'underline'] },
       \ 'g:choosewin_return_on_single_win': 0,
       \ }
+      " \ 'g:choosewin_color_cursor': { 'gui': ['bg', 'fg', 'underline'], 'cterm': [ 'bg', 'fg', 'underline'] },
 
 function! s:options_set(options) "{{{
   for [varname, value] in items(a:options)

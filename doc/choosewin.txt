@@ -84,17 +84,9 @@ VARIABLES						*choowsewin-variables*
 	      \ 'gui': ['gray20', 'black'],
 	      \ 'cterm': [ 240, 0]
 	      \ }
-	let g:choosewin_color_cursor = {
-	      \ 'gui': ['bg', 'fg', 'underline'],
-	      \ 'cterm': [ 'bg', 'fg', 'underline']
-	      \ }
 <
 
 *g:choosewin_color_other*
-	Default: See plugin/choosewin.vim
-	Type: |Dictionary|
-
-*g:choosewin_color_cursor*
 	Default: See plugin/choosewin.vim
 	Type: |Dictionary|
 
