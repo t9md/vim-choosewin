@@ -157,6 +157,10 @@ function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1
     return
   endif
+  if g:choosewin_skip_on_single_win && len(a:winnums) ==# 1
+    silent execute a:winnums[0] 'wincmd w'
+    return
+  endif
   let winlabel    = !empty(a:0) ? a:1 : g:choosewin_label
 
   let self.options    = {}

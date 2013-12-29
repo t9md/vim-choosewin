@@ -21,6 +21,7 @@ let s:options = {
       \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 9, 16] },
       \ 'g:choosewin_color_other': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
       \ 'g:choosewin_return_on_single_win': 0,
+      \ 'g:choosewin_skip_on_single_win': 1,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       \ 'g:choosewin_tablabel': '1234567890',
       \ }
