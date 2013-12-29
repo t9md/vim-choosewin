@@ -120,6 +120,11 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Set 1 to return immediately when number of window is 1.
 
+*g:choosewin_skip_on_single_win*
+	Default: 1
+	Type: |Number|
+	Set 1 to choose immediately when number of window is 1.
+
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
