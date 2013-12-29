@@ -90,6 +90,17 @@ VARIABLES						*choowsewin-variables*
 	Default: See plugin/choosewin.vim
 	Type: |Dictionary|
 
+*g:choosewin_label*
+	Default: '1234567890'
+	Type: |String|
+	[NOTE] choosewin ignore case you input so that you don't need to
+	press Shift. This is for show label with upper case to standout and
+	choose window with minimal key stroke.
+
+	Exeample~
+>
+	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+<
 *g:choosewin_label_align*
 	Default: 'center'
 	One of 'right', 'center', 'left'
