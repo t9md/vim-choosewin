@@ -123,6 +123,19 @@ VARIABLES						*choowsewin-variables*
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
+							   *choosewin#start()*
+choosewin#start({winnum-list}, {label-string})
+	{winnum-list}
+		|List| of window number.
+	{label-string}
+		Sequence of character used for label.
+		Must longer than {winnum-list}
+
+	Exeample: show label for specific window~
+>
+	" win3 => d, win4 => e, silently ignored.
+	call choosewin#start([3,4], 'def')
+<
 ==============================================================================
 CONFIGURATION EXAMPLE				    *choowsewin-example*
 >
