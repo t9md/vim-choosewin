@@ -86,21 +86,34 @@ VARIABLES						*choowsewin-variables*
 	      \ }
 <
 
+*g:choosewin_color_label_current*
+	Default: See plugin/choosewin.vim
+	Type: |Dictionary|
+	Used for current window/tab label.
+
 *g:choosewin_color_other*
 	Default: See plugin/choosewin.vim
 	Type: |Dictionary|
+	Used for background color around window/tab label.
 
 *g:choosewin_label*
-	Default: '1234567890'
+	Default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	Type: |String|
 	[NOTE] choosewin ignore case you input so that you don't need to
 	press Shift. This is for show label with upper case to standout and
-	choose window with minimal key stroke.
+	choose label with minimal key stroke.
 
 	Exeample~
 >
 	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 <
+*g:choosewin_tablabel*
+	Default: '1234567890'
+	Type: |String|
+	[NOTE] choosewin ignore case you input so that you don't need to
+	press Shift. This is for show label with upper case to standout and
+	choose label with minimal key stroke.
+
 *g:choosewin_label_align*
 	Default: 'center'
 	One of 'right', 'center', 'left'
