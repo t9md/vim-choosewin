@@ -16,10 +16,13 @@ let s:options = {
       \ 'g:choosewin_label_align':         'center',
       \ 'g:choosewin_label_padding':       3,
       \ 'g:choosewin_label_fill':          0,
-      \ 'g:choosewin_color_label': { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
+      \ 'g:choosewin_color_label': { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
+      \ 'g:choosewin_color_label_current': 
+      \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 9, 16] },
       \ 'g:choosewin_color_other': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
       \ 'g:choosewin_return_on_single_win': 0,
-      \ 'g:choosewin_label': '1234567890',
+      \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \ 'g:choosewin_tablabel': '1234567890',
       \ }
       " \ 'g:choosewin_label': ';ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 
@@ -39,10 +42,12 @@ augroup plugin-choosewin
 augroup END
 
 " KeyMap:
-nnoremap <silent> <Plug>(choosewin)  :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
+nnoremap <silent> <Plug>(choosewin)     :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
+nnoremap <silent> <Plug>(choosewin-tab) :<C-u>call choosewin#start_tab(range(1, tabpagenr('$')))<CR>
 
 " Command
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
+command! -bar ChooseTab call choosewin#start_tab(range(1, tabpagenr('$')))
 
 " Finish:
 let &cpo = s:old_cpo
