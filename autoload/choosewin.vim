@@ -159,7 +159,6 @@ function! s:cw.init() "{{{1
   let self.options    = {}
   let self.win_dest = ''
   call self.tablabel_init(range(1, tabpagenr('$')), g:choosewin_tablabel)
-  call self.hl_set()
 endfunction
 
 function! s:cw.prompt_show(prompt) "{{{1
@@ -184,16 +183,17 @@ let s:vim_options = {
 
 function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1 | return | endif
+  call self.hl_set()
+  if get(a:000, 0, 0) && len(a:winnums) ==# 1
+    call self.land_win(a:winnums[0])
+    return
+  endif
 
   try
     let NOT_FOUND = -1
     let winlabel = get(a:000, 1, g:choosewin_label)
     let winnums  = a:winnums
     call self.init()
-    if get(a:000, 0, 0) && len(a:winnums) ==# 1
-      call self.land_win(a:winnums[0])
-      return
-    endif
 
     let self.options = s:options_replace(s:vim_options)
 

@@ -187,6 +187,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2013-12-29:
+	- now blinking cursor word at land so that easy to spot cursor.
 	- [api-change] add auto-choose optional args for choowsewin#start()
 	  suggested by hrsh7th
 2013-12-28: v0.8
