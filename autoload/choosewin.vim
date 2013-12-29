@@ -205,6 +205,7 @@ function! s:cw.start(winnums, ...) "{{{1
   finally
     call self.statusline_restore()
     call s:options_restore(self.options)
+    echo '' | redraw
     if !empty(self.win_dest)
       silent execute self.win_dest 'wincmd w'
     endif

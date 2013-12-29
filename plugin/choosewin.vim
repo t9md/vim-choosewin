@@ -16,10 +16,12 @@ let s:options = {
       \ 'g:choosewin_label_align':         'center',
       \ 'g:choosewin_label_padding':       3,
       \ 'g:choosewin_label_fill':          0,
-      \ 'g:choosewin_color_label': { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 9, 16] },
+      \ 'g:choosewin_color_label':
+      \      { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
       \ 'g:choosewin_color_label_current': 
-      \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 9, 16] },
-      \ 'g:choosewin_color_other': { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
+      \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
+      \ 'g:choosewin_color_other':
+      \      { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       \ 'g:choosewin_tablabel': '1234567890',
