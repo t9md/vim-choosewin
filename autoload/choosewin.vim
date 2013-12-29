@@ -174,9 +174,14 @@ let s:vim_options = {
 
 function! s:cw.start(winnums, ...) "{{{1
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1 | return | endif
+  if get(a:000, 0, 0) && len(a:winnums) ==# 1
+     silent execute a:winnums[0] 'wincmd w'
+     return
+  endif
+
   try
     let NOT_FOUND = -1
-    let winlabel = !empty(a:0) ? a:1 : g:choosewin_label
+    let winlabel = get(a:000, 1, g:choosewin_label)
     let winnums  = a:winnums
     call self.init()
     let self.options = s:options_replace(s:vim_options)

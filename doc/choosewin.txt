@@ -144,10 +144,15 @@ VARIABLES						*choowsewin-variables*
 FUNCTIONS						*choowsewin-functions*
 
 							   *choosewin#start()*
-choosewin#start({winnum-list}, {label-string})
-	{winnum-list}
+choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
+	{winnum-list}:  Required
 		|List| of window number.
-	{label-string}
+	{auto-choose}: Optional
+		Type: |Number|
+		Value: 0 or 1
+		Set 1 to automatically choose win if number of window is 1
+
+	{label-string}: Optional
 		Sequence of character used for label.
 		Must longer than {winnum-list}
 
@@ -170,6 +175,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2013-12-29:
+	- [api-change] add auto-choose optional args for choowsewin#start()
+	  suggested by hrsh7th
 2013-12-28: v0.8
 	- now can choose tab inspired number of advice by manga-osyo
 2013-12-28: v0.6
