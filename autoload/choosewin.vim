@@ -162,7 +162,7 @@ function! s:cw.tablabel_init(tabnums, label) "{{{1
 endfunction
 
 function! s:cw.init() "{{{1
-  let self.env = { 'win': winnr(), 'tab': tabpagenr() }
+  " let self.env = { 'win': winnr(), 'tab': tabpagenr() }
   let self.statusline = {}
   let self.options    = {}
   let self.win_dest = ''
