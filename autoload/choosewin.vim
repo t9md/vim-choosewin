@@ -134,13 +134,15 @@ endfunction
 function! s:cw.label2num(nums, label) "{{{1
   let R = {}
   let nums = copy(a:nums)
-  for c in split(a:label, '\zs')
-    let n = remove(nums, 0)
-    let R[c] = n
-    if empty(nums)
+  let label = split(copy(a:label), '\zs')
+
+  while 1
+    let R[remove(label, 0)] = remove(nums, 0)
+    if empty(nums) || empty(label)
       break
     endif
-  endfor
+  endwhile
+
   return R
 endfunction
 
@@ -181,13 +183,19 @@ let s:vim_options = {
       \ '&guitablabel': '%{g:choosewin_tablabel[v:lnum-1]}',
       \ }
 
+function! s:cw.env()
+  return [ tabpagenr(), winnr() ]
+endfunction
+
 function! s:cw.start(winnums, ...) "{{{1
-  let RESULT = 0
-  if g:choosewin_return_on_single_win && len(a:winnums) ==# 1 | return | endif
+
+  if g:choosewin_return_on_single_win && len(a:winnums) ==# 1
+    return []
+  endif
   call self.hl_set()
   if get(a:000, 0, 0) && len(a:winnums) ==# 1
     call self.land_win(a:winnums[0])
-    return
+    return self.env()
   endif
 
   try
@@ -216,7 +224,7 @@ function! s:cw.start(winnums, ...) "{{{1
         if winn !=# NOT_FOUND
           let self.win_dest = winn
         else
-          let RESULT = 1
+          return []
         endif
         break
       endif
@@ -229,7 +237,7 @@ function! s:cw.start(winnums, ...) "{{{1
       call self.land_win(self.win_dest)
     endif
   endtry
-  return RESULT
+  return self.env()
 endfunction
 
 function! choosewin#start(...) "{{{1
