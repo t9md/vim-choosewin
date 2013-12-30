@@ -188,6 +188,9 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
+[ ] FIX API-specification
+[ ] Distinguish original tab so that user lost while traveling tab.
+
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 

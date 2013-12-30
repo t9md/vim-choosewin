@@ -54,6 +54,11 @@ function! s:cw.hl_set() "{{{1
         \ : self.highlighter.register(g:choosewin_color_other)
   let self.color_label_current =
         \ self.highlighter.register(g:choosewin_color_label_current)
+  " let screen = has("gui_running") ? 'gui' : 'cterm'
+  " let color_label_tab_orig = copy(g:choosewin_color_label_current)
+  " let color_label_tab_orig[screen] = color_label_tab_orig[screen][0:1] + ['underline']
+  " let self.color_label_tab_orig = 
+        " \ self.highlighter.register(color_label_tab_orig)
   let self.color_land =
         \ self.highlighter.register(g:choosewin_color_land)
 endfunction
@@ -157,6 +162,7 @@ function! s:cw.tablabel_init(tabnums, label) "{{{1
 endfunction
 
 function! s:cw.init() "{{{1
+  let self.env = { 'win': winnr(), 'tab': tabpagenr() }
   let self.statusline = {}
   let self.options    = {}
   let self.win_dest = ''
