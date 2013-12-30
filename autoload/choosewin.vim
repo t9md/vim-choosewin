@@ -182,6 +182,7 @@ let s:vim_options = {
       \ }
 
 function! s:cw.start(winnums, ...) "{{{1
+  let RESULT = 0
   if g:choosewin_return_on_single_win && len(a:winnums) ==# 1 | return | endif
   call self.hl_set()
   if get(a:000, 0, 0) && len(a:winnums) ==# 1
@@ -214,6 +215,8 @@ function! s:cw.start(winnums, ...) "{{{1
         let winn = s:get_ic(self.label2win, input, NOT_FOUND)
         if winn !=# NOT_FOUND
           let self.win_dest = winn
+        else
+          let RESULT = 1
         endif
         break
       endif
@@ -226,10 +229,11 @@ function! s:cw.start(winnums, ...) "{{{1
       call self.land_win(self.win_dest)
     endif
   endtry
+  return RESULT
 endfunction
 
 function! choosewin#start(...) "{{{1
-  call call(s:cw.start, a:000, s:cw)
+  return call(s:cw.start, a:000, s:cw)
 endfunction
 
 function! choosewin#color_set() "{{{1

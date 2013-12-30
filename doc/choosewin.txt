@@ -156,6 +156,8 @@ FUNCTIONS						*choowsewin-functions*
 
 							   *choosewin#start()*
 choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
+	ReturnValue: 0(success), 1(cancel)
+
 	{winnum-list}:  Required
 		|List| of window number.
 	{auto-choose}: Optional
