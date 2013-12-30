@@ -192,6 +192,8 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
+[ ] [new feature] close tab with key 'x' and next/prev with '[,]'
+    which helps lack of tablabel(usually its limited to 0-9 digit char).
 [ ] FIX API-specification
 [ ] Distinguish original tab so that user lost while traveling tab.
 
