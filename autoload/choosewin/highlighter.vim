@@ -1,5 +1,7 @@
 let s:h = {}
 
+let s:TYPE_STRING = type('')
+
 function! s:h.init() "{{{1
   let self.hls       = {}
   let self.match_ids = []
@@ -17,7 +19,7 @@ function! s:h.hlname_for(defstr) "{{{1
 endfunction
 
 function! s:h.register(color) "{{{1
-  if type(a:color) == type('')
+  if type(a:color) ==# s:TYPE_STRING
     return a:color
   endif
   let defstr = self.hl_defstr(a:color)

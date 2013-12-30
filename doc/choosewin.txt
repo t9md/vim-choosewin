@@ -185,6 +185,10 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 ==============================================================================
 BUG							    *choowsewin-bug*
 
+* Number of tab exceed length of |g:choosewin_tablabel| cause error.
+* Number of window exceed passed win label cause error, especially likely to
+ face this situation when you manually pass labelstr using choosewin#start()
+
 ==============================================================================
 TODO							    *choowsewin-todo*
 
