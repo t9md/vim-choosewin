@@ -27,7 +27,7 @@ let s:options = {
       \ 'g:choosewin_blink_on_land': 1,
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-      \ 'g:choosewin_tablabel': '1234567890',
+      \ 'g:choosewin_tablabel': '1234567890[]$',
       \ }
       " \ 'g:choosewin_label': ';ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 

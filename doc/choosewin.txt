@@ -123,10 +123,20 @@ VARIABLES						*choowsewin-variables*
 	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 <
 *g:choosewin_tablabel*
-	Default: '1234567890'
+	Default: '1234567890[]$'
 	Type: |String|
 	[CAUNTION] You need to manage to avoid conflict to
 	|g:choosewin_label| or you can't choose label you want.
+
+	[NOTE] LAST 4 CHALACTER is used for SPECIAL PURPOSE
+	With default value, last four chars are used like below.
+
+		0 => choose FIRST    tab
+		[ => choose PREVIOUS tab
+		] => choose NEXT     tab
+		$ => choose LAST     tab
+
+	So keep in mind that you must set at least 4 chars to this variable.
 
 	[NOTE] choosewin ignore case you input so that you don't need to
 	press Shift. This is for show label with upper case to standout and
@@ -192,12 +202,13 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
+[ ] [bug fix] choosing tab and <Esc> don't revert original tab.
 [ ] [new feature] close tab with key 'x' and next/prev with '[,]'
     which helps lack of tablabel(usually its limited to 0-9 digit char).
     last four chars is used four left/right/end/head
 
 [ ] FIX API-specification
-[ ] Distinguish original tab so that user lost while traveling tab.
+[ ] Distinguish original tab so that user never lost while traveling tab.
 
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
