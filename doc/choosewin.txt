@@ -202,17 +202,19 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
-[ ] [bug fix] choosing tab and <Esc> don't revert original tab.
-[ ] [new feature] close tab with key 'x' and next/prev with '[,]'
-    which helps lack of tablabel(usually its limited to 0-9 digit char).
-    last four chars is used four left/right/end/head
-
+[ ] [newfeature] close tab with key 'x'.
 [ ] FIX API-specification
 [ ] Distinguish original tab so that user never lost while traveling tab.
 
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2013-12-31:
+	- [bugfixed] Number of tab exceed length of |g:choosewin_tablabel|
+	  cause error.
+	- [new-feature] last four char for |g:choosewin_tablabel|is used for
+	  special tab excursion.
+	- [bugfix] choosing tab and <Esc> don't revert original tab.
 2013-12-29:
 	- now blinking cursor word at land so that easy to spot cursor.
 	- [api-change] add auto-choose optional args for choowsewin#start()
