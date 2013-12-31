@@ -194,14 +194,14 @@ function! s:cw.env()
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
-
-  if g:choosewin_return_on_single_win && len(a:winnums) ==# 1
-    return []
-  endif
   call self.hl_set()
-  if get(a:000, 0, 0) && len(a:winnums) ==# 1
-    call self.land_win(a:winnums[0])
-    return self.env()
+  if len(a:winnums) ==# 1
+    if get(a:000, 0, 0)
+      call self.land_win(a:winnums[0])
+      return self.env()
+    elseif g:choosewin_return_on_single_win
+      return []
+    endif
   endif
 
   try
