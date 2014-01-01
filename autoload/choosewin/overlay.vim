@@ -1,5 +1,6 @@
 let s:supported_chars = join(map(range(33, 126), 'nr2char(v:val)'), '')
 
+" Util:
 function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   let r = []
@@ -27,22 +28,7 @@ endfunction
 function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
 endfunction
-
-function! s:scan_match(str, pattern) "{{{1
-  let R = []
-  let start = 0
-  while 1
-    let m = match(a:str, a:pattern, start)
-    if m ==# -1 | break | endif
-    call add(R, m)
-    let start = m + 1
-  endwhile
-  return R
-endfunction
 "}}}
-"}}}
-
-" Util:
 function! s:getwinline(win, ...) "{{{1
   " getbufline() wrapper
   let args = [ winbufnr(a:win) ] + a:000
@@ -85,59 +71,8 @@ function! s:fill_space(list, tabstop, maxwidth) "{{{1
 endfunction
 "}}}
 
-" Font:
-let s:font_data = choosewin#font#table#get()
-let s:font = {}
-function! s:font.new(char) "{{{1
-  let self._data = s:font_data[a:char]
-  let self.height = len(self._data)
-  let self.width  = len(self._data[0])
-  return self
-endfunction
-
-function! s:font.info() "{{{1
-  return {
-        \ 'data': self._data,
-        \ 'height': self.height,
-        \ 'width': self.width,
-        \ }
-endfunction
-
-function! s:font.print() "{{{1
-  return join(self._data, "\n")
-endfunction
-
-function! s:font.parse() "{{{1
-  let R = []
-
-  for idx in range(0, len(self._data) - 1)
-    let indexes = s:scan_match(self._data[idx], '\$')
-    let line_anchor = '%{line+' . idx . '}l'
-    let pattern = join(map(indexes, 'line_anchor . "%{col+" . v:val . "}c"'), '|')
-    call add(R, pattern)
-  endfor
-  call filter(R, '!empty(v:val)')
-  return R
-endfunction
-
-function! s:font.height() "{{{1
-  return len(self._data)
-endfunction
-
-function! s:font.pattern() "{{{1
-  return '\v' . join(self.parse(), '|')
-endfunction
-"}}}
-
-" for s:c in s:str_split(s:supported_chars)
-  " echo s:c '============================'
-  " echo s:font.new(s:c).pattern()
-" endfor
-" let s:_A = s:font.new('A')
-
 " Overlay:
 let s:overlay = {}
-
 function! s:overlay.fill_space(line_s, line_e, width) "{{{1
   let lines_new = s:fill_space(
         \ getline(a:line_s, a:line_e), &tabstop, a:width)
@@ -185,17 +120,17 @@ function! s:overlay.main(wins) "{{{1
     endfor
   finally
     execute winnr_org 'wincmd w'
-  endtry                                                                        
-                                                                                
-  " Read input:                                                                 
-  redraw                                                                        
-  echon 'continue?'                                                             
-  call getchar()                                                                
-                                                                                
-  " Take action:                                                                
-                                                                                
-  " Revert                                                                      
-  try                                                                           
+  endtry
+
+  " Read input:
+  redraw
+  echon 'continue?'
+  call getchar()
+
+  " Take action:
+
+  " Revert
+  try
     for winnr in a:wins
       execute winnr 'wincmd w'
       call clearmatches()
