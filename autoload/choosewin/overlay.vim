@@ -67,17 +67,17 @@ endfunction
 
 function! s:fill_space(list, tabstop, maxwidth) "{{{1
   return map(deepcopy(a:list), 's:append_space(s:tab2space(v:val, a:tabstop), a:maxwidth)')
-endfunction                                         
-"}}}                                                
-                                                    
-" Overlay:                                          
-let s:overlay = {}                                  
-function! s:overlay.init() "{{{1                    
-  let self.hlter = choosewin#highlighter#get()      
-  let self._font_table = choosewin#font#table()     
-  let self.color = self.hlter.color                 
-endfunction                                         
-                                                    
+endfunction
+"}}}
+
+" Overlay:
+let s:overlay = {}
+function! s:overlay.init() "{{{1
+  let self.hlter = choosewin#highlighter#get()
+  let self._font_table = choosewin#font#table()
+  let self.color = self.hlter.color
+endfunction
+
 function! s:overlay.fill_space(line_s, line_e, width) "{{{1
   let lines_new = s:fill_space(
         \ getline(a:line_s, a:line_e), &tabstop, a:width)
@@ -114,23 +114,23 @@ function! s:overlay.overlay(wins) "{{{1
   let self.winnr_org = winnr()
   let self.wins      = a:wins
   let self.lines_org = {}
-  for winnum in self.wins                           
-    let self.lines_org[winbufnr(winnum)] = {}       
-  endfor                                            
-                                                    
-  let captions = s:str_split(g:choosewin_label)     
-  try                                               
-    for winnr in self.wins                          
-      execute winnr 'wincmd w'                      
+  for winnum in self.wins
+    let self.lines_org[winbufnr(winnum)] = {}
+  endfor
+
+  let captions = s:str_split(g:choosewin_label)
+  try
+    for winnr in self.wins
+      execute winnr 'wincmd w'
       let font   = self._font_table[remove(captions, 0)]
       let line_s = line('w0') + (winheight(0) - font.height)/2
-      let col    = (winwidth(0) - font.width)/2     
-      let line_e = line_s + font.height             
+      let col    = (winwidth(0) - font.width)/2
+      let line_e = line_s + font.height
       call self.lines_preserve(line_s, line_e, self.lines_org[winbufnr(winnum)])
       call self.fill_space(line_s, line_e, col + font.width)
-      call self.hl_shade()                          
-      call self.hl_label(                           
-            \ [line_s, col ],                       
+      call self.hl_shade()
+      call self.hl_label(
+            \ [line_s, col ],
             \ self.color[ (winnr ==# self.winnr_org) ? 'OverlayCurrent': 'Overlay' ],
             \ font.pattern )
       redraw
