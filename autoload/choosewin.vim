@@ -75,7 +75,7 @@ function! s:cw.blink_cword() "{{{1
   if !g:choosewin_blink_on_land
     return
   endif
-  let pat = '\k*\%#\k*' 
+  let pat = '\k*\%#\k*'
   for i in range(2)
     let id = matchadd(self.color.Land, pat) | redraw | sleep 80m
     call matchdelete(id)                        | redraw | sleep 80m
@@ -96,7 +96,6 @@ function! s:cw.statusline_restore() "{{{1
     call setwinvar(win, '&statusline', val)
   endfor
 endfunction
-
 
 function! s:cw.prepare_label(win, align) "{{{1
   let pad = repeat(' ', g:choosewin_label_padding)
@@ -244,6 +243,7 @@ function! s:cw.status()
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
+  let self.overlay = choosewin#overlay#get()
   let self.hlter = choosewin#highlighter#get()
   let self.color = self.hlter.color
   if len(a:winnums) ==# 1
@@ -264,13 +264,17 @@ function! s:cw.start(winnums, ...) "{{{1
 
     while 1
       call self.winlabel_init(winnums, winlabel)
-      call self.statusline_replace(winnums)
+      if g:choosewin_statusline_replace | call self.statusline_replace(winnums) | endif
+      if g:choosewin_overlay_enable     | call self.overlay.overlay(winnums) | endif
       redraw
       let input = self.read_input()
       let tabnnum = self.get_tabnum(input)
       if tabnnum !=# s:NOT_FOUND
         if tabnnum ==# tabpagenr() | continue | endif
         call self.statusline_restore()
+        if g:choosewin_overlay_enable
+          call self.overlay.restore()
+        endif
         silent execute 'tabnext ' tabnnum
         let self.env.tab.cur = tabpagenr()
         let winnums  = range(1, winnr('$'))
@@ -287,6 +291,9 @@ function! s:cw.start(winnums, ...) "{{{1
     endwhile
   finally
     call self.statusline_restore()
+    if g:choosewin_overlay_enable
+      call self.overlay.restore()
+    endif
     call s:options_restore(self.options)
     echo '' | redraw
     if !empty(self.win_dest)
