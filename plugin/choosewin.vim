@@ -20,10 +20,16 @@ let s:options = {
       \      { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
       \ 'g:choosewin_color_label_current': 
       \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
+      \ 'g:choosewin_color_overlay':
+      \      { 'gui': ['DarkGreen', 'DarkGreen' ], 'cterm': [ 22, 22 ] },
+      \ 'g:choosewin_color_overlay_current':                         
+      \      { 'gui': ['LimeGreen', 'LimeGreen' ], 'cterm': [ 40, 40 ] },
       \ 'g:choosewin_color_other':
       \      { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
       \ 'g:choosewin_color_land':
       \   { 'gui':[ 'LawnGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
+      \ 'g:choosewin_color_shade':
+      \   { 'gui':[ '', '#7777777'], 'cterm': ['', 'grey'] },
       \ 'g:choosewin_blink_on_land': 1,
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -44,7 +50,7 @@ call s:options_set(s:options)
 
 augroup plugin-choosewin
   autocmd!
-  autocmd ColorScheme,SessionLoadPost * call choosewin#color_set()
+  autocmd ColorScheme,SessionLoadPost * call choosewin#highlighter#refresh()
 augroup END
 
 " KeyMap:
@@ -57,4 +63,9 @@ command! -bar ChooseWin
 
 " Finish:
 let &cpo = s:old_cpo
+if expand("%:p") !=# expand("<sfile>:p")
+  finish
+endif
+" let hlter = choosewin#highlighter#get()
+call choosewin#highlighter#refresh()
 " vim: foldmethod=marker

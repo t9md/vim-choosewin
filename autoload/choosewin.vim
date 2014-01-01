@@ -65,26 +65,6 @@ endfunction
 "}}}
 
 let s:cw = {}
-function! s:cw.hl_set() "{{{1
-  if !has_key(self, 'highlighter')
-    let self.highlighter = choosewin#highlighter#new('ChooseWin')
-  endif
-
-  let self.color_label = self.highlighter.register(g:choosewin_color_label)
-  let self.color_other = g:choosewin_label_fill
-        \ ? self.color_label
-        \ : self.highlighter.register(g:choosewin_color_other)
-  let self.color_label_current =
-        \ self.highlighter.register(g:choosewin_color_label_current)
-  " let screen = has("gui_running") ? 'gui' : 'cterm'
-  " let color_label_tab_orig = copy(g:choosewin_color_label_current)
-  " let color_label_tab_orig[screen] = color_label_tab_orig[screen][0:1] + ['underline']
-  " let self.color_label_tab_orig = 
-        " \ self.highlighter.register(color_label_tab_orig)
-  let self.color_land =
-        \ self.highlighter.register(g:choosewin_color_land)
-endfunction
-
 function! s:cw.statusline_save(winnums) "{{{1
   for win in a:winnums
     let self.statusline[win] = getwinvar(win, '&statusline')
@@ -97,8 +77,8 @@ function! s:cw.blink_cword() "{{{1
   endif
   let pat = '\k*\%#\k*' 
   for i in range(2)
-    let id = matchadd(self.color_land, pat) | redraw | sleep 80m
-    call matchdelete(id)                    | redraw | sleep 80m
+    let id = matchadd(self.color.Land, pat) | redraw | sleep 80m
+    call matchdelete(id)                        | redraw | sleep 80m
   endfor
 endfunction
 
@@ -123,35 +103,35 @@ function! s:cw.prepare_label(win, align) "{{{1
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
   let color = winnr() ==# a:win
-        \ ? self.color_label_current
-        \ : self.color_label
+        \ ? self.color.LabelCurrent
+        \ : self.color.Label
 
   if a:align ==# 'left'
-    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color_other)
+    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
 
   elseif a:align ==# 'right'
-    return printf('%%#%s# %%= %%#%s# %s ', self.color_other, color, win_s)
+    return printf('%%#%s# %%= %%#%s# %s ', self.color.Other, color, win_s)
 
   elseif a:align ==# 'center'
     let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
     return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
-          \ self.color_other, padding, color, win_s, self.color_other)
+          \ self.color.Other, padding, color, win_s, self.color.Other)
   endif
 endfunction
 
 function! s:cw.tabline() "{{{1
   let R         = ''
   let pad   = repeat(' ', g:choosewin_label_padding)
-  let sepalator = printf('%%#%s# ', self.color_other)
+  let sepalator = printf('%%#%s# ', self.color.Other)
   for tabnum in self.env.tab.all
     let color = tabpagenr() ==# tabnum
-          \ ? self.color_label_current
-          \ : self.color_label
+          \ ? self.color.LabelCurrent
+          \ : self.color.Label
 
     let R .= printf('%%#%s# %s ', color,  pad . self.get_tablabel(tabnum) . pad)
     let R .= tabnum !=# self.env.tab.all[-1] ? sepalator : ''
   endfor
-  let R .= printf('%%#%s#', self.color_other)
+  let R .= printf('%%#%s#', self.color.Other)
   return R
 endfunction
 
@@ -264,7 +244,8 @@ function! s:cw.status()
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
-  call self.hl_set()
+  let self.hlter = choosewin#highlighter#get()
+  let self.color = self.hlter.color
   if len(a:winnums) ==# 1
     if get(a:000, 0, 0)
       call self.land_win(a:winnums[0])
@@ -319,10 +300,6 @@ function! choosewin#start(...) "{{{1
   return call(s:cw.start, a:000, s:cw)
 endfunction
 
-function! choosewin#color_set() "{{{1
-  call s:cw.hl_set()
-  call s:cw.highlighter.refresh()
-endfunction
 
 function! choosewin#tabline() "{{{1
   return s:cw.tabline()

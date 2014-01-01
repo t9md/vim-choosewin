@@ -11,6 +11,10 @@ function! s:intrpl(string, vars) "{{{1
   return substitute(a:string, mark,'\=remove(r, 0)', 'g')
 endfunction
 
+function! s:str_split(str) "{{{1
+  return split(a:str, '\zs')
+endfunction
+
 function! s:scan(str, pattern) "{{{1
   let ret = []
   let nth = 1
@@ -69,11 +73,15 @@ endfunction
 " Overlay:
 let s:overlay = {}
 function! s:overlay.init() "{{{1
+  let self.hlter = choosewin#highlighter#get()
+  let self.color = self.hlter.color
   let self._font_table = choosewin#font#table()
 endfunction
+
 function! s:overlay.fill_space(line_s, line_e, width) "{{{1
   let lines_new = s:fill_space(
         \ getline(a:line_s, a:line_e), &tabstop, a:width)
+  silent! undojoin
   call setline(a:line_s, lines_new)
 endfunction
 
@@ -102,19 +110,19 @@ function! s:overlay.main(wins) "{{{1
     let lines_org[winnum] = {}
   endfor
 
-  let captions = ['A', 'B', 'C', 'D', 'E' ]
+  let captions = s:str_split(g:choosewin_label)
   " Setup rendering area:
   try
     for winnr in a:wins
       execute winnr 'wincmd w'
-      let font = s:font.new(remove(captions, 0))
+      let font = self._font_table[remove(captions, 0)]
       let line_s = line('w0') + (winheight(0) - font.height)/2
       let col = (winwidth(0) - font.width)/2
-
       let line_e = line_s + overlay_height
       call self.lines_preserve(line_s, line_e, lines_org[winnum])
       call self.fill_space(line_s, line_e, overlay_width)
-      call self.overlay([line_s, col ], font.pattern())
+      call self.shade()
+      call self.overlay([line_s, col ], font.pattern)
     endfor
   finally
     execute winnr_org 'wincmd w'
@@ -139,18 +147,33 @@ function! s:overlay.main(wins) "{{{1
   endtry
 endfunction
 
+function! s:overlay.shade() "{{{1
+  let vars = {
+        \ 'w0': line('w0'),
+        \ 'w$': line('w$'),
+        \ }
+  let pat = s:intrpl('%{w0}l\_.*%{w$}l', vars)
+  call matchadd(self.color.Shade, '\v'. pat )
+endfunction
+
 function! s:overlay.overlay(pos, pattern) "{{{1
   let vars = {
         \ 'line': a:pos[0],
         \ 'col':  a:pos[1],
         \ }
   let pattern = s:intrpl(a:pattern, vars)
-  call matchadd("Test000", pattern, 1000)
+  " call matchadd('SmallsCurrent' , pattern, 1000)
+  call matchadd(self.color.OverlayCurrent , pattern, 1000)
 endfunction
 "}}}
+function! choosewin#overlay#main(...)
+  call call(s:overlay.main, a:000, s:overlay)
+endfunction
+
 call s:overlay.init()
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
+let g:choosewin_label = ';@ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 command! OverLay call s:overlay.main(range(1, winnr('$')))
 " vim: foldmethod=marker

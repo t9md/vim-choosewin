@@ -1,6 +1,5 @@
 let s:font_list = map(range(33, 126), 'nr2char(v:val)')
-let s:font_table      = choosewin#font#table#table()
-let s:data_file       = 'autoload/choosewin/data/vertical'
+let s:data_file = expand("<sfile>:h") . '/data/vertical'
 
 " Util:
 function! s:str_split(str) "{{{1
@@ -60,7 +59,7 @@ function! s:font.new(char, data) "{{{1
   let self.height  = len(self._data)
   let self.width   = len(self._data[0])
   let self.pattern = self._pattern()
-  return self
+  return deepcopy(self)
 endfunction
 
 function! s:font.info() "{{{1
@@ -114,7 +113,8 @@ if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
 let start = reltime()
-" for s:n in range(1,30)
+" let font_table = choosewin#font#table()
+" for s:n in range(20)
   call s:table.init()
 " endfor
 echo reltimestr(reltime(start))
