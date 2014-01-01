@@ -14,6 +14,7 @@ let g:choosewin_active = 0
 let s:options = {
       \ 'g:choosewin_statusline_replace': 1,
       \ 'g:choosewin_overlay_enable': 0,
+      \ 'g:choosewin_overlay_shade': 1,
       \ 'g:choosewin_label_align':   'center',
       \ 'g:choosewin_label_padding': 3,
       \ 'g:choosewin_label_fill':    0,

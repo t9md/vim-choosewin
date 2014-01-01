@@ -128,7 +128,9 @@ function! s:overlay.overlay(wins) "{{{1
       let line_e = line_s + font.height
       call self.lines_preserve(line_s, line_e, self.lines_org[winbufnr(winnum)])
       call self.fill_space(line_s, line_e, col + font.width)
-      call self.hl_shade()
+      if g:choosewin_overlay_shade
+        call self.hl_shade()
+      endif
       call self.hl_label(
             \ [line_s, col ],
             \ self.color[ (winnr ==# self.winnr_org) ? 'OverlayCurrent': 'Overlay' ],
