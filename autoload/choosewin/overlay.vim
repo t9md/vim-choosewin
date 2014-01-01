@@ -68,6 +68,9 @@ endfunction
 
 " Overlay:
 let s:overlay = {}
+function! s:overlay.init() "{{{1
+  let self._font_table = choosewin#font#table()
+endfunction
 function! s:overlay.fill_space(line_s, line_e, width) "{{{1
   let lines_new = s:fill_space(
         \ getline(a:line_s, a:line_e), &tabstop, a:width)
@@ -135,7 +138,6 @@ function! s:overlay.main(wins) "{{{1
     execute winnr_org 'wincmd w'
   endtry
 endfunction
-"}}}
 
 function! s:overlay.overlay(pos, pattern) "{{{1
   let vars = {
@@ -146,5 +148,9 @@ function! s:overlay.overlay(pos, pattern) "{{{1
   call matchadd("Test000", pattern, 1000)
 endfunction
 "}}}
-" call s:overlay.main(range(1, winnr('$')))
+call s:overlay.init()
+if expand("%:p") !=# expand("<sfile>:p")
+  finish
+endif
+command! OverLay call s:overlay.main(range(1, winnr('$')))
 " vim: foldmethod=marker
