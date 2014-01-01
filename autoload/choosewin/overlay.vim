@@ -24,11 +24,6 @@ function! s:scan(str, pattern) "{{{1
   endwhile
   return ret
 endfunction
-
-function! s:str_split(str) "{{{1
-  return split(a:str, '\zs')
-endfunction
-"}}}
 function! s:getwinline(win, ...) "{{{1
   " getbufline() wrapper
   let args = [ winbufnr(a:win) ] + a:000
@@ -151,4 +146,5 @@ function! s:overlay.overlay(pos, pattern) "{{{1
   call matchadd("Test000", pattern, 1000)
 endfunction
 "}}}
-call s:overlay.main(range(1, winnr('$')))
+" call s:overlay.main(range(1, winnr('$')))
+" vim: foldmethod=marker
