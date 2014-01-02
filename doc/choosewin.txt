@@ -86,19 +86,17 @@ VARIABLES						*choowsewin-variables*
 	      \ }
 <
 
+*g:choosewin_color_overlay*
+	color of overlay window caption
+*g:choosewin_color_overlay_current*
+	color of overlay window caption for current window
+*g:choosewin_color_shade*
+	color of shade
 *g:choosewin_color_label_current*
-	Default: See plugin/choosewin.vim
-	Type: |Dictionary|
-	Used for current window/tab label.
-
+	color of label for current win/tab
 *g:choosewin_color_other*
-	Default: See plugin/choosewin.vim
-	Type: |Dictionary|
-	Used for background color around window/tab label.
-
+	color of around-label win/tab
 *g:choosewin_color_land*
-	Default: See plugin/choosewin.vim
-	Type: |Dictionary|
 	Used to blink cursor word when landing to window.
 
 *g:choosewin_blink_on_land*
@@ -161,6 +159,41 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Set 1 to return immediately when number of window is 1.
 
+*g:choosewin_overlay_enable*
+	Default: 0
+	Type: |Number|
+	Enable experimental overlay window caption.
+
+	[CAUTION] Very very experimental state.
+	Don't use in important buffer.
+
+	Limintaion~
+	Not work properly in following situation.
+		- buffer includes multibyte characters.
+		- buffer includes |concealed| character.
+
+	How It works~
+	Purpose of this section is make you understand tread off of overlay.
+		Good: Easy to spot window label than it on |&statusline|.
+		Bad: Too aggressive for merely show caption.
+
+	What 'too agressive' means,
+		- change buffer temporarily
+			Substitute tab to space and append space to each line
+			of caption is rendered.
+			Append empty line to EOF.
+		- Then highlight caption font with matchadd()
+		- when reverting undo all changes.
+		
+	Not work properly in following situation.
+		- buffer includes multibyte characters.
+		- buffer includes |concealed| character.
+
+*g:choosewin_overlay_shade*
+	Default: 0
+	Type: |Number|
+	Enable shade where overlay window caption is rendered.
+
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
@@ -195,7 +228,8 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 ==============================================================================
 BUG							    *choowsewin-bug*
 
-* Number of tab exceed length of |g:choosewin_tablabel| cause error.
+* Experimental overlay caption break redo history.
+* Number of tab exceed length of |g:choosewin_tablabel| cause error.[fixed?]
 * Number of window exceed passed win label cause error, especially likely to
  face this situation when you manually pass labelstr using choosewin#start()
 
@@ -209,6 +243,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-03:
+	- [improve] cleanup highlight management.
+	- [new] add experimental overlay window caption.
 2013-12-31:
 	- [bugfixed] Number of tab exceed length of |g:choosewin_tablabel|
 	  cause error.
