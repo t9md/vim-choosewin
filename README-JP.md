@@ -18,3 +18,10 @@ tmux の `display-pane` 機能を模倣しようと思い、作りました。
 ```Vim
 nmap  -  <Plug>(choosewin)
 ```
+
+# 実験的なウィンドウラベルのオーバーレイ表示
+
+とても多くの制限と落とし穴があります。
+日常的な編集作業や、重要なバッファでの作業には使わないで下さい。
+
+![Movie](http://gifzo.net/3sADnbhA2C.gif)
