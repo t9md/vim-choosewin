@@ -31,7 +31,7 @@ let s:options = {
       \ 'g:choosewin_color_land':
       \   { 'gui':[ 'LawnGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
       \ 'g:choosewin_color_shade':
-      \   { 'gui':[ '', '#7777777'], 'cterm': ['', 'grey'] },
+      \   { 'gui':[ '', '#777777'], 'cterm': ['', 'grey'] },
       \ 'g:choosewin_blink_on_land': 1,
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
