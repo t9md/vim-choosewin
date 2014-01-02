@@ -1,4 +1,3 @@
-" let s:supported_chars    = join(map(range(33, 126), 'nr2char(v:val)'), '')
 let s:font_height        = 10
 let s:font_width         = 16
 let s:highlight_priority = 1000
@@ -217,10 +216,4 @@ endfunction
 "}}}
 
 call s:overlay.init()
-
-if expand("%:p") !=# expand("<sfile>:p")
-  finish
-endif
-let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-command! OverLay call s:overlay.main(range(1, winnr('$')))
 " vim: foldmethod=marker
