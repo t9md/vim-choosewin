@@ -172,6 +172,7 @@ VARIABLES						*choowsewin-variables*
 		- buffer includes multibyte characters.
 		- buffer includes |concealed| character.
 		- buffer includes |fold|.
+		- buffer is |wrap|ed.
 
 	Some of them could be improved if I work hard but I believe I coudn't
 	overcome limitation completely.
@@ -240,6 +241,7 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
+[ ] disable &wrap and &lcs-trail ? adviced by manga-osyo
 [ ] [newfeature] close tab with key 'x'.
 [ ] FIX API-specification
 [ ] Distinguish original tab so that user never lost while traveling tab.
