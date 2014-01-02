@@ -1,6 +1,11 @@
 let s:supported_chars = join(map(range(33, 126), 'nr2char(v:val)'), '')
 
 " Util:
+function! s:intrpl2(string, vars) "{{{1
+  let mark = '\v\{(.{-})\}'
+  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
+endfunction "}}}
+
 function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   let r = []
@@ -28,6 +33,15 @@ function! s:scan(str, pattern) "{{{1
   endwhile
   return ret
 endfunction
+
+function! s:uniq(list) "{{{1
+  let R = {}
+  for l in a:list
+    let R[l] = 1
+  endfor
+  return map(keys(R), 'str2nr(v:val)')
+endfunction
+
 function! s:getwinline(win, ...) "{{{1
   " getbufline() wrapper
   let args = [ winbufnr(a:win) ] + a:000
@@ -110,29 +124,65 @@ function! s:overlay.main(wins)
   endtry
 endfunction
 
+let s:vim_options_buffer = {
+      \ '&modified':   0,
+      \ '&modifiable': 1,
+      \ '&readonly':   0,
+      \ }
+
+function! s:buffer_options_set(bufnr, options) "{{{1
+  let R = {}
+  for [var, val] in items(a:options)
+    let R[var] = getbufvar(a:bufnr, var)
+    call setbufvar(a:bufnr, var, val)
+    unlet var val
+  endfor
+  return R
+endfunction
+
+function! s:buffer_options_restore(bufnr, options) "{{{1
+  " call g:plog([ bufname(a:bufnr), getbufvar(a:bufnr, '&modifiable')])
+  for [var, val] in items(a:options)
+    call setbufvar(a:bufnr, var, val)
+    unlet var val
+  endfor
+endfunction
+
+
 function! s:overlay.overlay(wins) "{{{1
   let self.winnr_org = winnr()
   let self.wins      = a:wins
   let self.lines_org = {}
-  for winnum in self.wins
-    let self.lines_org[winbufnr(winnum)] = {}
-  endfor
+  let buffers = s:uniq(map(range(1, winnr('$')), 'winbufnr(v:val)'))
+  for bufnr in buffers | let self.lines_org[bufnr] = {} | endfor
+  let self.buffers = {}
 
   let captions = s:str_split(g:choosewin_label)
   try
+    for bufnr in buffers
+      noautocmd execute bufwinnr(bufnr) 'wincmd w'
+      silent! undojoin
+      call append(line('$'), map(range(100), '""'))
+      let self.buffers[bufnr] = {
+            \ 'lines': {},
+            \ 'options': s:buffer_options_set(bufnr, s:vim_options_buffer),
+            \ }
+    endfor
     for winnr in self.wins
       noautocmd execute winnr 'wincmd w'
       let font   = self._font_table[remove(captions, 0)]
       let line_s = line('w0') + (winheight(0) - font.height)/2
-      let col    = (winwidth(0) - font.width)/2
       let line_e = line_s + font.height
-      call self.lines_preserve(line_s, line_e, self.lines_org[winbufnr(winnum)])
+      let col    = (winwidth(0) - font.width)/2
+
+      call self.lines_preserve(line_s, line_e, self.lines_org[winbufnr(winnr)])
       call self.fill_space(line_s, line_e, col + font.width)
       if g:choosewin_overlay_shade
         call self.hl_shade()
       endif
+      let vars = s:vars([line_s, col])
       call self.hl_label(
-            \ [line_s, col ],
+            \ vars,
             \ self.color[ (winnr ==# self.winnr_org) ? 'OverlayCurrent': 'Overlay' ],
             \ font.pattern )
       redraw
@@ -143,11 +193,27 @@ function! s:overlay.overlay(wins) "{{{1
 endfunction
 
 function! s:overlay.restore()
+  " call g:plog(self.buffers)
+
   try
     for winnr in self.wins
       noautocmd execute winnr 'wincmd w'
       call clearmatches()
-      call self.lines_restore(self.lines_org[winbufnr(winnr)])
+      " call self.lines_restore(self.lines_org[winbufnr(winnr)])
+    endfor
+
+    for [ bufnr, saved ] in items(self.buffers)
+      noautocmd execute bufwinnr(bufnr) 'wincmd w'
+      call s:buffer_options_restore(str2nr(bufnr), saved.options)
+      let line_e = line('$')
+      let line_s = line_e - (100 - 1)
+      " call g:plog(bufname(bufnr('')))
+      silent undo
+
+      " let cmd =  line_s . ',' . line_e . 'delete _'
+      " execute cmd
+      " call g:plog(cmd)
+      " silent undo
     endfor
   finally
     let self.lines_org = {}
@@ -156,14 +222,30 @@ function! s:overlay.restore()
 endfunction
 
 function! s:overlay.hl_shade() "{{{1
-  let pat = s:intrpl('%{w0}l\_.*%{w$}l', { 'w0': line('w0'), 'w$': line('w$') })
+  let pat = s:intrpl2('%{w0}l\_.*%{w$}l', { 'w0': line('w0'), 'w$': line('w$') })
+  " let pat = s:intrpl('%{w0}l\_.*%{w$}l', { 'w0': line('w0'), 'w$': line('w$') })
   call matchadd(self.color.Shade, '\v'. pat )
 endfunction
 
-function! s:overlay.hl_label(pos, color, pattern) "{{{1
+function! s:overlay.hl_label(vars, color, pattern) "{{{1
   call matchadd(a:color,
-        \ s:intrpl(a:pattern, { 'line': a:pos[0], 'col':  a:pos[1] }),
+        \ s:intrpl2(a:pattern, a:vars),
         \ 1000)
+endfunction
+
+function! s:vars(pos)
+  let l = a:pos[0]
+  let c = a:pos[1]
+  let vars = { 'line': l, 'col': c }
+  " height
+  for l_offset in range(0,10)
+    let vars['line+' . l_offset] = l + l_offset
+  endfor
+  " width
+  for c_offset in range(0,16)
+    let vars['col+' . c_offset] = c + c_offset
+  endfor
+  return vars
 endfunction
 
 function! s:overlay.get() "{{{1
