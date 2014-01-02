@@ -171,6 +171,10 @@ VARIABLES						*choowsewin-variables*
 	Not work properly in following situation.
 		- buffer includes multibyte characters.
 		- buffer includes |concealed| character.
+		- buffer includes |fold|.
+
+	Some of them could be improved if I work hard but I believe I coudn't
+	overcome limitation completely.
 
 	How It works~
 	Purpose of this section is make you understand tread off of overlay.
