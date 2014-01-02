@@ -121,7 +121,7 @@ function! s:overlay.overlay(wins) "{{{1
   let captions = s:str_split(g:choosewin_label)
   try
     for winnr in self.wins
-      execute winnr 'wincmd w'
+      noautocmd execute winnr 'wincmd w'
       let font   = self._font_table[remove(captions, 0)]
       let line_s = line('w0') + (winheight(0) - font.height)/2
       let col    = (winwidth(0) - font.width)/2
@@ -138,20 +138,20 @@ function! s:overlay.overlay(wins) "{{{1
       redraw
     endfor
   finally
-    execute self.winnr_org 'wincmd w'
+    noautocmd execute self.winnr_org 'wincmd w'
   endtry
 endfunction
 
 function! s:overlay.restore()
   try
     for winnr in self.wins
-      execute winnr 'wincmd w'
+      noautocmd execute winnr 'wincmd w'
       call clearmatches()
       call self.lines_restore(self.lines_org[winbufnr(winnr)])
     endfor
   finally
     let self.lines_org = {}
-    execute self.winnr_org 'wincmd w'
+    noautocmd execute self.winnr_org 'wincmd w'
   endtry
 endfunction
 
