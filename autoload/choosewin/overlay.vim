@@ -4,17 +4,17 @@ let s:highlight_priority = 1000
 let s:render_width       = 100
 
 let s:vim_options_buffer = {
-      \ '&modified':   0,                                                  
-      \ '&modifiable': 1,                                                  
-      \ '&readonly':   0,                                                  
-      \ '&wrap':       0,                                                  
-      \ }                                                  
-                                                  
-" Util:                                                  
-function! s:intrpl(string, vars) "{{{1                                                  
-  let mark = '\v\{(.{-})\}'                                                  
-  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')                                                  
-endfunction "}}}                                                  
+      \ '&modified':   0,
+      \ '&modifiable': 1,
+      \ '&readonly':   0,
+      \ '&wrap':       0,
+      \ }
+
+" Util:
+function! s:intrpl(string, vars) "{{{1
+  let mark = '\v\{(.{-})\}'
+  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
+endfunction "}}}
 
 function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
@@ -172,17 +172,17 @@ function! s:overlay.restore() "{{{1
     for bufnr in self.bufs
       noautocmd execute bufwinnr(bufnr) 'wincmd w'
       " normal! g-
-      silent undo                                                                                                                                                                                                        
-      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)                                                                                                                                                                                                        
-      if filereadable(b:choosewin.undofile)                                                                                                                                                                                                        
-        silent execute 'rundo' b:choosewin.undofile                                                                                                                                                                                                        
-      endif                                                                                                                                                                                                        
-      unlet b:choosewin                                                                                                                                                                                                        
-    endfor                                                                                                                                                                                                        
-                                                                                                                                                                                                        
-    for winnr in self.wins                                                                                                                                                                                                        
-      noautocmd execute winnr 'wincmd w'                                                                                                                                                                                                        
-      for m_id in w:choosewin.matchids                                                                                                                                                                                                        
+      silent undo
+      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
+      if filereadable(b:choosewin.undofile)
+        silent execute 'rundo' b:choosewin.undofile
+      endif
+      unlet b:choosewin
+    endfor
+
+    for winnr in self.wins
+      noautocmd execute winnr 'wincmd w'
+      for m_id in w:choosewin.matchids
         call matchdelete(m_id)
       endfor
       call setpos('.', w:choosewin.pos_org)
