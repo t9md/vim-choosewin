@@ -88,7 +88,7 @@ function! s:cw.statusline_save(winnums) "{{{1
 endfunction
 
 function! s:cw.blink_cword() "{{{1
-  if !g:choosewin_blink_on_land
+  if ! self.conf['blink_on_land']
     return
   endif
   let pat = '\k*\%#\k*'
@@ -102,7 +102,7 @@ function! s:cw.statusline_replace(winnums) "{{{1
   call self.statusline_save(a:winnums)
 
   for win in a:winnums
-    let s = self.prepare_label(win, g:choosewin_label_align)
+    let s = self.prepare_label(win, self.conf['label_align'])
     call setwinvar(win, '&statusline', s)
   endfor
 endfunction
@@ -114,7 +114,7 @@ function! s:cw.statusline_restore() "{{{1
 endfunction
 
 function! s:cw.prepare_label(win, align) "{{{1
-  let pad = repeat(' ', g:choosewin_label_padding)
+  let pad = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
   let color = winnr() ==# a:win
@@ -136,7 +136,7 @@ endfunction
 
 function! s:cw.tabline() "{{{1
   let R         = ''
-  let pad   = repeat(' ', g:choosewin_label_padding)
+  let pad   = repeat(' ', self.conf['label_padding'])
   let sepalator = printf('%%#%s# ', self.color.Other)
   for tabnum in self.env.tab.all
     let color = tabpagenr() ==# tabnum
@@ -181,18 +181,16 @@ function! s:cw.tablabel_init(tabnums, label) "{{{1
   let self.tab2label  = s:dict_invert(self.label2tab)
 endfunction
 
-
 function! s:cw.init() "{{{1
-  let self.conf            = self._config()
   let self.exception       = ''
   let self.statusline      = {}
-  let self.tablabel        = g:choosewin_tablabel
+  let self.tablabel        = self.conf['tablabel']
   let self._tablabel_split = s:str_split(self.tablabel)
   let self.tab_options         = {}
   let self.win_dest        = ''
   let self.env             = self.get_env()
   let self.env_orig        = deepcopy(self.env)
-  let self.keymap          = extend(self.keymap_default(), g:choosewin_keymap)
+  let self.keymap          = extend(self.keymap_default(), self.conf['keymap'])
   call self.tablabel_init(self.env.tab.all, self.tablabel)
 endfunction
 
@@ -217,23 +215,23 @@ function! s:cw.read_input() "{{{1
   return nr2char(getchar())
 endfunction
 
-function! s:cw._config() "{{{1
-  let R = {
-      \ 'statusline_replace':        'g:choosewin_statusline_replace',
-      \ 'tabline_replace':           'g:choosewin_tabline_replace',
-      \ 'overlay_enable':            'g:choosewin_overlay_enable',
-      \ 'overlay_shade':             'g:choosewin_overlay_shade',
-      \ 'overlay_unfold':            'g:choosewin_overlay_unfold',
-      \ 'label_align':               'g:choosewin_label_align',
-      \ 'label_padding':             'g:choosewin_label_padding',
-      \ 'label_fill':                'g:choosewin_label_fill',
-      \ 'blink_on_land':             'g:choosewin_blink_on_land',
-      \ 'return_on_single_win':      'g:choosewin_return_on_single_win',
-      \ 'label':                     'g:choosewin_label',
-      \ 'keymap':                    'g:choosewin_keymap',
-      \ 'tablabel':                  'g:choosewin_tablabel',
-      \ }
-  return R
+function! s:cw.config() "{{{1
+  return {
+        \ 'statusline_replace':        g:choosewin_statusline_replace,
+        \ 'tabline_replace':           g:choosewin_tabline_replace,
+        \ 'overlay_enable':            g:choosewin_overlay_enable,
+        \ 'overlay_shade':             g:choosewin_overlay_shade,
+        \ 'overlay_clearout':          g:choosewin_overlay_clearout,
+        \ 'label_align':               g:choosewin_label_align,
+        \ 'label_padding':             g:choosewin_label_padding,
+        \ 'label_fill':                g:choosewin_label_fill,
+        \ 'blink_on_land':             g:choosewin_blink_on_land,
+        \ 'return_on_single_win':      g:choosewin_return_on_single_win,
+        \ 'label':                     g:choosewin_label,
+        \ 'keymap':                    g:choosewin_keymap,
+        \ 'tablabel':                  g:choosewin_tablabel,
+        \ 'auto_choose':               0,
+        \ }
 endfunction
 
 function! s:cw.tab_choose(num) "{{{1
@@ -328,46 +326,63 @@ endfunction
 function! s:cw.label_show(winnums, winlabel) "{{{1
   let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
   call self.winlabel_init(winnums, a:winlabel)
-  if g:choosewin_statusline_replace
+  if self.conf['statusline_replace']
     call self.statusline_replace(winnums)
   endif
-  if g:choosewin_overlay_enable
+  if self.conf['overlay_enable']
     let self.overlay = choosewin#overlay#get()
-    call self.overlay.overlay(winnums, a:winlabel)
+    call self.overlay.overlay(winnums, self.conf)
   endif
   redraw
 endfunction
 
 function! s:cw.label_clear() "{{{1
-  if g:choosewin_statusline_replace
+  if self.conf['statusline_replace']
     call self.statusline_restore()
   endif
-  if g:choosewin_overlay_enable
+  if self.conf['overlay_enable']
     call self.overlay.restore()
   endif
 endfunction
 
 function! s:cw.tab_replace() "{{{1
-  if !g:choosewin_tabline_replace | return | endif
+  if !self.conf['tabline_replace']
+    return
+  endif
   let self.tab_options = s:options_replace(s:vim_tab_options)
 endfunction
 
 function! s:cw.tab_restore() "{{{1
-  if !g:choosewin_tabline_replace | return | endif
+  if !self.conf['tabline_replace']
+    return
+  endif
   call s:options_restore(self.tab_options)
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
-  let self.hlter   = choosewin#highlighter#get()
-  let self.color   = self.hlter.color
-  let auto_choose = get(a:000, 0, 0)
-  let winlabel    = get(a:000, 1, g:choosewin_label)
+  let arg_1st = get(a:000, 0, {})
+  let arg_2nd = get(a:000, 1, '')
+
+  " care backward compatibility
+  if type(arg_1st) !=# type({})
+    let config = { 'auto_choose': arg_1st }
+    if !empty(arg_2nd)
+      let config.label = arg_2nd
+    endif
+    echoerr 'Choosewin: you use old api, help "choosein#start()" for new api-call'
+  else
+    let config = arg_1st
+  endif
+
+  let self.conf   = extend(self.config(), config, 'force')
+  let self.hlter  = choosewin#highlighter#get()
+  let self.color  = self.hlter.color
 
   if len(a:winnums) ==# 1
-    if auto_choose
+    if self.conf['auto_choose']
       call self.land_win(a:winnums[0])
       return self.last_status()
-    elseif g:choosewin_return_on_single_win
+    elseif self.conf['return_on_single_win']
       return []
     endif
   endif
@@ -375,10 +390,10 @@ function! s:cw.start(winnums, ...) "{{{1
   try
     call self.init()
     call self.tab_replace()
-    call self.label_show(a:winnums, winlabel)
+    call self.label_show(a:winnums, self.conf['label'])
     try
       while 1
-        call self.choose(self.win_all(), winlabel)
+        call self.choose(self.win_all(), self.conf['label'])
       endwhile
     catch 'CHOOSED'
     catch 'CANCELED'
@@ -409,6 +424,10 @@ endfunction
 
 function! choosewin#tabline() "{{{1
   return s:cw.tabline()
+endfunction
+
+function! choosewin#config() "{{{1
+  return s:cw.config()
 endfunction
 
 function! choosewin#get_tablabel(tabnum) "{{{1

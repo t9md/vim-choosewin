@@ -86,9 +86,13 @@ endfunction
 function! s:overlay._fill_space(lines, width) "{{{1
   let width = (a:width + s:font_width) / 2
   for line in a:lines
-    let line_new = substitute(getline(line), "\t", repeat(" ", &tabstop), 'g')
-    let pad_num = max([ width - len(line_new), 0 ])
-    call setline(line, line_new . repeat(' ', pad_num))
+    if self.conf['overlay_clearout']
+      let line_new = repeat(' ', width)
+    else
+      let line_new = substitute(getline(line), "\t", repeat(" ", &tabstop), 'g')
+      let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
+    endif
+    call setline(line, line_new)
   endfor
 endfunction
 
@@ -121,11 +125,12 @@ function! s:overlay.setup_winvar() "{{{1
 endfunction
 
 
-function! s:overlay.setup(wins, label) "{{{1
+function! s:overlay.setup(wins, conf) "{{{1
+  let self.conf           = a:conf
   let self.scrolloff_save = &scrolloff
   let &scrolloff          = 0
   let self.font_idx       = 0
-  let self.captions       = s:str_split(a:label)
+  let self.captions       = s:str_split(self.conf['label'])
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = s:uniq(tabpagebuflist(tabpagenr()))
@@ -219,7 +224,7 @@ function! s:overlay.restore() "{{{1
 endfunction
 
 function! s:overlay.hl_shade() "{{{1
-  if !g:choosewin_overlay_shade
+  if !self.conf['overlay_shade']
     return
   endif
 

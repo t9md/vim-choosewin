@@ -175,7 +175,8 @@ VARIABLES						*choowsewin-variables*
 
 	Limintaion~
 	Not work properly in following situation.
-		- buffer includes multibyte characters.
+		- buffer includes multibyte characters
+		  You can use |g:choosewin_overlay_clearout| as workaround.
 
 	How It works~
 	Purpose of this section is make you understand trade-off of overlay.
@@ -195,11 +196,18 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable shade where overlay window caption is rendered.
 
+*g:choosewin_overlay_clearout*
+	Default: 0
+	Type: |Number|
+	Clear out caption rendering area first before overlay.
+	Which is useful when buffer contains multibyte character, which break
+	window caption font because 1 char is not necessarily 1 byte.
+
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
 							   *choosewin#start()*
-choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
+choosewin#start({winnum-list}, [ {config} ] )
 	Return: |List|
 	Value:
 		choosed:  [ tabpagenr(), winnr() ]
@@ -208,19 +216,48 @@ choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
 	{winnum-list}:  Required
 		|List| of window number.
 
-	{auto-choose}: Optional
+	{config}: Optional
+		Type: |Dictionary|
+		
+		Pass configuration option with { "key": value } format.
+		The config you passed is merged to default_config,
+		See |choosewin#config()|.
+
+	Api-only parameters~
+	following config parameter is not provided as global
+	configuration variable. so need to mention here.
+
+	auto_choose:
 		Type: |Number|
 		Value: 0 or 1
-		Set 1 to automatically choose win if number of window is 1
+		Set 1 to automatically choose window when candidate window is
+		only one.
 
-	{label-string}: Optional
-		Sequence of character used for label.
 
-	Exeample: show label for specific window~
->
+	[Exeample]: show label for specific window  >
 	" win3 => d, win4 => e, char 'f' is silently ignored.
-	call choosewin#start([3,4], 0, 'def')
+	call choosewin#start([3,4], { 'label': 'def' })
 <
+	[Exeample]: automatically choose if candidate window is one. >
+	function! s:is_ignore_window(winnr)
+	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+	  return index(ignore_filtype, getbufvar(winbufnr(a:winnr), "&filetype")) != -1
+	endfunction
+
+	let wins = range(1,winnr('$'))
+	call choosewin#start(
+	      \ filter(wins, '!s:is_ignore_window(v:val)'),
+	      \ { 'auto_choose': 1 }
+	      \ )
+<
+
+						  *choosewin#config()*
+choosewin#config()
+	Return: |Dictionary|
+	You can check inital configuration set used by choosewin.
+	Initial means configuration at each choosewin start, 'not default',
+	its respect your customization through global variable.
+
 ==============================================================================
 CONFIGURATION EXAMPLE				    *choowsewin-example*
 >
