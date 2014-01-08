@@ -121,11 +121,11 @@ function! s:overlay.setup_winvar() "{{{1
 endfunction
 
 
-function! s:overlay.setup(wins) "{{{1
+function! s:overlay.setup(wins, label) "{{{1
   let self.scrolloff_save = &scrolloff
   let &scrolloff          = 0
   let self.font_idx       = 0
-  let self.captions       = s:str_split(g:choosewin_label)
+  let self.captions       = s:str_split(a:label)
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = s:uniq(tabpagebuflist(tabpagenr()))
@@ -163,9 +163,9 @@ function! s:overlay.next_font() "{{{1
   return FONT
 endfunction
 
-function! s:overlay.overlay(wins) "{{{1
+function! s:overlay.overlay(wins, label) "{{{1
   try
-    call self.setup(a:wins)
+    call self.setup(a:wins, a:label)
     call self.append_blankline()
     call self.setup_winvar()
     call self.fill_space()

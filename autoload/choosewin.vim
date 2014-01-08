@@ -328,7 +328,7 @@ function! s:cw.label_show(winnums, winlabel) "{{{1
   endif
   if g:choosewin_overlay_enable
     let self.overlay = choosewin#overlay#get()
-    call self.overlay.overlay(a:winnums)
+    call self.overlay.overlay(a:winnums, a:winlabel)
   endif
   redraw
 endfunction
@@ -384,8 +384,9 @@ function! s:cw.start(winnums, ...) "{{{1
       let self.exception = v:exception
     endtry
   finally
-    return self.finish()
+    call self.finish()
   endtry
+  return self.last_status()
 endfunction
 
 function! s:cw.finish() "{{{1
@@ -395,7 +396,6 @@ function! s:cw.finish() "{{{1
     call self.land_win(self.win_dest)
   endif
   call s:msg(self.exception)
-  return self.last_status()
 endfunction
 
 function! choosewin#start(...) "{{{1
