@@ -176,7 +176,8 @@ VARIABLES						*choowsewin-variables*
 	Limintaion~
 	Not work properly in following situation.
 		- buffer includes multibyte characters
-		  You can use |g:choosewin_overlay_clearout| as workaround.
+		  You can use |g:choosewin_overlay_clear_multibyte| as
+		  workaround.
 
 	How It works~
 	Purpose of this section is make you understand trade-off of overlay.
@@ -196,12 +197,13 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable shade where overlay window caption is rendered.
 
-*g:choosewin_overlay_clearout*
+*g:choosewin_overlay_clear_multibyte*
 	Default: 0
 	Type: |Number|
-	Clear out caption rendering area first before overlay.
-	Which is useful when buffer contains multibyte character, which break
-	window caption font because 1 char is not necessarily 1 byte.
+	When caption rendering area include multiple chars, clear out caption
+	rendering area first before overlay.
+	Useful when buffer contains multibyte character, which break window
+	caption font because 1 char is not necessarily 1 byte.
 
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
@@ -279,6 +281,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-08:
+	- [improve] Add multibyte workaround.
 	- [improve] now overlay not break since &conceallevel = 0 temporarily
 	- [bugfix] validate valid winnum and number of label
 	- [improve] disable fold, wrap, list adviced by manga-osyo.

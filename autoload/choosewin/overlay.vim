@@ -74,6 +74,19 @@ function! s:undobreak() "{{{1
 endfunction
 "}}}
 
+if exists('*strchars')
+  function! s:strchars(str)
+    return strchars(a:str)
+  endfunction
+else
+  function! s:strchars(str)
+    return strlen(substitute(str, ".", "x", "g"))
+  endfunction
+endif
+function! s:include_multibyte_char(str) "{{{1
+    return strlen(a:str) !=# s:strchars(a:str)
+endfunction
+
 " Overlay:
 let s:overlay = {}
 
@@ -86,10 +99,11 @@ endfunction
 function! s:overlay._fill_space(lines, width) "{{{1
   let width = (a:width + s:font_width) / 2
   for line in a:lines
-    if self.conf['overlay_clearout']
+    let line_s = getline(line)
+    if self.conf['overlay_clearout'] && s:include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
     else
-      let line_new = substitute(getline(line), "\t", repeat(" ", &tabstop), 'g')
+      let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
       let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
     endif
     call setline(line, line_new)
