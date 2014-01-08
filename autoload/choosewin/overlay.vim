@@ -74,6 +74,7 @@ function! s:undobreak() "{{{1
 endfunction
 "}}}
 
+" s:strchars() "{{{1
 if exists('*strchars')
   function! s:strchars(str)
     return strchars(a:str)
@@ -83,9 +84,11 @@ else
     return strlen(substitute(str, ".", "x", "g"))
   endfunction
 endif
+"}}}
 function! s:include_multibyte_char(str) "{{{1
     return strlen(a:str) !=# s:strchars(a:str)
 endfunction
+"}}}
 
 " Overlay:
 let s:overlay = {}
