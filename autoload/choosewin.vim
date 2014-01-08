@@ -59,7 +59,6 @@ function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
 endfunction
 
-
 function! s:goto_tabwin(tabnum, winnum) "{{{1
   silent execute 'tabnext ' a:tabnum
   silent execute a:winnum 'wincmd w'
@@ -189,7 +188,6 @@ function! s:cw.init() "{{{1
   let self.statusline      = {}
   let self.tablabel        = g:choosewin_tablabel
   let self._tablabel_split = s:str_split(self.tablabel)
-  let tab_sepecial_chars   = g:choosewin_tablabel[-4:]
   let self.tab_options         = {}
   let self.win_dest        = ''
   let self.env             = self.get_env()
@@ -249,9 +247,7 @@ function! s:cw.win_choose(num) "{{{1
 endfunction
 
 function! s:cw.choose(winnum, winlabel) "{{{1
-  let INPUT = self.read_input()
-
-  let [action, num ] = self.get_action(INPUT)
+  let [action, num] = self.get_action(self.read_input())
   if action ==# 'tab'
     if num ==# self.env.tab.cur
       return
@@ -273,11 +269,17 @@ function! s:cw.choose(winnum, winlabel) "{{{1
 endfunction
 
 function! s:cw.get_action(input) "{{{1
+  " [ kind, arg ] style
+
   let tabn = s:get_ic(self.label2tab, a:input, 0)
-  if !empty(tabn) | return [ 'tab', tabn ] | endif
+  if !empty(tabn)
+    return [ 'tab', tabn ]
+  endif
 
   let winn = s:get_ic(self.label2win, a:input, 0)
-  if !empty(winn) | return [ 'win', winn ] | endif
+  if !empty(winn)
+    return [ 'win', winn ]
+  endif
 
   let action = get(self.keymap, a:input)
   if !empty(action)
@@ -287,16 +289,19 @@ function! s:cw.get_action(input) "{{{1
             \ action ==# 'tab_prev'  ? max([1, self.env.tab.cur - 1]) :
             \ action ==# 'tab_next'  ? min([tabpagenr('$'), self.env.tab.cur + 1]) :
             \ action ==# 'tab_last'  ? tabpagenr('$') :
-            \ NEVER_HAPPEN
+            \ -1
+
+      if tabn ==# -1
+        throw 'UNKNOWN_ACTION'
+      endif
 
       return [ 'tab', tabn ]
+    elseif action ==# 'win_land'
+      return [ 'win', winnr() ]
     else
-      if action ==# 'win_land'
-        return [ 'win', winnr() ]
-      endif
+        throw 'UNKNOWN_ACTION'
     endif
   endif
-
 
   return [ 'cancel', 1 ]
 endfunction
@@ -379,7 +384,7 @@ function! s:cw.start(winnums, ...) "{{{1
       let self.exception = v:exception
     endtry
   finally
-    call self.finish()
+    return self.finish()
   endtry
 endfunction
 
