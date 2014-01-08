@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 0.9
+Version: 1.0
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -285,7 +285,7 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
-2014-01-08:
+2014-01-08: v1.0
 	- [improve] Add multibyte workaround.
 	- [improve] now overlay not break since &conceallevel = 0 temporarily
 	- [bugfix] validate valid winnum and number of label
