@@ -1,6 +1,6 @@
 let s:h = {}
 
-function! s:h.init()
+function! s:h.init() "{{{1
   let self.hlmgr = choosewin#hlmanager#new('ChooseWin')
   let color = {}
   let color.Label          = self.hlmgr.register(g:choosewin_color_label)
@@ -15,20 +15,20 @@ function! s:h.init()
   let self.color = color
 endfunction
 
-function! s:h.get()
+function! s:h.get() "{{{1
   if !has_key(self, 'hlmgr') | call s:h.init() | endif
   return self
 endfunction
 
-function! s:h.refresh()
+function! s:h.refresh() "{{{1
   if !has_key(self, 'hlmgr') | call s:h.init() | endif
   call self.hlmgr.refresh()
 endfunction
 
-function! choosewin#highlighter#get()
+function! choosewin#highlighter#get() "{{{1
   return s:h.get()
 endfunction
 
-function! choosewin#highlighter#refresh()
+function! choosewin#highlighter#refresh() "{{{1
   call s:h.refresh()
 endfunction

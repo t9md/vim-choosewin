@@ -121,24 +121,33 @@ VARIABLES						*choowsewin-variables*
 	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 <
 *g:choosewin_tablabel*
-	Default: '1234567890[]$'
+	Default: '123456789'
 	Type: |String|
 	[CAUNTION] You need to manage to avoid conflict to
 	|g:choosewin_label| or you can't choose label you want.
 
-	[NOTE] LAST 4 CHALACTER is used for SPECIAL PURPOSE
-	With default value, last four chars are used like below.
+*g:choosewin_keymap*
+	Default: {}
+	Type: |Dictionary|
 
-		0 => choose FIRST    tab
-		[ => choose PREVIOUS tab
-		] => choose NEXT     tab
-		$ => choose LAST     tab
+	Used to customize keymap while choosing.
+	Default keymap is below.
 
-	So keep in mind that you must set at least 4 chars to this variable.
+	| Key  | Action     | Description             |
+	| ---- | ---------- | ----------------------- |
+	| 0    | tab_first  | choose FIRST    tab     |
+	| [    | tab_prev   | choose PREVIOUS tab     |
+	| ]    | tab_next   | choose NEXT     tab     |
+	| $    | tab_last   | choose LAST     tab     |
+	| ;    | win_land   | land to current window  |
+	| <CR> | win_land   | land to current window  |
 
-	[NOTE] choosewin ignore case you input so that you don't need to
-	press Shift. This is for show label with upper case to standout and
-	choose label with minimal key stroke.
+	And you can customize like following
+>
+	" land to current win with 'm'
+	let g:choosewin_keymap = {}
+	let g:choosewin_keymap.m = 'win_land'
+<
 
 *g:choosewin_label_align*
 	Default: 'center'
@@ -171,8 +180,6 @@ VARIABLES						*choowsewin-variables*
 	Not work properly in following situation.
 		- buffer includes multibyte characters.
 		- buffer includes |concealed| character.
-		- buffer includes |fold|.
-		- buffer is |wrap|ed.
 
 	Some of them could be improved if I work hard but I believe I coudn't
 	overcome limitation completely.
@@ -198,6 +205,11 @@ VARIABLES						*choowsewin-variables*
 	Default: 0
 	Type: |Number|
 	Enable shade where overlay window caption is rendered.
+
+*g:choosewin_overlay_unfold*
+	Default: 1
+	Type: |Number|
+	Disable fold temporarily before overlay.
 
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
@@ -239,7 +251,8 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
-[ ] disable &wrap and &lcs-trail ? adviced by manga-osyo
+[x] disable &wrap and &lcs-trail ? adviced by manga-osyo
+    except &lcs-trail
 [ ] [newfeature] close tab with key 'x'.
 [ ] FIX API-specification
 [ ] Distinguish original tab so that user never lost while traveling tab.
@@ -247,6 +260,10 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-08:
+	- [improve] unfold and wrap disable, and keymap
+	- [bugfix] properly clear label on tabswitch
+	- [refactor] and stabilize
 2014-01-06:
 	- [bugfix] Number of tab exceed length of |g:choosewin_tablabel| cause
 	  error.

@@ -77,6 +77,7 @@ function! s:overlay.setup_winvar() "{{{1
     let wv = {}
 
     if g:choosewin_overlay_unfold
+      let wv.winview    = winsaveview()
       let wv.foldenable = &foldenable
       let &foldenable = 0
     endif
@@ -188,6 +189,7 @@ function! s:overlay.restore() "{{{1
       call setpos('.', w:choosewin.pos_org)
       if g:choosewin_overlay_unfold
         let &foldenable = w:choosewin.foldenable
+        call winrestview(w:choosewin.winview)
       endif
       unlet w:choosewin
     endfor
