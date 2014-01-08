@@ -264,6 +264,12 @@ choosewin#config()
 CONFIGURATION EXAMPLE				    *choowsewin-example*
 >
 	nmap  -  <Plug>(choosewin)
+
+	" if you want to use overlay feature
+	let g:choosewin_overlay_enable = 1
+
+	" overlay font broke on mutibyte buffer?
+	let g:choosewin_overlay_clear_multibyte = 1
 <
 ==============================================================================
 BUG							    *choowsewin-bug*
@@ -273,8 +279,7 @@ BUG							    *choowsewin-bug*
 TODO							    *choowsewin-todo*
 
 [x] disable &lcs-trail adviced by manga-osyo
-[ ] [newfeature] close tab with key 'x'.
-[ ] FIX API-specification
+[x] FIX API-specification
 [ ] Distinguish original tab so that user never lost while traveling tab.
 
 ==============================================================================
