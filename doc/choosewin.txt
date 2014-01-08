@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 0.8
+Version: 0.9
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -173,33 +173,23 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable experimental overlay window caption.
 
-	[CAUTION] Very very experimental state.
-	Don't use in important buffer.
-
 	Limintaion~
 	Not work properly in following situation.
 		- buffer includes multibyte characters.
 		- buffer includes |concealed| character.
 
-	Some of them could be improved if I work hard but I believe I coudn't
-	overcome limitation completely.
-
 	How It works~
-	Purpose of this section is make you understand tread off of overlay.
-		Good: Easy to spot window label than it on |&statusline|.
-		Bad: Too aggressive for merely show caption.
+	Purpose of this section is make you understand trade-off of overlay.
+		Good:	Easy to spot window label than it on |&statusline|.
+		Bad:	Too aggressive for merely show caption.
 
 	What 'too agressive' means,
 		- change buffer temporarily
-			Substitute tab to space and append space to each line
-			of caption is rendered.
-			Append empty line to EOF.
+			1. Substitute tab to space
+			2. Append space to rendering area
+			3. Append empty line to EOF.
 		- Then highlight caption font with matchadd()
 		- when reverting undo all changes.
-
-	Not work properly in following situation.
-		- buffer includes multibyte characters.
-		- buffer includes |concealed| character.
 
 *g:choosewin_overlay_shade*
 	Default: 0
@@ -218,6 +208,7 @@ choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
 
 	{winnum-list}:  Required
 		|List| of window number.
+
 	{auto-choose}: Optional
 		Type: |Number|
 		Value: 0 or 1
@@ -225,12 +216,11 @@ choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
 
 	{label-string}: Optional
 		Sequence of character used for label.
-		Must longer than {winnum-list}
 
 	Exeample: show label for specific window~
 >
 	" win3 => d, win4 => e, char 'f' is silently ignored.
-	call choosewin#start([3,4], 'def')
+	call choosewin#start([3,4], 0, 'def')
 <
 ==============================================================================
 CONFIGURATION EXAMPLE				    *choowsewin-example*
@@ -240,8 +230,6 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 ==============================================================================
 BUG							    *choowsewin-bug*
 
-* Number of window exceed passed win label cause error, especially likely to
- face this situation when you manually pass labelstr using choosewin#start()
 
 ==============================================================================
 TODO							    *choowsewin-todo*
