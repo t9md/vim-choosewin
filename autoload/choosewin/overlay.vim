@@ -170,6 +170,7 @@ function! s:overlay.overlay(wins, label) "{{{1
     call self.setup_winvar()
     call self.fill_space()
 
+    call g:plog(self.wins)
     for winnr in self.wins
       noautocmd execute winnr 'wincmd w'
       if g:choosewin_overlay_shade
@@ -260,3 +261,103 @@ endfunction
 
 call s:overlay.init()
 " vim: foldmethod=marker
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

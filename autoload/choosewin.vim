@@ -321,14 +321,19 @@ function! s:cw.last_status() "{{{1
   return [ tabpagenr(), winnr() ]
 endfunction
 
+function! s:cw.valid_winnums(winnums)
+  return filter(copy(a:winnums), ' index(self.win_all(), v:val) != -1 ')
+endfunction
+
 function! s:cw.label_show(winnums, winlabel) "{{{1
-  call self.winlabel_init(a:winnums, a:winlabel)
+  let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
+  call self.winlabel_init(winnums, a:winlabel)
   if g:choosewin_statusline_replace
-    call self.statusline_replace(a:winnums)
+    call self.statusline_replace(winnums)
   endif
   if g:choosewin_overlay_enable
     let self.overlay = choosewin#overlay#get()
-    call self.overlay.overlay(a:winnums, a:winlabel)
+    call self.overlay.overlay(winnums, a:winlabel)
   endif
   redraw
 endfunction
@@ -355,9 +360,11 @@ endfunction
 function! s:cw.start(winnums, ...) "{{{1
   let self.hlter   = choosewin#highlighter#get()
   let self.color   = self.hlter.color
+  let auto_choose = get(a:000, 0, 0)
+  let winlabel    = get(a:000, 1, g:choosewin_label)
 
   if len(a:winnums) ==# 1
-    if get(a:000, 0, 0)
+    if auto_choose
       call self.land_win(a:winnums[0])
       return self.last_status()
     elseif g:choosewin_return_on_single_win
@@ -366,11 +373,9 @@ function! s:cw.start(winnums, ...) "{{{1
   endif
 
   try
-    let winlabel = get(a:000, 1, g:choosewin_label)
-    let winnums  = a:winnums
     call self.init()
     call self.tab_replace()
-    call self.label_show(winnums, winlabel)
+    call self.label_show(a:winnums, winlabel)
     try
       while 1
         call self.choose(self.win_all(), winlabel)
@@ -386,7 +391,7 @@ function! s:cw.start(winnums, ...) "{{{1
   finally
     call self.finish()
   endtry
-  return self.last_status()
+    return self.last_status()
 endfunction
 
 function! s:cw.finish() "{{{1
