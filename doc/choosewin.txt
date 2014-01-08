@@ -171,7 +171,7 @@ VARIABLES						*choowsewin-variables*
 *g:choosewin_overlay_enable*
 	Default: 0
 	Type: |Number|
-	Enable experimental overlay window caption.
+	Enable overlay window caption.
 
 	Limintaion~
 	Not work properly in following situation.
@@ -181,7 +181,7 @@ VARIABLES						*choowsewin-variables*
 	How It works~
 	Purpose of this section is make you understand trade-off of overlay.
 		Good:	Easy to spot window label than it on |&statusline|.
-		Bad:	Too aggressive for merely show caption.
+		Bad:	Too aggressive for merely show caption and slow.
 
 	What 'too agressive' means,
 		- change buffer temporarily
