@@ -7,7 +7,12 @@ let s:vim_options_buffer = {
       \ '&modified':   0,
       \ '&modifiable': 1,
       \ '&readonly':   0,
+      \ }
+
+let s:vim_options_window = {
       \ '&wrap':       0,
+      \ '&list':       0,
+      \ '&foldenable': 0,
       \ }
 
 " Util:
@@ -46,6 +51,23 @@ function! s:buffer_options_restore(bufnr, options) "{{{1
   endfor
 endfunction
 
+function! s:window_options_set(winnr, options) "{{{1
+  let R = {}
+  for [var, val] in items(a:options)
+    let R[var] = getwinvar(a:winnr, var)
+    call setwinvar(a:winnr, var, val)
+    unlet var val
+  endfor
+  return R
+endfunction
+
+function! s:window_options_restore(winnr, options) "{{{1
+  for [var, val] in items(a:options)
+    call setwinvar(a:winnr, var, val)
+    unlet var val
+  endfor
+endfunction
+
 function! s:undobreak() "{{{1
   let &undolevels = &undolevels
   " silent exec 'normal!' "i\<C-g>u\<ESC>"
@@ -74,29 +96,23 @@ function! s:overlay.setup_winvar() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
 
-    let wv = {}
-
-    if g:choosewin_overlay_unfold
-      let wv.winview    = winsaveview()
-      let wv.foldenable = &foldenable
-      let &foldenable = 0
-    endif
-
+    let wv         = {}
+    let wv.winview = winsaveview()
+    let wv.options = s:window_options_set(winnr, s:vim_options_window)
     let wv['w0']   = line('w0')
     let wv['w$']   = line('w0')
 
     " need to save orignal pos before line_middle
-    let wv.pos_org = getpos('.')
+    let wv.pos_org  = getpos('.')
     normal! M
-    let line_middle = line('.')
-    let line_s      = max([line_middle + 2 - s:font_height/2, 0])
-    let line_e      = line_s + s:font_height - 1
-    let col         = (winwidth(0) - s:font_width)/2
+    let line_middle   = line('.')
+    let line_s        = max([line_middle + 2 - s:font_height/2, 0])
+    let line_e        = line_s + s:font_height - 1
+    let col           = (winwidth(0) - s:font_width)/2
 
     let wv.pos_render = [ line_s, col ]
-    let wv.matchids = []
-
-    let w:choosewin = wv
+    let wv.matchids   = []
+    let w:choosewin   = wv
 
     let b:choosewin.rendering_area += range(line_s, line_e)
     let b:choosewin.winwidth += [winwidth(0)]
@@ -187,10 +203,8 @@ function! s:overlay.restore() "{{{1
         call matchdelete(m_id)
       endfor
       call setpos('.', w:choosewin.pos_org)
-      if g:choosewin_overlay_unfold
-        let &foldenable = w:choosewin.foldenable
-        call winrestview(w:choosewin.winview)
-      endif
+      call s:window_options_restore(str2nr(winnr), w:choosewin.options)
+      call winrestview(w:choosewin.winview)
       unlet w:choosewin
     endfor
 

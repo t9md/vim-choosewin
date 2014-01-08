@@ -206,11 +206,6 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable shade where overlay window caption is rendered.
 
-*g:choosewin_overlay_unfold*
-	Default: 1
-	Type: |Number|
-	Disable fold temporarily before overlay.
-
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
