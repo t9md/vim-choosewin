@@ -20,7 +20,6 @@ function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction "}}}
-
 function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
 endfunction
@@ -157,6 +156,16 @@ function! s:overlay.fill_space()
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
+function! s:overlay.show_label() "{{{1
+  for winnr in self.wins
+    noautocmd execute winnr 'wincmd w'
+    call self.hl_shade()
+    call self.hl_label(winnr ==# self.winnr_org)
+  endfor
+  noautocmd execute self.winnr_org 'wincmd w'
+  redraw
+endfunction
+
 function! s:overlay.next_font() "{{{1
   let FONT = self._font_table[self.captions[self.font_idx]]
   let self.font_idx += 1
@@ -164,67 +173,68 @@ function! s:overlay.next_font() "{{{1
 endfunction
 
 function! s:overlay.overlay(wins, label) "{{{1
-  try
-    call self.setup(a:wins, a:label)
-    call self.append_blankline()
-    call self.setup_winvar()
-    call self.fill_space()
+  call self.setup(a:wins, a:label)
+  call self.append_blankline()
+  call self.setup_winvar()
+  call self.fill_space()
+  call self.show_label()
+endfunction
 
-    for winnr in self.wins
-      noautocmd execute winnr 'wincmd w'
-      if g:choosewin_overlay_shade
-        call add(w:choosewin.matchids, self.hl_shade())
-      endif
-      call add(w:choosewin.matchids,
-            \ self.hl_label(winnr ==# self.winnr_org))
+function! s:overlay.restore_buffer()
+  for bufnr in self.bufs
+    noautocmd execute bufwinnr(bufnr) 'wincmd w'
+    if &modified
+      silent undo
+    endif
+    call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
+    if filereadable(b:choosewin.undofile)
+      silent execute 'rundo' b:choosewin.undofile
+    endif
+    unlet b:choosewin
+  endfor
+endfunction
+
+function! s:overlay.restore_window()
+  for winnr in self.wins
+    noautocmd execute winnr 'wincmd w'
+    for m_id in w:choosewin.matchids
+      call matchdelete(m_id)
     endfor
-  finally
-    noautocmd execute self.winnr_org 'wincmd w'
-    redraw
-  endtry
+    call setpos('.', w:choosewin.pos_org)
+    call s:window_options_restore(str2nr(winnr), w:choosewin.options)
+    call winrestview(w:choosewin.winview)
+    unlet w:choosewin
+  endfor
+  noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
 function! s:overlay.restore() "{{{1
   try
-    for bufnr in self.bufs
-      noautocmd execute bufwinnr(bufnr) 'wincmd w'
-      silent undo
-      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
-      if filereadable(b:choosewin.undofile)
-        silent execute 'rundo' b:choosewin.undofile
-      endif
-      unlet b:choosewin
-    endfor
-
-    for winnr in self.wins
-      noautocmd execute winnr 'wincmd w'
-      for m_id in w:choosewin.matchids
-        call matchdelete(m_id)
-      endfor
-      call setpos('.', w:choosewin.pos_org)
-      call s:window_options_restore(str2nr(winnr), w:choosewin.options)
-      call winrestview(w:choosewin.winview)
-      unlet w:choosewin
-    endfor
-
+    call self.restore_buffer()
+    call self.restore_window()
   finally
-    noautocmd execute self.winnr_org 'wincmd w'
     let &scrolloff = self.scrolloff_save
   endtry
 endfunction
 
 function! s:overlay.hl_shade() "{{{1
-  return matchadd(self.color.Shade,
+  if !g:choosewin_overlay_shade
+    return
+  endif
+
+  let mid = matchadd(self.color.Shade,
         \ s:intrpl('\v%{w0}l\_.*%{w$}l', { 'w0': line('w0'), 'w$': line('w$') })
         \ )
+  call add(w:choosewin.matchids, mid)
 endfunction
 
 function! s:overlay.hl_label(is_current) "{{{1
   let pattern = s:intrpl(self.next_font().pattern, s:vars(w:choosewin.pos_render))
-  return matchadd(
+  let mid = matchadd(
         \ self.color[ a:is_current ? 'OverlayCurrent': 'Overlay' ],
         \ pattern,
         \ s:highlight_priority)
+  call add(w:choosewin.matchids, mid)
 endfunction
 
 function! s:vars(pos) "{{{1

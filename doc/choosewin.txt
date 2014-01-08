@@ -246,8 +246,7 @@ BUG							    *choowsewin-bug*
 ==============================================================================
 TODO							    *choowsewin-todo*
 
-[x] disable &wrap and &lcs-trail ? adviced by manga-osyo
-    except &lcs-trail
+[x] disable &lcs-trail adviced by manga-osyo
 [ ] [newfeature] close tab with key 'x'.
 [ ] FIX API-specification
 [ ] Distinguish original tab so that user never lost while traveling tab.
@@ -256,7 +255,9 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-08:
-	- [improve] unfold and wrap disable, and keymap
+	- [bugfix] validate valid winnum and number of label
+	- [improve] disable fold, wrap, list adviced by manga-osyo.
+	- [improve] separate keymap variable
 	- [bugfix] properly clear label on tabswitch
 	- [refactor] and stabilize
 2014-01-06:
