@@ -39,9 +39,8 @@ let s:options = {
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       \ 'g:choosewin_keymap': {},
-      \ 'g:choosewin_tablabel': '1234567890[]$',
+      \ 'g:choosewin_tablabel': '123456789',
       \ }
-      " \ 'g:choosewin_label': ';ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 
 function! s:options_set(options)
   for [varname, value] in items(a:options)

@@ -1,6 +1,6 @@
 let s:font_height        = 10
 let s:font_width         = 16
-let s:highlight_priority = 1000
+let s:highlight_priority = 100
 let s:render_width       = 100
 
 let s:vim_options_buffer = {
@@ -188,7 +188,6 @@ function! s:overlay.restore() "{{{1
   try
     for bufnr in self.bufs
       noautocmd execute bufwinnr(bufnr) 'wincmd w'
-      " normal! g-
       silent undo
       call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
       if filereadable(b:choosewin.undofile)
