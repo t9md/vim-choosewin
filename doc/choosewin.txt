@@ -176,7 +176,6 @@ VARIABLES						*choowsewin-variables*
 	Limintaion~
 	Not work properly in following situation.
 		- buffer includes multibyte characters.
-		- buffer includes |concealed| character.
 
 	How It works~
 	Purpose of this section is make you understand trade-off of overlay.
@@ -243,6 +242,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-08:
+	- [improve] now overlay not break since &conceallevel = 0 temporarily
 	- [bugfix] validate valid winnum and number of label
 	- [improve] disable fold, wrap, list adviced by manga-osyo.
 	- [improve] separate keymap variable

@@ -10,9 +10,10 @@ let s:vim_options_buffer = {
       \ }
 
 let s:vim_options_window = {
-      \ '&wrap':       0,
-      \ '&list':       0,
-      \ '&foldenable': 0,
+      \ '&wrap':         0,
+      \ '&list':         0,
+      \ '&foldenable':   0,
+      \ '&conceallevel': 0,
       \ }
 
 " Util:
