@@ -100,7 +100,7 @@ function! s:overlay._fill_space(lines, width) "{{{1
   let width = (a:width + s:font_width) / 2
   for line in a:lines
     let line_s = getline(line)
-    if self.conf['overlay_clearout'] && s:include_multibyte_char(line_s)
+    if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
