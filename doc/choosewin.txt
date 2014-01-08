@@ -196,7 +196,7 @@ VARIABLES						*choowsewin-variables*
 			Append empty line to EOF.
 		- Then highlight caption font with matchadd()
 		- when reverting undo all changes.
-		
+
 	Not work properly in following situation.
 		- buffer includes multibyte characters.
 		- buffer includes |concealed| character.
@@ -217,7 +217,7 @@ FUNCTIONS						*choowsewin-functions*
 							   *choosewin#start()*
 choosewin#start({winnum-list},[ {auto-choose}, {label-string}] )
 	Return: |List|
-	Value: 
+	Value:
 		choosed:  [ tabpagenr(), winnr() ]
 		canceled: []
 
