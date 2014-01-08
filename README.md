@@ -5,7 +5,7 @@
 ![Movie](http://gifzo.net/3sADnbhA2C.gif)
 
 # Land to window you choose.
-Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
+Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.  
 
 This plugin should be useful especially when you are working on high resolution wide display.  
 Since with wide display, you are likely to open multiple window and moving around window is a little bit tiresome.  
