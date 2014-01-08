@@ -18,3 +18,14 @@ tmux の `display-pane` 機能を模倣しようと思い、作りました。
 ```Vim
 nmap  -  <Plug>(choosewin)
 ```
+
+追加的な設定項目
+```Vim
+" オーバーレイ機能を有効にしたい場合
+let g:choosewin_overlay_enable          = 1
+
+" オーバーレイ・フォントをマルチバイト文字を含むバッファでも綺麗に表示する。
+let g:choosewin_overlay_clear_multibyte = 1
+```
+
+More configuration is explained in help file. see `:help choosewin`

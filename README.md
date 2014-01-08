@@ -20,3 +20,14 @@ example Configuration
 ```Vim
 nmap  -  <Plug>(choosewin)
 ```
+
+Additional configuration
+```Vim
+" if you want to use overlay feature
+let g:choosewin_overlay_enable          = 1
+
+" overlay font broke on mutibyte buffer?
+let g:choosewin_overlay_clear_multibyte = 1
+```
+
+More configuration is explained in help file. see `:help choosewin`
