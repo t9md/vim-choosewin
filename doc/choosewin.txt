@@ -285,6 +285,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-09:
+	- [bugfix] for buffer buftype=nowrite,nofile, buffer was not recovered
+	  since &modified flag is ignored.
 2014-01-08: v1.0
 	- [improve] Add multibyte workaround.
 	- [improve] now overlay not break since &conceallevel = 0 temporarily
