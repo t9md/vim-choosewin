@@ -126,7 +126,7 @@ function! s:overlay.setup_winvar() "{{{1
 
     " need to save orignal pos before line_middle
     let wv.pos_org  = getpos('.')
-    normal! M
+    keepjump normal! M
     let line_middle   = line('.')
     let line_s        = max([line_middle + 2 - s:font_height/2, 0])
     let line_e        = line_s + s:font_height - 1
@@ -210,7 +210,7 @@ function! s:overlay.restore_buffer()
     if !exists('b:choosewin') | continue | endif
     try
       if &modified
-        silent undo
+        keepjump silent undo
       endif
       call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
       if filereadable(b:choosewin.undofile)
