@@ -101,6 +101,23 @@ endif
 function! s:include_multibyte_char(str) "{{{1
   return strlen(a:str) !=# s:strchars(a:str)
 endfunction
+
+function! s:mbstrpart(s, col) "{{{1
+  let str = ''
+  for c in split(a:s, '\zs')
+    let str .= c
+    if strdisplaywidth(str) > a:col
+      break
+    endif
+  endfor
+  return str
+endfunction
+
+function! s:mb_fill_space(str, col, width) "{{{1
+  let str = s:mbstrpart(a:str, a:col)
+  let pad = a:width - strdisplaywidth(str)
+  return [ str . repeat(' ', pad) , strlen(str)]
+endfunction
 "}}}
 
 " Overlay:
@@ -118,6 +135,7 @@ function! s:overlay._fill_space(lines, width) "{{{1
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
+      " let [line_new, col] = s:mb_fill_space(line_s, (a:width - s:font_width)/2 , width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
       let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
@@ -294,11 +312,11 @@ function! s:vars(pos) "{{{1
   let col  = a:pos[1]
   let R    = { 'line': line, 'col': col }
 
-  for line_offset in range(0,10)
+  for line_offset in range(0, s:font_height)
     let R['line+' . line_offset] = line + line_offset
   endfor
 
-  for col_offset in range(0,16)
+  for col_offset in range(0, s:font_width)
     let R['col+' . col_offset] = col + col_offset
   endfor
   return R
@@ -322,3 +340,203 @@ endfunction
 
 call s:overlay.init()
 " vim: foldmethod=marker
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
