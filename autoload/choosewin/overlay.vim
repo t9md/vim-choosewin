@@ -207,27 +207,36 @@ endfunction
 function! s:overlay.restore_buffer()
   for bufnr in self.bufs
     noautocmd execute bufwinnr(bufnr) 'wincmd w'
-    if &modified
-      silent undo
-    endif
-    call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
-    if filereadable(b:choosewin.undofile)
-      silent execute 'rundo' b:choosewin.undofile
-    endif
-    unlet b:choosewin
+    if !exists('b:choosewin') | continue | endif
+    try
+      if &modified
+        silent undo
+      endif
+      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
+      if filereadable(b:choosewin.undofile)
+        silent execute 'rundo' b:choosewin.undofile
+      endif
+    catch
+      unlet b:choosewin
+    endtry
   endfor
 endfunction
 
 function! s:overlay.restore_window()
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
-    for m_id in w:choosewin.matchids
-      call matchdelete(m_id)
-    endfor
-    call setpos('.', w:choosewin.pos_org)
-    call s:window_options_restore(str2nr(winnr), w:choosewin.options)
-    call winrestview(w:choosewin.winview)
-    unlet w:choosewin
+    if !exists('w:choosewin') | continue | endif
+
+    try
+      for m_id in w:choosewin.matchids
+        call matchdelete(m_id)
+      endfor
+      call setpos('.', w:choosewin.pos_org)
+      call s:window_options_restore(str2nr(winnr), w:choosewin.options)
+      call winrestview(w:choosewin.winview)
+    catch
+      unlet w:choosewin
+    endtry
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction

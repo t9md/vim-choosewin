@@ -191,6 +191,10 @@ function! s:cw.init() "{{{1
   let self.env             = self.get_env()
   let self.env_orig        = deepcopy(self.env)
   let self.keymap          = extend(self.keymap_default(), self.conf['keymap'])
+
+  if self.conf['overlay_enable']
+    let self.overlay = choosewin#overlay#get()
+  endif
   call self.tablabel_init(self.env.tab.all, self.tablabel)
 endfunction
 
@@ -323,15 +327,15 @@ function! s:cw.valid_winnums(winnums)
   return filter(copy(a:winnums), ' index(self.win_all(), v:val) != -1 ')
 endfunction
 
-function! s:cw.label_show(winnums, winlabel) "{{{1
+function! s:cw.label_show(winnums, winlabel) "{{{1  
   let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
-  call self.winlabel_init(winnums, a:winlabel)
-  if self.conf['statusline_replace']
-    call self.statusline_replace(winnums)
-  endif
-  if self.conf['overlay_enable']
-    let self.overlay = choosewin#overlay#get()
-    call self.overlay.overlay(winnums, self.conf)
+  call self.winlabel_init(winnums, a:winlabel)      
+                                                    
+  if self.conf['statusline_replace']                
+    call self.statusline_replace(winnums)           
+  endif                                             
+  if self.conf['overlay_enable']                    
+    call self.overlay.overlay(winnums, self.conf)   
   endif
   redraw
 endfunction
