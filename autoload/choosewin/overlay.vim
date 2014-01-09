@@ -206,9 +206,9 @@ endfunction
 function! s:overlay.restore_buffer()
   for bufnr in self.bufs
     noautocmd execute bufwinnr(bufnr) 'wincmd w'
-    if &modified
+    " if &modified
       silent undo
-    endif
+    " endif
     call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
     if filereadable(b:choosewin.undofile)
       silent execute 'rundo' b:choosewin.undofile
