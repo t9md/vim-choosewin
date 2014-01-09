@@ -3,6 +3,10 @@ let s:font_width         = 16
 let s:highlight_priority = 100
 let s:render_width       = 100
 
+let s:vim_options_global = {
+      \ '&scrolloff': 0,
+      \ }
+
 let s:vim_options_buffer = {
       \ '&modified':   0,
       \ '&modifiable': 1,
@@ -22,6 +26,7 @@ function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction "}}}
+
 function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
 endfunction
@@ -73,6 +78,13 @@ function! s:undobreak() "{{{1
   let &undolevels = &undolevels
   " silent exec 'normal!' "i\<C-g>u\<ESC>"
 endfunction
+
+function! s:undoclear() "{{{1
+	let undolevels_org = &undolevels
+	let &undolevels = -1
+	noautocmd execute "normal! a \<BS>\<Esc>"
+	let &undolevels = undolevels_org
+endfunction
 "}}}
 
 " s:strchars() "{{{1
@@ -87,7 +99,7 @@ else
 endif
 "}}}
 function! s:include_multibyte_char(str) "{{{1
-    return strlen(a:str) !=# s:strchars(a:str)
+  return strlen(a:str) !=# s:strchars(a:str)
 endfunction
 "}}}
 
@@ -142,20 +154,23 @@ function! s:overlay.setup_winvar() "{{{1
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
-
 function! s:overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
-  let self.scrolloff_save = &scrolloff
-  let &scrolloff          = 0
+  let self.options_global = s:buffer_options_set(bufnr(''), s:vim_options_global)
   let self.font_idx       = 0
   let self.captions       = s:str_split(self.conf['label'])
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = s:uniq(tabpagebuflist(tabpagenr()))
+  let self.buffer_save   = {}
 
   for bufnr in self.bufs
-    call setbufvar(bufnr, 'choosewin',
-          \ { 'rendering_area': [], 'winwidth': [], 'options': {}, 'undofile': tempname() } )
+    call setbufvar(bufnr, 'choosewin', {
+          \ 'rendering_area': [],
+          \ 'winwidth': [],
+          \ 'options': {},
+          \ 'undofile': tempname()
+          \ })
   endfor
 endfunction
 
@@ -207,15 +222,19 @@ endfunction
 function! s:overlay.restore_buffer()
   for bufnr in self.bufs
     noautocmd execute bufwinnr(bufnr) 'wincmd w'
-    if !exists('b:choosewin') | continue | endif
     try
-      if &modified
-        keepjump silent undo
+      if !exists('b:choosewin')
+        continue
       endif
-      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
+      if &modified
+        noautocmd keepjump silent undo
+      endif
       if filereadable(b:choosewin.undofile)
         silent execute 'rundo' b:choosewin.undofile
+      else
+        call s:undoclear()
       endif
+      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
     catch
       unlet b:choosewin
     endtry
@@ -246,7 +265,7 @@ function! s:overlay.restore() "{{{1
     call self.restore_buffer()
     call self.restore_window()
   finally
-    let &scrolloff = self.scrolloff_save
+    call s:buffer_options_restore(bufnr(''), self.options_global)
   endtry
 endfunction
 

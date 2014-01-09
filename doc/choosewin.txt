@@ -287,6 +287,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-09: v1.1
+	- [improve] now undo history cleared when undolist is empty.
 	- [improve] recover poslist properly in overlay mode
 	- [bugfix] for buffer buftype=nowrite,nofile, buffer was not recovered
 	  since &modified flag is ignored.
