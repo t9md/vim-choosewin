@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 1.1
+Version: 1.2
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -220,7 +220,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 
 	{config}: Optional
 		Type: |Dictionary|
-		
+
 		Pass configuration option with { "key": value } format.
 		The config you passed is merged to default_config,
 		See |choosewin#config()|.
@@ -286,6 +286,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-09: v1.2
+	- verup
 2014-01-09: v1.1
 	- [improve] now undo history cleared when undolist is empty.
 	- [improve] recover poslist properly in overlay mode
