@@ -297,6 +297,8 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-11:
+	- [other] changed default color similar to tmux. the purpose for this
+	  is easily distinguish current window.
 	- [improve] greatly improve overlay rendering with new pattern
 	  compilation x2 faster now.
 2014-01-10:
