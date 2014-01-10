@@ -331,7 +331,6 @@ endfunction
 
 function! s:cw.label_show(winnums, winlabel) "{{{1
   let winnums = a:winnums[ : len(a:winlabel) - 1 ]
-  " let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
   call self.winlabel_init(winnums, a:winlabel)
 
   if self.conf['statusline_replace']
@@ -402,9 +401,6 @@ function! s:cw.start(winnums, ...) "{{{1
   let winnums    = self.valid_winnums(a:winnums)
 
   try
-    " if exists('*g:choosewin_hook.start')
-      " call g:choosewin_hook.start()
-    " endif
     call self.init()
     call self.first_path(winnums)
 
@@ -417,9 +413,6 @@ function! s:cw.start(winnums, ...) "{{{1
     let self.exception = v:exception
   finally
 
-    " if exists('*g:choosewin_hook.finish')
-      " call g:choosewin_hook.finish()
-    " endif
     call self.finish()
     return self.last_status()
   endtry
