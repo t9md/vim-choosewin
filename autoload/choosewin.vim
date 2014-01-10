@@ -1,5 +1,6 @@
 " Constant:
-let s:NOT_FOUND = -1
+let s:NOT_FOUND       = -1
+let s:TYPE_DICTIONARY = type({})
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -113,7 +114,7 @@ function! s:cw.statusline_restore() "{{{1
 endfunction
 
 function! s:cw.prepare_label(win, align) "{{{1
-  let pad = repeat(' ', self.conf['label_padding'])
+  let pad   = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
   let color = winnr() ==# a:win
@@ -197,7 +198,7 @@ function! s:cw.init() "{{{1
   call self.tablabel_init(self.env.tab.all, self.tablabel)
 endfunction
 
-function! s:cw.keymap_default()
+function! s:cw.keymap_default() "{{{1
   return {
         \ '0':     'tab_first',
         \ '[':     'tab_prev',
@@ -324,12 +325,13 @@ function! s:cw.last_status() "{{{1
   endif
 endfunction
 
-function! s:cw.valid_winnums(winnums)
+function! s:cw.valid_winnums(winnums) "{{{1
   return filter(copy(a:winnums), ' index(self.win_all(), v:val) != -1 ')
 endfunction
 
 function! s:cw.label_show(winnums, winlabel) "{{{1
-  let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
+  let winnums = a:winnums[ : len(a:winlabel) - 1 ]
+  " let winnums = self.valid_winnums(a:winnums)[ : len(a:winlabel) - 1 ]
   call self.winlabel_init(winnums, a:winlabel)
 
   if self.conf['statusline_replace']
@@ -364,37 +366,47 @@ function! s:cw.tab_restore() "{{{1
   call s:options_restore(self.tab_options)
 endfunction
 
+function! s:cw.first_path(winnums) "{{{1
+  if empty(a:winnums)
+    throw 'RETURN'
+  endif
+  if len(a:winnums) ==# 1
+    if self.conf['auto_choose']
+      let self.win_dest = a:winnums[0]
+      throw 'CHOOSED'
+    elseif self.conf['return_on_single_win']
+      throw 'RETURN'
+    endif
+  endif
+endfunction
+
 function! s:cw.start(winnums, ...) "{{{1
+  " care backward compatibility "{{{
   let arg_1st = get(a:000, 0, {})
   let arg_2nd = get(a:000, 1, '')
 
-  " care backward compatibility "{{{
-  if type(arg_1st) !=# type({})
+  if type(arg_1st) is s:TYPE_DICTIONARY
+    let config = arg_1st
+  else
+    " old api call
     let config = { 'auto_choose': arg_1st }
     if !empty(arg_2nd)
       let config.label = arg_2nd
     endif
     echoerr 'Choosewin: you use old api, help "choosein#start()" for new api-call'
-  else
-    let config = arg_1st
   endif "}}}
 
-  let self.conf   = extend(self.config(), config, 'force')
-  let self.hlter  = choosewin#highlighter#get()
-  let self.color  = self.hlter.color
+  let self.conf  = extend(self.config(), config, 'force')
+  let self.hlter = choosewin#highlighter#get()
+  let self.color = self.hlter.color
+  let winnums    = self.valid_winnums(a:winnums)
 
   try
-    if len(a:winnums) ==# 1
-      if self.conf['auto_choose']
-        let self.win_dest = a:winnums[0]
-        throw 'CHOOSED'
-      elseif self.conf['return_on_single_win']
-        throw 'RETURN'
-      endif
-    endif
     call self.init()
+    call self.first_path(winnums)
+
     call self.tab_replace()
-    call self.label_show(a:winnums, self.conf['label'])
+    call self.label_show(winnums, self.conf['label'])
     while 1
       call self.choose(self.win_all(), self.conf['label'])
     endwhile
