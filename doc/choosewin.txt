@@ -286,6 +286,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-10:
+	- [improve] treat first_path() case as consistent manner.
+	- [improve] eliminate invalid window at initial phrase
 2014-01-09: v1.2
 	- verup
 2014-01-09: v1.1
