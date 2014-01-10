@@ -18,6 +18,8 @@ let s:options = {
       \ 'g:choosewin_land_char': ';',
       \ 'g:choosewin_overlay_enable': 0,
       \ 'g:choosewin_overlay_shade': 0,
+      \ 'g:choosewin_overlay_shade_priority': 100,
+      \ 'g:choosewin_overlay_label_priority': 101,
       \ 'g:choosewin_overlay_clear_multibyte': 0,
       \ 'g:choosewin_label_align':   'center',
       \ 'g:choosewin_label_padding': 3,

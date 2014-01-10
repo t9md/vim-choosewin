@@ -205,6 +205,16 @@ VARIABLES						*choowsewin-variables*
 	Useful when buffer contains multibyte character, which break window
 	caption font because 1 char is not necessarily 1 byte.
 
+*g:choosewin_overlay_shade_priority*
+	Default: 100
+	Type: |Number|
+	Highlight priority value, this value passed to matchadd() at overlay.
+
+*g:choosewin_overlay_label_priority*
+	Default: 101
+	Type: |Number|
+	Highlight priority value, this value passed to matchadd() at overlay.
+
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 

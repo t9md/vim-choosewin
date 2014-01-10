@@ -225,6 +225,8 @@ function! s:cw.config() "{{{1
         \ 'tabline_replace':           g:choosewin_tabline_replace,
         \ 'overlay_enable':            g:choosewin_overlay_enable,
         \ 'overlay_shade':             g:choosewin_overlay_shade,
+        \ 'overlay_shade_priority':    g:choosewin_overlay_shade_priority,
+        \ 'overlay_label_priority':    g:choosewin_overlay_label_priority,
         \ 'overlay_clear_multibyte':   g:choosewin_overlay_clear_multibyte,
         \ 'label_align':               g:choosewin_label_align,
         \ 'label_padding':             g:choosewin_label_padding,

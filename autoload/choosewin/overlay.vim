@@ -276,13 +276,13 @@ function! s:overlay.hl_shade() "{{{1
     return
   endif
   let pattern = printf('\v%%%dl\_.*%%%dl', w:choosewin['w0'], w:choosewin['w$'])
-  let mid = matchadd(self.color.Shade, pattern, s:hl_shade_priority)
-  call add(w:choosewin.matchids, mid)
+  call add(w:choosewin.matchids,
+        \ matchadd(self.color.Shade, pattern, self.conf['overlay_label_priority']))
 endfunction
 
 function! s:overlay.hl_shade_trailingWS() "{{{1
-  let mid = matchadd(self.color.Shade, '\s\+$', s:hl_shade_priority)
-  call add(w:choosewin.matchids, mid)
+  call add(w:choosewin.matchids,
+        \ matchadd(self.color.Shade, '\s\+$', self.conf['overlay_shade_priority']))
 endfunction
 
 function! s:overlay.hl_label(is_current) "{{{1
