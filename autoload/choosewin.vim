@@ -402,6 +402,9 @@ function! s:cw.start(winnums, ...) "{{{1
   let winnums    = self.valid_winnums(a:winnums)
 
   try
+    " if exists('*g:choosewin_hook.start')
+      " call g:choosewin_hook.start()
+    " endif
     call self.init()
     call self.first_path(winnums)
 
@@ -413,6 +416,10 @@ function! s:cw.start(winnums, ...) "{{{1
   catch
     let self.exception = v:exception
   finally
+
+    " if exists('*g:choosewin_hook.finish')
+      " call g:choosewin_hook.finish()
+    " endif
     call self.finish()
     return self.last_status()
   endtry

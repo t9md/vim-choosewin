@@ -37,6 +37,7 @@ let s:options = {
       \ 'g:choosewin_color_shade':
       \   { 'gui':[ '', '#777777'], 'cterm': ['', 'grey'] },
       \ 'g:choosewin_blink_on_land': 1,
+      \ 'g:choosewin_hook': {},
       \ 'g:choosewin_return_on_single_win': 0,
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       \ 'g:choosewin_keymap': {},

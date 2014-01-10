@@ -287,6 +287,9 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-10:
+	- [improve] disable trailing white space highlight internally.
+	- [improve] performance and effectiveness improve by avoiding
+	  unnecessary append blankline.
 	- [improve] treat first_path() case as consistent manner.
 	- [improve] eliminate invalid window at initial phrase
 2014-01-09: v1.2
