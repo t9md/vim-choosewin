@@ -296,6 +296,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-11:
+	- [improve] greatly improve overlay rendering with new pattern
+	  compilation x2 faster now.
 2014-01-10:
 	- [improve] disable trailing white space highlight internally.
 	- [improve] performance and effectiveness improve by avoiding

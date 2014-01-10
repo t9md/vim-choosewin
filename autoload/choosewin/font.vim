@@ -24,8 +24,8 @@ let s:data = {}
 function! s:data.parse(file) "{{{1
   let fonts = copy(s:font_list)
 
-  let D = {}
-  for f in fonts | let D[f] = [] | endfor
+  let R = {}
+  for f in fonts | let R[f] = [] | endfor
 
   for line in readfile(a:file)
     if line =~# '\v^---'
@@ -38,10 +38,10 @@ function! s:data.parse(file) "{{{1
       " echo ' ============='
       continue
     endif
-    call add(D[current_font], line)
+    call add(R[current_font], line)
     " echo line
   endfor
-  return D
+  return R
 endfunction
 
 function! s:data.table() "{{{1
@@ -75,7 +75,7 @@ function! s:font.print() "{{{1
   return join(self._data, "\n")
 endfunction
 
-function! s:font._parse() "{{{1
+function! s:font._parse_old() "{{{1
   let R = []
   for idx in range(0, len(self._data) - 1)
     let indexes = s:scan_match(self._data[idx], '\$')
@@ -88,8 +88,36 @@ function! s:font._parse() "{{{1
   return R
 endfunction
 
+function! s:font._parse() "{{{1
+  let R = []
+  for idx in range(0, len(self._data) - 1)
+    let indexes = s:scan_match(self._data[idx], '\$')
+    let line_anchor = '%{line+' . idx . '}l'
+    let lc = -1
+    let s = ''
+    for cc in indexes
+      if (lc + 1) ==# cc
+        let s .= '.'
+      else
+        if !empty(s)
+          let s.= '|'
+        endif
+        let s .= line_anchor . '%{col+' . cc . '}c.'
+      endif
+      let lc = cc
+    endfor
+    call add(R, s)
+  endfor
+  call filter(R, '!empty(v:val)')
+  return R
+endfunction
+
 function! s:font._pattern() "{{{1
   return '\v' . join(self._parse(), '|')
+endfunction
+
+function! s:font._pattern_old() "{{{1
+  return '\v' . join(self._parse_old(), '|')
 endfunction
 "}}}
 
@@ -108,14 +136,60 @@ function! choosewin#font#table() "{{{1
   return s:table.init()._table
 endfunction
 "}}}
-
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
-let start = reltime()
 " let font_table = choosewin#font#table()
-" for s:n in range(20)
-  call s:table.init()
-" endfor
-echo reltimestr(reltime(start))
+let s:font_height       = 10
+let s:font_width        = 16
+let s:hl_shade_priority = 100
+let s:hl_label_priority = 101
+function! s:intrpl(string, vars) "{{{1
+  let mark = '\v\{(.{-})\}'
+  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
+endfunction
+
+function! s:vars(pos) "{{{1
+  let line = a:pos[0]
+  let col  = a:pos[1]
+  let R    = { 'line': line, 'col': col }
+
+  for line_offset in range(0, s:font_height)
+    let R['line+' . line_offset] = line + line_offset
+  endfor
+
+  for col_offset in range(0, s:font_width)
+    let R['col+' . col_offset] = col + col_offset
+  endfor
+  return R
+endfunction
+
+function! Test() "{{{1
+  call clearmatches()
+  let start = reltime()
+  let font_list = map(range(33, 126), 'nr2char(v:val)')
+  let font_table = choosewin#font#table()
+
+  let vars = s:vars([1,1])
+  for n in range(500)
+    for font in font_list
+      let pattern = font_table[font].pattern_old
+      call s:overlay(pattern, vars)
+    endfor
+  endfor
+  echo reltimestr(reltime(start))
+endfunction
+
+" let A = choosewin#font#table()['A']
+function! s:view(pattern, vars) "{{{1
+  return matchadd('Search',
+        \ s:intrpl(a:pattern, a:vars))
+endfunction
+
+function! s:overlay(pattern, vars) "{{{1
+  call matchdelete(matchadd('Search',
+        \ s:intrpl(a:pattern, a:vars)))
+endfunction
+" command! Test call Test()
+"}}}
 " vim: foldmethod=marker
