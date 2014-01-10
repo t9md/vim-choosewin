@@ -25,17 +25,17 @@ let s:options = {
       \ 'g:choosewin_label_padding': 3,
       \ 'g:choosewin_label_fill':    0,
       \ 'g:choosewin_color_label':
-      \      { 'gui': ['ForestGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
+      \      { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
       \ 'g:choosewin_color_label_current':
       \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
       \ 'g:choosewin_color_overlay':
-      \      { 'gui': ['DodgerBlue3', 'DodgerBlue3' ], 'cterm': [ 25, 25 ] },
+      \      { 'gui': ['DarkGreen', 'DarkGreen' ], 'cterm': [ 22, 22 ] },
       \ 'g:choosewin_color_overlay_current':
-      \      { 'gui': ['firebrick1', 'firebrick1' ], 'cterm': [ 124, 124 ] },
+      \      { 'gui': ['LimeGreen', 'LimeGreen' ], 'cterm': [ 40, 40 ] },
       \ 'g:choosewin_color_other':
       \      { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
       \ 'g:choosewin_color_land':
-      \   { 'gui':[ 'LimeGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
+      \   { 'gui':[ 'LawnGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
       \ 'g:choosewin_color_shade':
       \   { 'gui':[ '', '#777777'], 'cterm': ['', 'grey'] },
       \ 'g:choosewin_blink_on_land': 1,
@@ -44,6 +44,7 @@ let s:options = {
       \ 'g:choosewin_keymap': {},
       \ 'g:choosewin_tablabel': '123456789',
       \ }
+
 
 function! s:options_set(options)
   for [varname, value] in items(a:options)
