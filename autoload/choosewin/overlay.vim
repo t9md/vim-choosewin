@@ -171,8 +171,6 @@ endfunction
 function! s:overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
   let self.options_global = s:buffer_options_set(bufnr(''), s:vim_options_global)
-
-  " font index start from -1 for minor performance benefit.
   let self.font_idx       = 0
   let self.captions       = self.conf['label']
   let self.wins           = a:wins
