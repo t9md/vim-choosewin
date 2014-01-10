@@ -154,7 +154,7 @@ function! s:overlay.setup_winvar() "{{{1
     let wv['w$']      = line('w$')
     let wv.pos_org    = getpos('.')
     let line_middle   = wv['w0'] + winheight(0)/2 - 1
-    let line_s        = max([line_middle + 2 - s:font_height/2, 0])
+    let line_s        = max([line_middle + 3 - s:font_height/2, 0])
     let line_e        = line_s + s:font_height - 1
     let col           = (winwidth(0) - s:font_width)/2
     let wv.pos_render = [ line_s, col ]
