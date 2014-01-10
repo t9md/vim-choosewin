@@ -401,6 +401,7 @@ function! s:cw.start(winnums, ...) "{{{1
   catch
     let self.exception = v:exception
   finally
+    call self.finish()
     return self.last_status()
   endtry
 endfunction
