@@ -1,7 +1,5 @@
-let s:font_height       = 10
-let s:font_width        = 16
-let s:hl_shade_priority = 100
-let s:hl_label_priority = 101
+let s:FONT_HEIGHT       = 10
+let s:FONT_WIDTH        = 16
 
 let s:vim_options_global = {
       \ '&scrolloff':  0,
@@ -129,12 +127,12 @@ function! s:overlay.init() "{{{1
 endfunction
 
 function! s:overlay._fill_space(lines, width) "{{{1
-  let width = (a:width + s:font_width) / 2
+  let width = (a:width + s:FONT_WIDTH) / 2
   for line in a:lines
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
-      " let [line_new, col] = s:mb_fill_space(line_s, (a:width - s:font_width)/2 , width)
+      " let [line_new, col] = s:mb_fill_space(line_s, (a:width - s:FONT_WIDTH)/2 , width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
       let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
@@ -154,9 +152,9 @@ function! s:overlay.setup_winvar() "{{{1
     let wv['w$']      = line('w$')
     let wv.pos_org    = getpos('.')
     let line_middle   = wv['w0'] + winheight(0)/2 - 1
-    let line_s        = max([line_middle + 3 - s:font_height/2, 0])
-    let line_e        = line_s + s:font_height - 1
-    let col           = (winwidth(0) - s:font_width)/2
+    let line_s        = max([line_middle + 3 - s:FONT_HEIGHT/2, 0])
+    let line_e        = line_s + s:FONT_HEIGHT - 1
+    let col           = (winwidth(0) - s:FONT_WIDTH)/2
     let wv.pos_render = [ line_s, col ]
     let wv.matchids   = []
     let w:choosewin   = wv
@@ -275,7 +273,7 @@ function! s:overlay.hl_shade() "{{{1
   endif
   let pattern = printf('\v%%%dl\_.*%%%dl', w:choosewin['w0'], w:choosewin['w$'])
   call add(w:choosewin.matchids,
-        \ matchadd(self.color.Shade, pattern, self.conf['overlay_label_priority']))
+        \ matchadd(self.color.Shade, pattern, self.conf['overlay_shade_priority']))
 endfunction
 
 function! s:overlay.hl_shade_trailingWS() "{{{1
@@ -289,7 +287,7 @@ function! s:overlay.hl_label(is_current) "{{{1
   let mid = matchadd(
         \ self.color[ a:is_current ? 'OverlayCurrent': 'Overlay' ],
         \ s:intrpl(font.pattern, s:vars(w:choosewin.pos_render)),
-        \ s:hl_label_priority)
+        \ self.conf['overlay_label_priority'])
   call add(w:choosewin.matchids, mid)
 endfunction
 
@@ -298,11 +296,11 @@ function! s:vars(pos) "{{{1
   let col  = a:pos[1]
   let R    = { 'line': line, 'col': col }
 
-  for line_offset in range(0, s:font_height)
+  for line_offset in range(0, s:FONT_HEIGHT)
     let R['line+' . line_offset] = line + line_offset
   endfor
 
-  for col_offset in range(0, s:font_width)
+  for col_offset in range(0, s:FONT_WIDTH)
     let R['col+' . col_offset] = col + col_offset
   endfor
   return R
