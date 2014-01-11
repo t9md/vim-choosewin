@@ -274,12 +274,13 @@ choosewin#config()
 ==============================================================================
 CONFIGURATION EXAMPLE				    *choowsewin-example*
 >
+	" invoke with '-'
 	nmap  -  <Plug>(choosewin)
 
-	" if you want to use overlay feature
+	" use overlay feature
 	let g:choosewin_overlay_enable = 1
 
-	" overlay font broke on mutibyte buffer?
+	" workaround for overlay font broken on mutibyte buffer.
 	let g:choosewin_overlay_clear_multibyte = 1
 
 	" tmux like overlay color
@@ -291,6 +292,10 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 	      \ 'gui': ['firebrick1', 'firebrick1' ],
 	      \ 'cterm': [ 124, 124 ]
 	      \ }
+
+	let g:choosewin_blink_on_land      = 0 " dont' blink at land
+	let g:choosewin_statusline_replace = 0 " don't replace statusline
+	let g:choosewin_tabline_replace    = 0 " don't replace tabline
 <
 ==============================================================================
 BUG							    *choowsewin-bug*
