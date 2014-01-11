@@ -128,15 +128,15 @@ VARIABLES						*choowsewin-variables*
 	Used to customize keymap while choosing.
 	Default keymap is below.
 
-	| Key  | Action     | Description                | 
-	| ---- | ---------- | -------------------------- | 
-	| 0    | tab_first  | choose FIRST    tab        | 
-	| [    | tab_prev   | choose PREVIOUS tab        | 
-	| ]    | tab_next   | choose NEXT     tab        | 
-	| $    | tab_last   | choose LAST     tab        | 
-	| ;    | win_land   | land to current window     | 
-	| <CR> | win_land   | land to current window     | 
-	|      | <NOP>      | disable predefined keymap  | 
+	| Key  | Action     | Description                |
+	| ---- | ---------- | -------------------------- |
+	| 0    | tab_first  | choose FIRST    tab        |
+	| [    | tab_prev   | choose PREVIOUS tab        |
+	| ]    | tab_next   | choose NEXT     tab        |
+	| $    | tab_last   | choose LAST     tab        |
+	| ;    | win_land   | land to current window     |
+	| <CR> | win_land   | land to current window     |
+	|      | <NOP>      | disable predefined keymap  |
 
 	Disabling default keymap~
 
@@ -312,7 +312,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
-2014-01-11:
+2014-01-11: v1.3
+	- [verup] v1.3
 	- [improve] provide '<NOP>" special action to disable default keymap.
 	- [improve] greatly improve overlay rendering with new pattern
 	  compilation x2 faster now.

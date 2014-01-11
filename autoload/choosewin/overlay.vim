@@ -1,5 +1,5 @@
-let s:FONT_HEIGHT       = 10
-let s:FONT_WIDTH        = 16
+let s:FONT_HEIGHT = 10
+let s:FONT_WIDTH  = 16
 
 let s:vim_options_global = {
       \ '&scrolloff':  0,
@@ -78,10 +78,10 @@ function! s:undobreak() "{{{1
 endfunction
 
 function! s:undoclear() "{{{1
-	let undolevels_org = &undolevels
-	let &undolevels = -1
-	noautocmd execute "normal! a \<BS>\<Esc>"
-	let &undolevels = undolevels_org
+  let undolevels_org = &undolevels
+  let &undolevels = -1
+  noautocmd execute "normal! a \<BS>\<Esc>"
+  let &undolevels = undolevels_org
 endfunction
 
 " s:strchars() "{{{1
