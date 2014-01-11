@@ -1,6 +1,6 @@
 [日本語はこちら](https://github.com/t9md/vim-choosewin/blob/master/README-JP.md)
 
-# Animation GIF
+# Animated GIF
 
 ![Movie](http://gifzo.net/3sADnbhA2C.gif)
 

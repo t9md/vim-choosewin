@@ -133,20 +133,24 @@ VARIABLES						*choowsewin-variables*
 	Used to customize keymap while choosing.
 	Default keymap is below.
 
-	| Key  | Action     | Description             |
-	| ---- | ---------- | ----------------------- |
-	| 0    | tab_first  | choose FIRST    tab     |
-	| [    | tab_prev   | choose PREVIOUS tab     |
-	| ]    | tab_next   | choose NEXT     tab     |
-	| $    | tab_last   | choose LAST     tab     |
-	| ;    | win_land   | land to current window  |
-	| <CR> | win_land   | land to current window  |
+	| Key  | Action     | Description                | 
+	| ---- | ---------- | -------------------------- | 
+	| 0    | tab_first  | choose FIRST    tab        | 
+	| [    | tab_prev   | choose PREVIOUS tab        | 
+	| ]    | tab_next   | choose NEXT     tab        | 
+	| $    | tab_last   | choose LAST     tab        | 
+	| ;    | win_land   | land to current window     | 
+	| <CR> | win_land   | land to current window     | 
+	|      | <NOP>      | disable predefined keymap  | 
 
-	And you can customize like following
->
-	" land to current win with 'm'
-	let g:choosewin_keymap = {}
-	let g:choosewin_keymap.m = 'win_land'
+	Disabling default keymap~
+	To disable default keymap, you can use special action '<NOP>'.
+	The key set to '<NOP>' will be deleted(unmapped) from keytable.
+
+	Customization example~
+	let g:choosewin_keymap   = {}         " initialize as Dictonary
+	let g:choosewin_keymap.m = 'win_land' " land with 'm'
+	let g:choosewin_keymap.0 = '<NOP>'    " disable default 0 keybind
 <
 
 *g:choosewin_label_align*
@@ -307,7 +311,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-11:
-	  is easily distinguish current window.
+	- [improve] provide '<NOP>" special action to disable default keymap.
 	- [improve] greatly improve overlay rendering with new pattern
 	  compilation x2 faster now.
 2014-01-10:

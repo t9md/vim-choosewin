@@ -190,7 +190,9 @@ function! s:cw.init() "{{{1
   let self.win_dest        = ''
   let self.env             = self.get_env()
   let self.env_orig        = deepcopy(self.env)
-  let self.keymap          = extend(self.keymap_default(), self.conf['keymap'])
+  let self.keymap          = filter(
+        \ extend(self.keymap_default(), self.conf['keymap']),
+        \ "v:val !=# '<NOP>'")
 
   if self.conf['overlay_enable']
     let self.overlay = choosewin#overlay#get()

@@ -10,8 +10,6 @@ let s:old_cpo = &cpo
 set cpo&vim
 
 " Main:
-let g:choosewin_active = 0
-
 let s:options = {
       \ 'g:choosewin_statusline_replace': 1,
       \ 'g:choosewin_tabline_replace': 1,
@@ -67,14 +65,9 @@ nnoremap <silent> <Plug>(choosewin)
       \ :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
 
 " Command:
-command! -bar ChooseWin
-      \ call choosewin#start(range(1, winnr('$')))
+command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
 
 " Finish:
 let &cpo = s:old_cpo
-if expand("%:p") !=# expand("<sfile>:p")
-  finish
-endif
-" let hlter = choosewin#highlighter#get()
-call choosewin#highlighter#refresh()
+
 " vim: foldmethod=marker
