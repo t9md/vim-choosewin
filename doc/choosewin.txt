@@ -48,11 +48,6 @@ COMMANDS						*choowsewin-commands*
 ==============================================================================
 VARIABLES						*choowsewin-variables*
 
-*g:choosewin_active*
-	Default: 0
-	Type:    |Number|
-	Become active while choosewin is activated, for use in &statusline
-
 *g:choosewin_statusline_replace*
 	Default: 1
 	Type: Number
@@ -144,10 +139,12 @@ VARIABLES						*choowsewin-variables*
 	|      | <NOP>      | disable predefined keymap  | 
 
 	Disabling default keymap~
+
 	To disable default keymap, you can use special action '<NOP>'.
 	The key set to '<NOP>' will be deleted(unmapped) from keytable.
 
 	Customization example~
+>
 	let g:choosewin_keymap   = {}         " initialize as Dictonary
 	let g:choosewin_keymap.m = 'win_land' " land with 'm'
 	let g:choosewin_keymap.0 = '<NOP>'    " disable default 0 keybind
