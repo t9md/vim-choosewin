@@ -2,7 +2,7 @@
 
 # Animated GIF
 
-![Movie](http://gifzo.net/3sADnbhA2C.gif)
+![Movie](http://gifzo.net/YAymLEsrhf.gif)
 
 # Land to window you choose.
 Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.  
