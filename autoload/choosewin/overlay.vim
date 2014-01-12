@@ -3,6 +3,7 @@ let s:FONT_MAX.large = { 'width': 16, 'height': 10 }
 let s:FONT_MAX.small = { 'width':  5, 'height': 8 }
 
 let s:vim_options_global = {
+      \ '&cursorline': 0,
       \ '&scrolloff':  0,
       \ '&lazyredraw': 1,
       \ }

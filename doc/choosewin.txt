@@ -320,6 +320,7 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2014-01-12:
+	- [improve] disble cursorline while overlay
 	- [new-feature] now support 'small' font for overlay and configurable
 	  size you prefer. by default 'auto' mode determine font size based on
 	  winheight(0).
