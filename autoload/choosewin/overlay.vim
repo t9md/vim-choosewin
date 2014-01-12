@@ -126,7 +126,7 @@ function! s:overlay.init() "{{{1
   let self._font_table       = {}
   let self._font_table.large = choosewin#font#large()
   let self._font_table.small = choosewin#font#small()
-  let self.color       = self.hlter.color
+  let self.color             = self.hlter.color
 endfunction
 
 function! s:overlay._fill_space(lines, width) "{{{1
@@ -230,7 +230,7 @@ function! s:overlay.overlay(wins, label) "{{{1
   call self.show_label()
 endfunction
 
-function! s:overlay.restore_buffer()
+function! s:overlay.restore_buffer() "{{{1
   for bufnr in self.bufs
     noautocmd execute bufwinnr(bufnr) 'wincmd w'
     try
@@ -250,7 +250,7 @@ function! s:overlay.restore_buffer()
   endfor
 endfunction
 
-function! s:overlay.restore_window()
+function! s:overlay.restore_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
     if !exists('w:choosewin') | continue | endif
