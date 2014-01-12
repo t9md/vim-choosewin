@@ -193,6 +193,13 @@ VARIABLES						*choowsewin-variables*
 		- Then highlight caption font with matchadd()
 		- when reverting undo all changes.
 
+*g:choosewin_overlay_font_size*
+	Default: 'auto'
+	Type: |String|
+	Value: must be 'auto', 'small', 'large'
+	Specify overlay font size.
+	'auto' determine appropriate font size based on window height.
+
 *g:choosewin_overlay_shade*
 	Default: 0
 	Type: |Number|
@@ -312,6 +319,10 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-12:
+	- [new-feature] now support 'small' font for overlay and configurable
+	  size you prefer. by default 'auto' mode determine font size based on
+	  winheight(0).
 2014-01-11: v1.3
 	- [verup] v1.3
 	- [improve] provide '<NOP>" special action to disable default keymap.

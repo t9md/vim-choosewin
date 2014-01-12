@@ -1,5 +1,6 @@
-let s:FONT_HEIGHT_MAX = 10
-let s:FONT_WIDTH_MAX  = 16
+let s:FONT_MAX = {}
+let s:FONT_MAX.large = { 'width': 16, 'height': 10 }
+let s:FONT_MAX.small = { 'width':  5, 'height': 8 }
 
 let s:vim_options_global = {
       \ '&scrolloff':  0,
@@ -121,13 +122,15 @@ endfunction
 let s:overlay = {}
 
 function! s:overlay.init() "{{{1
-  let self.hlter       = choosewin#highlighter#get()
-  let self._font_table = choosewin#font#table()
+  let self.hlter             = choosewin#highlighter#get()
+  let self._font_table       = {}
+  let self._font_table.large = choosewin#font#large()
+  let self._font_table.small = choosewin#font#small()
   let self.color       = self.hlter.color
 endfunction
 
 function! s:overlay._fill_space(lines, width) "{{{1
-  let width = (a:width + s:FONT_WIDTH_MAX) / 2
+  let width = (a:width + s:FONT_MAX.large.width) / 2
   for line in a:lines
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
@@ -150,16 +153,21 @@ function! s:overlay.setup_winvar() "{{{1
     let wv.options  = s:window_options_set(winnr, s:vim_options_window)
     let wv['w0']    = line('w0')
     let wv['w$']    = line('w$')
-    let font        = self.next_font()
-    let wv.font     = font
+    let wh = winheight(0)
 
-    let line_middle = wv['w0'] + winheight(0)/2 - 1
-    let line_s      = max([line_middle + 3 - s:FONT_HEIGHT_MAX/2, 0])
+    let font_size = self.conf['overlay_font_size']
+    if font_size ==# 'auto'
+      let font_size = winheight(0) > s:FONT_MAX.large.height ? 'large' : 'small'
+    endif
+
+    let font        = self.next_font(font_size)
+    let wv.font     = font
+    let line_s      = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
     let line_e      = line_s + font.height - 1
-    let col         = (winwidth(0) - s:FONT_WIDTH_MAX)/2
+    let col         = (winwidth(0) - s:FONT_MAX[font_size].width)/2
 
     let wv.matchids = []
-    let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.height))
+    let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
 
     let w:choosewin = wv
 
@@ -284,8 +292,8 @@ function! s:overlay.hl_shade_trailingWS() "{{{1
         \ matchadd(self.color.Shade, '\s\+$', self.conf['overlay_shade_priority']))
 endfunction
 
-function! s:overlay.next_font() "{{{1
-  let font = self._font_table[self.captions[self.font_idx]]
+function! s:overlay.next_font(size) "{{{1
+  let font = self._font_table[a:size][self.captions[self.font_idx]]
   let self.font_idx += 1
   return font
 endfunction
@@ -298,7 +306,7 @@ function! s:overlay.hl_label(is_current) "{{{1
   call add(w:choosewin.matchids, mid)
 endfunction
 
-function! s:vars(pos, height) "{{{1
+function! s:vars(pos, width, height) "{{{1
   let line = a:pos[0]
   let col  = a:pos[1]
   let R    = { 'line': line, 'col': col }
@@ -307,7 +315,7 @@ function! s:vars(pos, height) "{{{1
     let R['line+' . line_offset] = line + line_offset
   endfor
 
-  for col_offset in range(0, s:FONT_WIDTH_MAX)
+  for col_offset in range(0, a:width)
     let R['col+' . col_offset] = col + col_offset
   endfor
   return R

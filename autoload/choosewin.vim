@@ -226,6 +226,7 @@ function! s:cw.config() "{{{1
         \ 'statusline_replace':        g:choosewin_statusline_replace,
         \ 'tabline_replace':           g:choosewin_tabline_replace,
         \ 'overlay_enable':            g:choosewin_overlay_enable,
+        \ 'overlay_font_size':         g:choosewin_overlay_font_size,
         \ 'overlay_shade':             g:choosewin_overlay_shade,
         \ 'overlay_shade_priority':    g:choosewin_overlay_shade_priority,
         \ 'overlay_label_priority':    g:choosewin_overlay_label_priority,

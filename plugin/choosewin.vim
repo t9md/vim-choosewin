@@ -14,6 +14,7 @@ let s:options = {
       \ 'g:choosewin_statusline_replace': 1,
       \ 'g:choosewin_tabline_replace': 1,
       \ 'g:choosewin_land_char': ';',
+      \ 'g:choosewin_overlay_font_size': 'auto',
       \ 'g:choosewin_overlay_enable': 0,
       \ 'g:choosewin_overlay_shade': 0,
       \ 'g:choosewin_overlay_shade_priority': 100,
