@@ -1,6 +1,6 @@
 # アニメーションGIF
 
-![Movie](http://gifzo.net/YAymLEsrhf.gif)
+![Movie](http://gifzo.net/1A8QMzrbRp.gif)
 
 # 選択したウィンドウに移動
 tmux の `display-pane` 機能を模倣しようと思い、作りました。  
