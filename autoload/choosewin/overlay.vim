@@ -1,5 +1,5 @@
-let s:FONT_HEIGHT = 10
-let s:FONT_WIDTH  = 16
+let s:FONT_HEIGHT_MAX = 10
+let s:FONT_WIDTH_MAX  = 16
 
 let s:vim_options_global = {
       \ '&scrolloff':  0,
@@ -127,12 +127,11 @@ function! s:overlay.init() "{{{1
 endfunction
 
 function! s:overlay._fill_space(lines, width) "{{{1
-  let width = (a:width + s:FONT_WIDTH) / 2
+  let width = (a:width + s:FONT_WIDTH_MAX) / 2
   for line in a:lines
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
-      " let [line_new, col] = s:mb_fill_space(line_s, (a:width - s:FONT_WIDTH)/2 , width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
       let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
@@ -145,23 +144,27 @@ function! s:overlay.setup_winvar() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
 
-    let wv            = {}
-    let wv.winview    = winsaveview()
-    let wv.options    = s:window_options_set(winnr, s:vim_options_window)
-    let wv['w0']      = line('w0')
-    let wv['w$']      = line('w$')
-    let wv.pos_org    = getpos('.')
-    let line_middle   = wv['w0'] + winheight(0)/2 - 1
-    let line_s        = max([line_middle + 3 - s:FONT_HEIGHT/2, 0])
-    let line_e        = line_s + s:FONT_HEIGHT - 1
-    let col           = (winwidth(0) - s:FONT_WIDTH)/2
-    let wv.pos_render = [ line_s, col ]
-    let wv.matchids   = []
-    let w:choosewin   = wv
+    let wv          = {}
+    let wv.pos_org  = getpos('.')
+    let wv.winview  = winsaveview()
+    let wv.options  = s:window_options_set(winnr, s:vim_options_window)
+    let wv['w0']    = line('w0')
+    let wv['w$']    = line('w$')
+    let font        = self.next_font()
+    let wv.font     = font
 
-    let b:choosewin.rendering_area += range(line_s, line_e)
-    let b:choosewin.winwidth       += [winwidth(0)]
-    let b:choosewin.append_EOF     += [line_e - wv['w$']]
+    let line_middle = wv['w0'] + winheight(0)/2 - 1
+    let line_s      = max([line_middle + 3 - s:FONT_HEIGHT_MAX/2, 0])
+    let line_e      = line_s + font.height - 1
+    let col         = (winwidth(0) - s:FONT_WIDTH_MAX)/2
+
+    let wv.matchids = []
+    let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.height))
+
+    let w:choosewin = wv
+
+    let b:choosewin.render_lines += range(line_s, line_e)
+    let b:choosewin.winwidth     += [winwidth(0)]
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
@@ -177,9 +180,8 @@ function! s:overlay.setup(wins, conf) "{{{1
 
   for bufnr in self.bufs
     call setbufvar(bufnr, 'choosewin', {
-          \ 'rendering_area': [],
+          \ 'render_lines': [],
           \ 'winwidth':       [],
-          \ 'append_EOF':     [0],
           \ 'options':        {},
           \ 'undofile':       tempname()
           \ })
@@ -194,9 +196,10 @@ function! s:overlay.setup_buffer()
     let b:choosewin.options = s:buffer_options_set(bufnr, s:vim_options_buffer)
     call s:undobreak()
 
-    call append(line('$'), map(range(max(b:choosewin.append_EOF)), '""'))
-    call self._fill_space(s:uniq(b:choosewin.rendering_area),
-          \ max(b:choosewin.winwidth))
+    let render_lines = s:uniq(b:choosewin.render_lines)
+    let append         = max([max(render_lines) - line('$'), 0 ])
+    call append(line('$'), map(range(append), '""'))
+    call self._fill_space(render_lines, max(b:choosewin.winwidth))
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
@@ -281,26 +284,30 @@ function! s:overlay.hl_shade_trailingWS() "{{{1
         \ matchadd(self.color.Shade, '\s\+$', self.conf['overlay_shade_priority']))
 endfunction
 
-function! s:overlay.hl_label(is_current) "{{{1
+function! s:overlay.next_font() "{{{1
   let font = self._font_table[self.captions[self.font_idx]]
   let self.font_idx += 1
+  return font
+endfunction
+
+function! s:overlay.hl_label(is_current) "{{{1
   let mid = matchadd(
         \ self.color[ a:is_current ? 'OverlayCurrent': 'Overlay' ],
-        \ s:intrpl(font.pattern, s:vars(w:choosewin.pos_render)),
+        \ w:choosewin.pattern,
         \ self.conf['overlay_label_priority'])
   call add(w:choosewin.matchids, mid)
 endfunction
 
-function! s:vars(pos) "{{{1
+function! s:vars(pos, height) "{{{1
   let line = a:pos[0]
   let col  = a:pos[1]
   let R    = { 'line': line, 'col': col }
 
-  for line_offset in range(0, s:FONT_HEIGHT)
+  for line_offset in range(0, a:height - 1)
     let R['line+' . line_offset] = line + line_offset
   endfor
 
-  for col_offset in range(0, s:FONT_WIDTH)
+  for col_offset in range(0, s:FONT_WIDTH_MAX)
     let R['col+' . col_offset] = col + col_offset
   endfor
   return R

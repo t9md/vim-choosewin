@@ -56,9 +56,9 @@ endfunction
 let s:font = {}
 function! s:font.new(char, data) "{{{1
   let self._data   = a:data
-  let self.height  = len(self._data)
+  " let self.height  = len(self._data)
   let self.width   = len(self._data[0])
-  let self.pattern = self._pattern()
+  let [ self.height, self.pattern ] = self._parse()
   return deepcopy(self)
 endfunction
 
@@ -89,6 +89,7 @@ function! s:font._parse_old() "{{{1
 endfunction
 
 function! s:font._parse() "{{{1
+  let height = 0
   let R = []
   for idx in range(0, len(self._data) - 1)
     let indexes = s:scan_match(self._data[idx], '\$')
@@ -105,16 +106,17 @@ function! s:font._parse() "{{{1
         let s .= line_anchor . '%{col+' . cc . '}c.'
       endif
       let lc = cc
+      let height = idx + 1
     endfor
     call add(R, s)
   endfor
-  call filter(R, '!empty(v:val)')
-  return R
+  let pattern = '\v' . join(filter(R, '!empty(v:val)') , '|')
+  return [ height, pattern ]
 endfunction
 
-function! s:font._pattern() "{{{1
-  return '\v' . join(self._parse(), '|')
-endfunction
+" function! s:font._pattern() "{{{1
+  " return '\v' . join(self._parse(), '|')
+" endfunction
 
 function! s:font._pattern_old() "{{{1
   return '\v' . join(self._parse_old(), '|')
@@ -136,14 +138,17 @@ function! choosewin#font#table() "{{{1
   return s:table.init()._table
 endfunction
 "}}}
+
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
+
 " let font_table = choosewin#font#table()
 let s:font_height       = 10
 let s:font_width        = 16
 let s:hl_shade_priority = 100
 let s:hl_label_priority = 101
+
 function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
@@ -171,10 +176,11 @@ function! Test() "{{{1
   let font_table = choosewin#font#table()
 
   let vars = s:vars([1,1])
-  for n in range(500)
-    for font in font_list
-      let pattern = font_table[font].pattern_old
-      call s:overlay(pattern, vars)
+  for n in range(1)
+    for char in font_list
+      " let pattern = font_table[char].pattern
+      echo string([ char, font_table[char].height ])
+      " call s:overlay(pattern, vars)
     endfor
   endfor
   echo reltimestr(reltime(start))
@@ -190,6 +196,7 @@ function! s:overlay(pattern, vars) "{{{1
   call matchdelete(matchadd('Search',
         \ s:intrpl(a:pattern, a:vars)))
 endfunction
-" command! Test call Test()
+"}}}
+command! Test call Test()
 "}}}
 " vim: foldmethod=marker
