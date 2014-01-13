@@ -138,7 +138,7 @@ function! s:overlay._fill_space(lines, width) "{{{1
       let line_new = repeat(' ', width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
-      let line_new .= repeat(' ' ,max([ width - len(line_new), 0 ]))
+      let line_new .= repeat(' ' , max([ width - len(line_new), 0 ]))
     endif
     call setline(line, line_new)
   endfor
@@ -165,7 +165,7 @@ function! s:overlay.setup_winvar() "{{{1
     let wv.font     = font
     let line_s      = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
     let line_e      = line_s + font.height - 1
-    let col         = (winwidth(0) - s:FONT_MAX[font_size].width)/2
+    let col         = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
 
     let wv.matchids = []
     let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
