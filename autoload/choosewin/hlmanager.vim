@@ -3,13 +3,6 @@ let s:TYPE_DICTIONARY = type({})
 let s:TYPE_NUMBER     = type(0)
 let s:GUI = has("gui_running") 
 
-function! s:ensure(expr, exception) "{{{1
-  if !a:expr
-    throw a:exception
-  endif
-endfunction
-"}}}
-
 let s:hlmgr = {}
 function! s:hlmgr.init(prefix) "{{{1
   let self._store  = {}
@@ -68,7 +61,6 @@ function! s:hlmgr.hl_defstr(color) "{{{1
   " return 'guibg=DarkGreen gui=bold' (Type: String)
   let R = []
   let screen = s:GUI ? 'gui' : 'cterm'
-  " let screen =  'cterm'
 
   let color = a:color[screen]
   "[NOTE] empty() is not appropriate, cterm color is specified with number
