@@ -21,9 +21,9 @@ let s:options = {
       \ 'g:choosewin_overlay_label_priority': 101,
       \ 'g:choosewin_overlay_clear_multibyte': 0,
       \ 'g:choosewin_label_align':   'center',
-      \ 'g:choosewin_label_padding': 3,
-      \ 'g:choosewin_label_fill':    0,
-      \ 'g:choosewin_color_label':
+      \ 'g:choosewin_label_padding': 3,   
+      \ 'g:choosewin_label_fill':    0,   
+      \ 'g:choosewin_color_label':        
       \      { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
       \ 'g:choosewin_color_label_current':
       \      { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
