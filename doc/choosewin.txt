@@ -374,6 +374,11 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-01-15:
+	- [new] add 'noop' option for api-only call
+	- [new] add hook feature for filter_window before label_show()
+	- [new] g:choosewin_active auto set variable intended within
+	  &statuline plugin(such as disabling trailing space warning).
 2014-01-12:
 	- [improve] disble cursorline while overlay
 	- [new-feature] now support 'small' font for overlay and configurable
