@@ -1,6 +1,7 @@
 " Constant:
 let s:NOT_FOUND       = -1
-let s:TYPE_DICTIONARY = type({})
+let s:TYPE_FUNCTION   = 2
+let s:TYPE_DICTIONARY = 4
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -234,6 +235,9 @@ function! s:cw.config() "{{{1
         \ 'label':                     g:choosewin_label,
         \ 'keymap':                    g:choosewin_keymap,
         \ 'tablabel':                  g:choosewin_tablabel,
+        \ 'hook':                      g:choosewin_hook,
+        \ 'hook_enable':               g:choosewin_hook_enable,
+        \ 'hook_bypass':               g:choosewin_hook_bypass,
         \ 'auto_choose':               0,
         \ 'noop':                      0,
         \ }
@@ -334,8 +338,28 @@ function! s:cw.valid_winnums(winnums) "{{{1
   return filter(copy(a:winnums), ' index(self.win_all(), v:val) != -1 ')
 endfunction
 
+function! s:cw.call_hook(hook_point, arg) "{{{1
+  if !self.conf['hook_enable']
+        \ || index(self.conf['hook_bypass'], a:hook_point ) !=# -1
+    return a:arg
+  endif
+  let HOOK = get(self.conf['hook'], a:hook_point, 0)
+  if type(HOOK) is s:TYPE_FUNCTION
+    return call(HOOK, [a:arg], {})
+  else
+    return a:arg
+  endif
+endfunction
+
 function! s:cw.label_show(winnums, winlabel) "{{{1
-  let winnums = a:winnums[ : len(a:winlabel) - 1 ]
+  try
+    " don't copy(a:winnums) intentionally for performance
+    let winnums = self.call_hook('filter_window', a:winnums)
+  catch
+    let winnums = a:winnums
+  endtry
+  let winnums = winnums[ : len(a:winlabel) - 1 ]
+
   call self.winlabel_init(winnums, a:winlabel)
 
   if self.conf['statusline_replace']
@@ -391,6 +415,7 @@ function! s:cw.start(winnums, ...) "{{{1
   let winnums    = self.valid_winnums(a:winnums)
 
   try
+    call self.state_update(1)
     call self.init()
     call self.first_path(winnums)
 
@@ -403,8 +428,16 @@ function! s:cw.start(winnums, ...) "{{{1
     let self.exception = v:exception
   finally
     call self.finish()
+    call self.state_update(0)
     return self.last_status()
   endtry
+endfunction
+
+function! s:cw.state_update(state) "{{{1
+  " for statusline plugin
+  let g:choosewin_active = a:state
+  " let &readonly = &readonly
+  " redraw
 endfunction
 
 function! s:cw.message() "{{{1

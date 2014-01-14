@@ -223,6 +223,49 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Highlight priority value, this value passed to matchadd() at overlay.
 
+*g:choosewin_hook_enable*
+	Default: 0
+	Type: |Number|
+	Value: 0 or 1
+
+	Need to set 1 if you want to use hook.
+
+*g:choosewin_hook_bypass*
+	Default: []
+	Type: |List|
+	Value: |List| of {hook_point}
+
+	See |choosewin-hook_point| for {hook_point}
+
+*g:choosewin_hook*
+	Default: {}
+	Type: |Dictionary|
+	Values: { '{hookpoint}': {funcref}, ... }
+
+	Used to hook at specific point.
+
+							*choosewin-hook_point*
+Available Hook Point~
+
+- filter_window~
+	Args: {winnums}
+	Type: |List|
+	Return: {winnums}
+
+	{winnums}:
+		|List| of window number which is subject to choosed by user.
+
+	[Exeample]: show label for specific window  >
+
+	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+
+	let g:choosewin_hook = {}
+	function! g:choosewin_hook.filter_window(winnums)
+	  return filter(a:winnums,
+		\ 'index(s:ignore_filtype,
+		\   getwinvar(v:val, "&filetype")) == -1' )
+	endfunction
+
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
@@ -272,16 +315,15 @@ choosewin#start({winnum-list}, [ {config} ] )
 	let wins = range(1,winnr('$'))
 	call choosewin#start(
 	      \ filter(wins, '!s:is_ignore_window(v:val)'),
-	      \ { 'auto_choose': 1 }
+	      \ { 'auto_choose': 1, 'hook_enable': 0 }
 	      \ )
 <
 	[Exeample]: noop usage
 	let choice = choosewin#start(winnums, { 'noop': 1, 'auto_choose': 1 })
 	if !empty(choice)
-	  let tab = choice[0]
-	  let win = choice[1]
+	  let [tab, win] = choice
 	  execute 'tabnext' tab
-	  execute win 'wincmd w
+	  execute win 'wincmd w'
 	endif
 
 						  *choosewin#config()*
