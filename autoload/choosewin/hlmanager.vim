@@ -1,7 +1,7 @@
 let s:TYPE_STRING     = type('')
 let s:TYPE_DICTIONARY = type({})
 let s:TYPE_NUMBER     = type(0)
-let s:GUI = has("gui_running") 
+let s:GUI = has("gui_running")
 
 let s:hlmgr = {}
 function! s:hlmgr.init(prefix) "{{{1
