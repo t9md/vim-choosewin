@@ -57,11 +57,6 @@ endfunction
 function! s:str_split(str) "{{{1
   return split(a:str, '\zs')
 endfunction
-
-function! s:goto_tabwin(tabnum, winnum) "{{{1
-  silent execute 'tabnext ' a:tabnum
-  silent execute a:winnum 'wincmd w'
-endfunction
 "}}}
 
 " Main:
@@ -240,6 +235,7 @@ function! s:cw.config() "{{{1
         \ 'keymap':                    g:choosewin_keymap,
         \ 'tablabel':                  g:choosewin_tablabel,
         \ 'auto_choose':               0,
+        \ 'noop':                      0,
         \ }
 endfunction
 
@@ -248,9 +244,13 @@ function! s:cw.tab_choose(num) "{{{1
   let self.env.tab.cur = a:num
 endfunction
 
-function! s:cw.win_choose(num) "{{{1
-  silent execute a:num 'wincmd w'
+function! s:cw.win_choose(num, ...) "{{{1
   let self.env.win.cur = a:num
+  let noop = get(a:000, 0)
+  if noop
+    return
+  endif
+  silent execute a:num 'wincmd w'
 endfunction
 
 function! s:cw.choose(winnum, winlabel) "{{{1
@@ -310,7 +310,7 @@ function! s:cw.get_action(input) "{{{1
 endfunction
 
 function! s:cw.land_win(winnum) "{{{1
-  silent execute a:winnum 'wincmd w'
+  call self.win_choose(a:winnum, self.conf['noop'])
   call self.blink_cword()
 endfunction
 "}}}
@@ -325,7 +325,7 @@ function! s:cw.last_status() "{{{1
     if self.exception =~# 'CANCELED\|RETURN'
       return []
     else
-      return [ tabpagenr(), winnr() ]
+      return [ self.env.tab.cur, self.env.win.cur ]
     endif
   endif
 endfunction
@@ -385,22 +385,7 @@ function! s:cw.first_path(winnums) "{{{1
 endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
-  " care backward compatibility "{{{
-  let arg_1st = get(a:000, 0, {})
-  let arg_2nd = get(a:000, 1, '')
-
-  if type(arg_1st) is s:TYPE_DICTIONARY
-    let config = arg_1st
-  else
-    " old api call
-    let config = { 'auto_choose': arg_1st }
-    if !empty(arg_2nd)
-      let config.label = arg_2nd
-    endif
-    echoerr 'Choosewin: you use old api, help "choosein#start()" for new api-call'
-  endif "}}}
-
-  let self.conf  = extend(self.config(), config, 'force')
+  let self.conf  = extend(self.config(), get(a:000, 0, {}), 'force')
   let self.hlter = choosewin#highlighter#get()
   let self.color = self.hlter.color
   let winnums    = self.valid_winnums(a:winnums)
@@ -417,7 +402,6 @@ function! s:cw.start(winnums, ...) "{{{1
   catch
     let self.exception = v:exception
   finally
-
     call self.finish()
     return self.last_status()
   endtry
@@ -433,6 +417,9 @@ endfunction
 function! s:cw.finish() "{{{1
   call self.tab_restore()
   echo '' | redraw
+  if self.conf['noop'] && self.env.tab.cur !=# self.env_orig.tab.cur
+    silent execute 'tabnext ' self.env_orig.tab.cur
+  endif
   if !empty(self.win_dest)
     call self.land_win(self.win_dest)
   endif

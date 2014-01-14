@@ -253,6 +253,11 @@ choosewin#start({winnum-list}, [ {config} ] )
 		Set 1 to automatically choose window when candidate window is
 		only one.
 
+	noop:
+		Type: |Number|
+		Value: 0 or 1
+		Set 1 don't execute window change, but return last status of
+		user's choice.
 
 	[Exeample]: show label for specific window  >
 	" win3 => d, win4 => e, char 'f' is silently ignored.
@@ -270,6 +275,14 @@ choosewin#start({winnum-list}, [ {config} ] )
 	      \ { 'auto_choose': 1 }
 	      \ )
 <
+	[Exeample]: noop usage
+	let choice = choosewin#start(winnums, { 'noop': 1, 'auto_choose': 1 })
+	if !empty(choice)
+	  let tab = choice[0]
+	  let win = choice[1]
+	  execute 'tabnext' tab
+	  execute win 'wincmd w
+	endif
 
 						  *choosewin#config()*
 choosewin#config()
