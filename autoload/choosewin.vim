@@ -366,7 +366,7 @@ function! s:cw.label_show(winnums, winlabel) "{{{1
     call self.statusline_replace(winnums)
   endif
   if self.conf['overlay_enable']
-    call self.overlay.overlay(winnums, self.conf)
+    call self.overlay.render(winnums, self.conf)
   endif
   redraw
 endfunction

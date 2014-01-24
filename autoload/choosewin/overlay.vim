@@ -224,7 +224,7 @@ function! s:overlay.show_label() "{{{1
   redraw
 endfunction
 
-function! s:overlay.overlay(wins, label) "{{{1
+function! s:overlay.render(wins, label) "{{{1
   call self.setup(a:wins, a:label)
   call self.setup_winvar()
   call self.setup_buffer()
@@ -327,10 +327,6 @@ function! s:overlay.get() "{{{1
     call s:overlay.init()
   endif
   return self
-endfunction
-
-function! choosewin#overlay#overlay(...) "{{{1
-  call call(s:overlay.overlay, a:000, s:overlay)
 endfunction
 
 function! choosewin#overlay#get() "{{{1
