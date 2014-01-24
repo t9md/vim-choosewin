@@ -1,6 +1,6 @@
 let s:FONT_MAX = {}
+let s:FONT_MAX.small = { 'width':  5, 'height':  8 }
 let s:FONT_MAX.large = { 'width': 16, 'height': 10 }
-let s:FONT_MAX.small = { 'width':  5, 'height': 8 }
 
 let s:vim_options_global = {
       \ '&cursorline': 0,
@@ -190,9 +190,9 @@ function! s:overlay.setup(wins, conf) "{{{1
   for bufnr in self.bufs
     call setbufvar(bufnr, 'choosewin', {
           \ 'render_lines': [],
-          \ 'winwidth':       [],
-          \ 'options':        {},
-          \ 'undofile':       tempname()
+          \ 'winwidth':     [],
+          \ 'options':      {},
+          \ 'undofile':     tempname(),
           \ })
   endfor
 endfunction
