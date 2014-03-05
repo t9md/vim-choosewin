@@ -104,7 +104,7 @@ VARIABLES						*choowsewin-variables*
 	Default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	Type: |String|
 
-	[CAUNTION] You need to manage to avoid conflict to
+	[CAUTION] You need to manage to avoid conflict to
 	|g:choosewin_tablabel| or you can't choose label you want.
 
 	[NOTE] choosewin ignore case you input so that you don't need to
