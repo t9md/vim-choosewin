@@ -29,11 +29,12 @@ resolution wide display.
 Since with wide display, you are likely to open multiple window and
 moving around window is a little bit tiresome.
 
-This plugin make window excursion simplify.
 
-	1. display window label on statusbar
-	2. read input from user
-	3. you can land window you choose
+This plugin simplifies window excursion.
+
+	1. Display window label on statusbar.
+	2. Read input from user.
+	3. You can land window you choose.
 
 ==============================================================================
 MAPPINGS					*choowsewin-mappings*
@@ -111,7 +112,7 @@ VARIABLES						*choowsewin-variables*
 	press Shift. This is for show label with upper case to standout and
 	choose label with minimal key stroke.
 
-	Exeample~
+	Example~
 >
 	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 <
@@ -145,7 +146,7 @@ VARIABLES						*choowsewin-variables*
 
 	Customization example~
 >
-	let g:choosewin_keymap   = {}         " initialize as Dictonary
+	let g:choosewin_keymap   = {}         " initialize as Dictionary
 	let g:choosewin_keymap.m = 'win_land' " land with 'm'
 	let g:choosewin_keymap.0 = '<NOP>'    " disable default 0 keybind
 <
@@ -157,7 +158,7 @@ VARIABLES						*choowsewin-variables*
 *g:choosewin_label_padding*
 	Default: 3
 	Type: |Number|
-	Controll padding concatanated around window label.
+	Control padding concatenated around window label.
 
 *g:choosewin_label_fill*
 	Default: 0
@@ -174,7 +175,7 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable overlay window caption.
 
-	Limintaion~
+	Limitation~
 	Not work properly in following situation.
 		- buffer includes multibyte characters
 		  You can use |g:choosewin_overlay_clear_multibyte| as
@@ -253,9 +254,9 @@ Available Hook Point~
 	Return: {winnums}
 
 	{winnums}:
-		|List| of window number which is subject to choosed by user.
+		|List| of window number which is subject to chose by user.
 
-	[Exeample]: show label for specific window  >
+	[Example]: show label for specific window  >
 
 	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
 
@@ -287,8 +288,8 @@ choosewin#start({winnum-list}, [ {config} ] )
 		See |choosewin#config()|.
 
 	Api-only parameters~
-	following config parameter is not provided as global
-	configuration variable. so need to mention here.
+	Following config parameter is not provided as global
+	configuration variable. So need to mention here.
 
 	auto_choose:
 		Type: |Number|
@@ -302,11 +303,11 @@ choosewin#start({winnum-list}, [ {config} ] )
 		Set 1 don't execute window change, but return last status of
 		user's choice.
 
-	[Exeample]: show label for specific window  >
+	[Example]: show label for specific window  >
 	" win3 => d, win4 => e, char 'f' is silently ignored.
 	call choosewin#start([3,4], { 'label': 'def' })
 <
-	[Exeample]: automatically choose if candidate window is one. >
+	[Example]: automatically choose if candidate window is one. >
 	function! s:is_ignore_window(winnr)
 	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
 	  return index(ignore_filtype, getbufvar(winbufnr(a:winnr), "&filetype")) != -1
@@ -318,7 +319,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 	      \ { 'auto_choose': 1, 'hook_enable': 0 }
 	      \ )
 <
-	[Exeample]: noop usage
+	[Example]: noop usage
 	let choice = choosewin#start(winnums, { 'noop': 1, 'auto_choose': 1 })
 	if !empty(choice)
 	  let [tab, win] = choice
@@ -329,7 +330,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 						  *choosewin#config()*
 choosewin#config()
 	Return: |Dictionary|
-	You can check inital configuration set used by choosewin.
+	You can check initial configuration set used by choosewin.
 	Initial means configuration at each choosewin start, 'not default',
 	its respect your customization through global variable.
 
