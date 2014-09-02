@@ -40,6 +40,10 @@ This plugin simplifies window excursion.
 MAPPINGS					*choowsewin-mappings*
 
 <Plug>(choosewin)
+	land to window you chose
+
+<Plug>(choosewin-swap)
+	swap current buffer with the buffer of window you chose.
 
 ==============================================================================
 COMMANDS						*choowsewin-commands*
@@ -340,6 +344,9 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 	" invoke with '-'
 	nmap  -  <Plug>(choosewin)
 
+	" swap buffer with '='
+	nnoremap = <Plug>(choosewin-swap)
+
 	" use overlay feature
 	let g:choosewin_overlay_enable = 1
 
@@ -375,6 +382,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-09-02:
+	- [new] introduce <Plug>(choosewin-swap) feature.
 2014-01-15:
 	- [new] add 'noop' option for api-only call
 	- [new] add hook feature for filter_window before label_show()

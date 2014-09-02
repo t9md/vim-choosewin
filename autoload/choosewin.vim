@@ -182,7 +182,7 @@ function! s:cw.init() "{{{1
   let self.statusline      = {}
   let self.tablabel        = self.conf['tablabel']
   let self._tablabel_split = s:str_split(self.tablabel)
-  let self.tab_options         = {}
+  let self.tab_options     = {}
   let self.win_dest        = ''
   let self.env             = self.get_env()
   let self.env_orig        = deepcopy(self.env)
@@ -316,6 +316,24 @@ endfunction
 function! s:cw.land_win(winnum) "{{{1
   call self.win_choose(a:winnum, self.conf['noop'])
   call self.blink_cword()
+endfunction
+
+function! s:cw.swap(...) "{{{1
+  " FIXME: very dirty hack using api but work '
+  let R = call(self.start, a:000, s:cw)
+  if empty(R) | return | endif
+
+  " save current
+  let buf_cur = bufnr('')
+  let [tab_dst, win_dst] = R
+  silent execute 'tabnext ' tab_dst
+  silent execute win_dst 'wincmd w'
+  let buf_dst = winbufnr('')
+  execute 'hide buffer' buf_cur
+
+  silent execute 'tabnext ' self.env_orig.tab.cur
+  silent execute self.env_orig.win.cur 'wincmd w'
+  execute 'hide buffer' buf_dst
 endfunction
 "}}}
 
@@ -461,6 +479,10 @@ endfunction
 
 function! choosewin#start(...) "{{{1
   return call(s:cw.start, a:000, s:cw)
+endfunction
+
+function! choosewin#swap(...) "{{{1
+  return call(s:cw.swap, a:000, s:cw)
 endfunction
 
 function! choosewin#tabline() "{{{1
