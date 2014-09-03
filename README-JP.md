@@ -16,7 +16,11 @@ tmux の `display-pane` 機能を模倣しようと思い、作りました。
 
 設定例
 ```Vim
+" invoke with '-'
 nmap  -  <Plug>(choosewin)
+
+" swap buffer with '='
+nmap = <Plug>(choosewin-swap)
 ```
 
 追加的な設定項目

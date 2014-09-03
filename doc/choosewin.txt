@@ -345,7 +345,7 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 	nmap  -  <Plug>(choosewin)
 
 	" swap buffer with '='
-	nnoremap = <Plug>(choosewin-swap)
+	nmap = <Plug>(choosewin-swap)
 
 	" use overlay feature
 	let g:choosewin_overlay_enable = 1

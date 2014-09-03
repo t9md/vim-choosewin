@@ -24,8 +24,12 @@ This plugin simplifies window excursion.
 Example configuration:
 
 
-```vim
+```Vim
+" invoke with '-'
 nmap  -  <Plug>(choosewin)
+
+" swap buffer with '='
+nmap = <Plug>(choosewin-swap)
 ```
 
 
