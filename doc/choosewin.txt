@@ -45,6 +45,9 @@ MAPPINGS					*choowsewin-mappings*
 <Plug>(choosewin-swap)
 	swap current buffer with the buffer of window you chose.
 
+<Plug>(choosewin-swap-again)
+	swap current buffer with the buffer of window you chose last.
+
 ==============================================================================
 COMMANDS						*choowsewin-commands*
 
@@ -344,8 +347,11 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 	" invoke with '-'
 	nmap  -  <Plug>(choosewin)
 
-	" swap buffer with '='
-	nmap = <Plug>(choosewin-swap)
+	" swap buffer with '<D-s>'
+	nmap  <D-s> <Plug>(choosewin-swap)
+
+	" swap buffer with '<D-x>'
+	nmap  <D-x> <Plug>(choosewin-swap-again)
 
 	" use overlay feature
 	let g:choosewin_overlay_enable = 1
@@ -382,6 +388,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2014-09-05:
+	- [new] introduce <Plug>(choosewin-swap-again) feature.
 2014-09-02:
 	- [new] introduce <Plug>(choosewin-swap) feature.
 2014-01-15:

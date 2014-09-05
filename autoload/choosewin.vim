@@ -2,6 +2,7 @@
 let s:NOT_FOUND       = -1
 let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
+let s:choosewin_swap_last = []
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -318,22 +319,30 @@ function! s:cw.land_win(winnum) "{{{1
   call self.blink_cword()
 endfunction
 
-function! s:cw.swap(...) "{{{1
+function! s:cw.swap(dst) "{{{1
   " FIXME: very dirty hack using api but work '
-  let R = call(self.start, a:000, s:cw)
-  if empty(R) | return | endif
-
   " save current
   let buf_cur = bufnr('')
-  let [tab_dst, win_dst] = R
+  let win_cur = winnr()
+  let tab_cur = tabpagenr()
+
+  let [tab_dst, win_dst] = a:dst
   silent execute 'tabnext ' tab_dst
   silent execute win_dst 'wincmd w'
   let buf_dst = winbufnr('')
   execute 'hide buffer' buf_cur
 
-  silent execute 'tabnext ' self.env_orig.tab.cur
-  silent execute self.env_orig.win.cur 'wincmd w'
+  silent execute 'tabnext ' tab_cur
+  silent execute win_cur 'wincmd w'
   execute 'hide buffer' buf_dst
+endfunction
+
+function! s:cw.swap_again() "{{{1
+  if empty(s:choosewin_swap_last)
+    call s:msg('No previous swap')
+    return
+  endif
+  call self.swap(s:choosewin_swap_last)
 endfunction
 "}}}
 
@@ -482,7 +491,14 @@ function! choosewin#start(...) "{{{1
 endfunction
 
 function! choosewin#swap(...) "{{{1
-  return call(s:cw.swap, a:000, s:cw)
+  let R = call(s:cw.start, a:000, s:cw)
+  if empty(R) | return | endif
+  let s:choosewin_swap_last = R
+  call s:cw.swap(R)
+endfunction
+
+function! choosewin#swap_again() "{{{1
+  call s:cw.swap_again()
 endfunction
 
 function! choosewin#tabline() "{{{1

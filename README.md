@@ -28,8 +28,11 @@ Example configuration:
 " invoke with '-'
 nmap  -  <Plug>(choosewin)
 
-" swap buffer with '='
-nmap = <Plug>(choosewin-swap)
+" swap buffer with '<D-s>'
+nmap  <D-s> <Plug>(choosewin-swap)
+
+" swap buffer with '<D-x>'
+nmap  <D-x> <Plug>(choosewin-swap-again)
 ```
 
 

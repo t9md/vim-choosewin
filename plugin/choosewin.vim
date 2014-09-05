@@ -72,6 +72,9 @@ nnoremap <silent> <Plug>(choosewin)
 nnoremap <silent> <Plug>(choosewin-swap)
       \ :<C-u>call choosewin#swap(range(1, winnr('$')), {'noop': 1})<CR>
 
+nnoremap <silent> <Plug>(choosewin-swap-again)
+      \ :<C-u>call choosewin#swap_again()<CR>
+
 " Command:
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
 

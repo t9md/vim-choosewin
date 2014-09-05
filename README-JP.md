@@ -19,8 +19,11 @@ tmux の `display-pane` 機能を模倣しようと思い、作りました。
 " invoke with '-'
 nmap  -  <Plug>(choosewin)
 
-" swap buffer with '='
-nmap = <Plug>(choosewin-swap)
+" swap buffer with '<D-s>'
+nmap  <D-s> <Plug>(choosewin-swap)
+
+" swap buffer with '<D-x>'
+nmap  <D-x> <Plug>(choosewin-swap-again)
 ```
 
 追加的な設定項目
