@@ -3,6 +3,8 @@ let s:NOT_FOUND       = -1
 let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
 let s:choosewin_swap_last = []
+" let s:choosewin_win_prev  = []
+let g:choosewin_win_prev  = []
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -344,6 +346,20 @@ function! s:cw.swap_again() "{{{1
   endif
   call self.swap(s:choosewin_swap_last)
 endfunction
+
+function! s:cw.previous() "{{{1
+  " FIXME: very dirty hack but work
+  " ideally it should be implemented as keymap within chooswin invocation not
+  " vim's keymap
+  if empty(g:choosewin_win_prev)
+    call s:msg('No previous window')
+    return
+  endif
+  let [tab_dst, win_dst] = g:choosewin_win_prev
+  let g:choosewin_win_prev = [ tabpagenr(), winnr() ]
+  silent execute 'tabnext ' tab_dst
+  silent execute win_dst 'wincmd w'
+endfunction
 "}}}
 
 let s:vim_tab_options = {
@@ -483,6 +499,7 @@ function! s:cw.finish() "{{{1
   if !empty(self.win_dest)
     call self.land_win(self.win_dest)
   endif
+  let g:choosewin_win_prev  = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
   call self.message()
 endfunction
 
@@ -499,6 +516,10 @@ endfunction
 
 function! choosewin#swap_again() "{{{1
   call s:cw.swap_again()
+endfunction
+
+function! choosewin#previous() "{{{1
+  call s:cw.previous()
 endfunction
 
 function! choosewin#tabline() "{{{1

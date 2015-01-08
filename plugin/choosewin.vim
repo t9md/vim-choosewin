@@ -75,8 +75,12 @@ nnoremap <silent> <Plug>(choosewin-swap)
 nnoremap <silent> <Plug>(choosewin-swap-again)
       \ :<C-u>call choosewin#swap_again()<CR>
 
+nnoremap <silent> <Plug>(choosewin-prev)
+      \ :<C-u>call choosewin#previous()<CR>
+
 " Command:
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
+command! -bar ChooseWinPrevious call choosewin#previous()
 
 " Finish:
 let &cpo = s:old_cpo
