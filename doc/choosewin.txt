@@ -374,8 +374,6 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 ==============================================================================
 BUG							    *choowsewin-bug*
 
-Overlaid caption is not on middle of screen when first screen column is not 1
-
 ==============================================================================
 TODO							    *choowsewin-todo*
 
@@ -383,7 +381,7 @@ TODO							    *choowsewin-todo*
 [x] disable &lcs-trail adviced by manga-osyo
 [x] FIX API-specification
 [x] Distinguish original tab so that user never lost while traveling tab.
-[ ] consider offset for overlay when first colmun is not 1.
+[x] consider offset for overlay when first colmun is not 1.
 
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
@@ -395,6 +393,7 @@ CHANGELOG						*choowsewin-changelog*
 	- [new] create 'ChooseWinSwap' command, you don't necessarily need
 	  this command since you can choose 'swap' within standard 'Choosewin'
 	  command, simply sintax sugar.
+	- [improve] now overlay consider offset of |windowcol()|.
 2014-09-05:
 	- [new] introduce <Plug>(choosewin-swap-again) feature.
 2014-09-02:

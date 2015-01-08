@@ -112,11 +112,11 @@ function! s:mbstrpart(s, col) "{{{1
   return str
 endfunction
 
-function! s:mb_fill_space(str, col, width) "{{{1
-  let str = s:mbstrpart(a:str, a:col)
-  let pad = a:width - strdisplaywidth(str)
-  return [ str . repeat(' ', pad) , strlen(str)]
-endfunction
+" function! s:mb_fill_space(str, col, width) "{{{1
+  " let str = s:mbstrpart(a:str, a:col)
+  " let pad = a:width - strdisplaywidth(str)
+  " return [ str . repeat(' ', pad) , strlen(str)]
+" endfunction
 "}}}
 
 " Overlay:
@@ -130,8 +130,8 @@ function! s:overlay.init() "{{{1
   let self.color             = self.hlter.color
 endfunction
 
-function! s:overlay._fill_space(lines, width) "{{{1
-  let width = (a:width + s:FONT_MAX.large.width) / 2
+function! s:overlay._fill_space(lines, width, offset) "{{{1
+  let width = (a:width + s:FONT_MAX.large.width) / 2 + a:offset
   for line in a:lines
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
@@ -161,11 +161,13 @@ function! s:overlay.setup_winvar() "{{{1
       let font_size = winheight(0) > s:FONT_MAX.large.height ? 'large' : 'small'
     endif
 
-    let font        = self.next_font(font_size)
-    let wv.font     = font
-    let line_s      = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
-    let line_e      = line_s + font.height - 1
-    let col         = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
+    let font     = self.next_font(font_size)
+    let wv.font  = font
+    let line_s   = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
+    let line_e   = line_s + font.height - 1
+    let col      = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
+    let offset   = col('.') - wincol()
+    let col     += offset
 
     let wv.matchids = []
     let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
@@ -173,6 +175,7 @@ function! s:overlay.setup_winvar() "{{{1
     let w:choosewin = wv
 
     let b:choosewin.render_lines += range(line_s, line_e)
+    let b:choosewin.offset       += [offset]
     let b:choosewin.winwidth     += [winwidth(0)]
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
@@ -191,6 +194,7 @@ function! s:overlay.setup(wins, conf) "{{{1
     call setbufvar(bufnr, 'choosewin', {
           \ 'render_lines': [],
           \ 'winwidth':     [],
+          \ 'offset':       [],
           \ 'options':      {},
           \ 'undofile':     tempname(),
           \ })
@@ -208,7 +212,7 @@ function! s:overlay.setup_buffer()
     let render_lines = s:uniq(b:choosewin.render_lines)
     let append         = max([max(render_lines) - line('$'), 0 ])
     call append(line('$'), map(range(append), '""'))
-    call self._fill_space(render_lines, max(b:choosewin.winwidth))
+    call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
