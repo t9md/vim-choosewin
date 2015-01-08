@@ -21,23 +21,15 @@ This plugin simplifies window excursion.
   3. You can land window you choose.
 
 
-Example configuration:
+## Example configuration:
 
 
 ```Vim
 " invoke with '-'
 nmap  -  <Plug>(choosewin)
-
-" swap buffer with '<D-s>'
-nmap  <D-s> <Plug>(choosewin-swap)
-
-" swap buffer with '<D-x>'
-nmap  <D-x> <Plug>(choosewin-swap-again)
 ```
 
-
-Additional configuration:
-
+Optional configuration:
 
 ```vim
 " if you want to use overlay feature
@@ -49,3 +41,19 @@ let g:choosewin_overlay_clear_multibyte = 1
 
 More configuration is explained in help file. See `:help choosewin`.
 
+## Default keymap in choosewin mode
+
+| Key  | Action     | Description                   |
+| ---- | ---------- | ----------------------------- |
+| 0    | tab_first  | choose FIRST    tab           |
+| [    | tab_prev   | choose PREVIOUS tab           |
+| ]    | tab_next   | choose NEXT     tab           |
+| $    | tab_last   | choose LAST     tab           |
+| ;    | win_land   | land to current window        |
+| -    | previous   | land to previous window       |
+| s    | swap       | swap buffer with you chose *1 |
+| <CR> | win_land   | land to current window        |
+|      | <NOP>      | disable predefined keymap     |
+
+*1 if you chose 'swap' again, swapping with previous window's buffer
+ex) with default keymap, double 's'(ss) swap with previous buffer.
