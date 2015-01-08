@@ -136,16 +136,19 @@ VARIABLES						*choowsewin-variables*
 	Used to customize keymap while choosing.
 	Default keymap is below.
 
-	| Key  | Action     | Description                |
-	| ---- | ---------- | -------------------------- |
-	| 0    | tab_first  | choose FIRST    tab        |
-	| [    | tab_prev   | choose PREVIOUS tab        |
-	| ]    | tab_next   | choose NEXT     tab        |
-	| $    | tab_last   | choose LAST     tab        |
-	| ;    | win_land   | land to current window     |
-	| -    | previous   | land to previous window    |
-	| <CR> | win_land   | land to current window     |
-	|      | <NOP>      | disable predefined keymap  |
+	| Key  | Action     | Description                   |
+	| ---- | ---------- | ----------------------------- |
+	| 0    | tab_first  | choose FIRST    tab           |
+	| [    | tab_prev   | choose PREVIOUS tab           |
+	| ]    | tab_next   | choose NEXT     tab           |
+	| $    | tab_last   | choose LAST     tab           |
+	| ;    | win_land   | land to current window        |
+	| -    | previous   | land to previous window       |
+	| s    | swap       | swap buffer with you chose *1 |
+	| <CR> | win_land   | land to current window        |
+	|      | <NOP>      | disable predefined keymap     |
+	*1 if you chose 'swap' again, swapping with previous window's buffer
+	ex) with default keymap, double 's'(ss) swap with previous buffer.
 
 	Disabling default keymap~
 
@@ -348,12 +351,6 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 	" invoke with '-'
 	nmap  -  <Plug>(choosewin)
 
-	" swap buffer with '<D-s>'
-	nmap  <D-s> <Plug>(choosewin-swap)
-
-	" swap buffer with '<D-x>'
-	nmap  <D-x> <Plug>(choosewin-swap-again)
-
 	" use overlay feature
 	let g:choosewin_overlay_enable = 1
 
@@ -393,6 +390,11 @@ CHANGELOG						*choowsewin-changelog*
 
 2015-01-08:
 	- [new] land to previous window suggested by @collinpeters
+	- [enhance] remove swap virtual keymap, now its incorporate into
+	  keymap within choosewin.
+	- [new] create 'ChooseWinSwap' command, you don't necessarily need
+	  this command since you can choose 'swap' within standard 'Choosewin'
+	  command, simply sintax sugar.
 2014-09-05:
 	- [new] introduce <Plug>(choosewin-swap-again) feature.
 2014-09-02:

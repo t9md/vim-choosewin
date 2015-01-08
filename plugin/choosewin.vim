@@ -69,14 +69,10 @@ augroup END
 nnoremap <silent> <Plug>(choosewin)
       \ :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
 
-nnoremap <silent> <Plug>(choosewin-swap)
-      \ :<C-u>call choosewin#swap(range(1, winnr('$')), {'noop': 1})<CR>
-
-nnoremap <silent> <Plug>(choosewin-swap-again)
-      \ :<C-u>call choosewin#swap_again()<CR>
 
 " Command:
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
+command! -bar ChooseWinSwap call choosewin#start(range(1, winnr('$')), {'swap': 1})
 
 " Finish:
 let &cpo = s:old_cpo

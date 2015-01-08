@@ -2,7 +2,6 @@
 let s:NOT_FOUND       = -1
 let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
-let s:choosewin_swap_last = []
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -67,6 +66,7 @@ function! s:cw.get_env() "{{{1
   return {
         \ 'win': { 'cur': winnr(),     'all': self.win_all() },
         \ 'tab': { 'cur': tabpagenr(), 'all': self.tab_all() },
+        \ 'buf': { 'cur': bufnr('') },
         \ }
 endfunction
 
@@ -219,7 +219,8 @@ endfunction
 
 function! s:cw.read_input() "{{{1
   redraw
-  call self.prompt_show('choose > ')
+  let prompt = ( self.conf['swap'] ? '[swap] ' : '' ) . 'chooose > '
+  call self.prompt_show(prompt)
   return nr2char(getchar())
 endfunction
 
@@ -246,6 +247,7 @@ function! s:cw.config() "{{{1
         \ 'hook_bypass':               g:choosewin_hook_bypass,
         \ 'auto_choose':               0,
         \ 'noop':                      0,
+        \ 'swap':                      0,
         \ }
 endfunction
 
@@ -267,32 +269,36 @@ function! s:cw.choose(winnum, winlabel) "{{{1
   let [action, num] = self.get_action(self.read_input())
   call self.label_clear()
 
-  if action ==# 'tab'
-    call self.tab_choose(num)
-    call self.label_show(self.win_all(), a:winlabel)
-    return
-  elseif action ==# 'win'
-    let self.win_dest = num
-    throw 'CHOSE'
-  elseif action ==# 'previous'
-    if empty(self.previous)
-      throw 'NO_PREVIOUS_WINDOW'
+  while 1
+    if action ==# 'tab'
+      call self.tab_choose(num)
+      call self.label_show(self.win_all(), a:winlabel)
+      return
+    elseif action ==# 'win'
+      let self.win_dest = num
+      throw 'CHOSE'
+    elseif action ==# 'previous'
+      if empty(self.previous)
+        throw 'NO_PREVIOUS_WINDOW'
+      endif
+      let [ tab_dst, self.win_dest ] = self.previous
+      call self.tab_choose(tab_dst)
+      throw 'CHOSE'
+    elseif action ==# 'swap'
+      if !self.conf['swap']
+        let self.conf['swap'] = 1
+        call self.label_show(self.win_all(), a:winlabel)
+        return
+      else
+        let action = 'previous'
+        continue
+      endif
+    elseif action ==# 'cancel'
+      call self.tab_choose(self.env_orig.tab.cur)
+      call self.win_choose(self.env_orig.win.cur)
+      throw 'CANCELED'
     endif
-    let [ tab_dst, self.win_dest ] = self.previous
-    call self.tab_choose(tab_dst)
-    throw 'CHOSE'
-  " elseif action ==# 'swap'
-    " if empty(self.previous)
-      " throw 'NO_PREVIOUS_WINDOW'
-    " endif
-    " let [ tab_dst, self.win_dest ] = self.previous
-    " call self.tab_choose(tab_dst)
-    " throw 'CHOSE'
-  elseif action ==# 'cancel'
-    call self.tab_choose(self.env_orig.tab.cur)
-    call self.win_choose(self.env_orig.win.cur)
-    throw 'CANCELED'
-  endif
+  endwhile
 endfunction
 
 function! s:cw.get_action(input) "{{{1
@@ -322,9 +328,9 @@ function! s:cw.get_action(input) "{{{1
     elseif action ==# 'win_land'
       return [ 'win', winnr() ]
     elseif action ==# 'previous'
-      return [ 'previous', 1]
+      return [ 'previous', -1]
     elseif action ==# 'swap'
-      call self.label_clear()
+      return [ 'swap', -1]
     else
       throw 'UNKNOWN_ACTION'
     endif
@@ -335,33 +341,10 @@ endfunction
 
 function! s:cw.land_win(winnum) "{{{1
   call self.win_choose(a:winnum, self.conf['noop'])
-  call self.blink_cword()
-endfunction
-
-function! s:cw.swap(dst) "{{{1
-  " FIXME: very dirty hack using api but work '
-  " save current
-  let buf_cur = bufnr('')
-  let win_cur = winnr()
-  let tab_cur = tabpagenr()
-
-  let [tab_dst, win_dst] = a:dst
-  silent execute 'tabnext ' tab_dst
-  silent execute win_dst 'wincmd w'
-  let buf_dst = winbufnr('')
-  execute 'hide buffer' buf_cur
-
-  silent execute 'tabnext ' tab_cur
-  silent execute win_cur 'wincmd w'
-  execute 'hide buffer' buf_dst
-endfunction
-
-function! s:cw.swap_again() "{{{1
-  if empty(s:choosewin_swap_last)
-    call s:msg('No previous swap')
+  if self.conf['swap']
     return
   endif
-  call self.swap(s:choosewin_swap_last)
+  call self.blink_cword()
 endfunction
 "}}}
 
@@ -501,7 +484,20 @@ function! s:cw.finish() "{{{1
   endif
   if !empty(self.win_dest)
     call self.land_win(self.win_dest)
-    if !self.conf['noop']
+
+    if self.conf['noop']
+      return
+    endif
+
+    if self.conf['swap']
+      let buf_dst = winbufnr('')
+      execute 'hide buffer' self.env_orig.buf.cur
+
+      silent execute 'tabnext ' self.env_orig.tab.cur
+      silent execute self.env_orig.win.cur 'wincmd w'
+      execute 'hide buffer' buf_dst
+      let self.previous = [ self.env.tab.cur, self.env.win.cur ]
+    else
       let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
     endif
   endif
@@ -510,17 +506,6 @@ endfunction
 
 function! choosewin#start(...) "{{{1
   return call(s:cw.start, a:000, s:cw)
-endfunction
-
-function! choosewin#swap(...) "{{{1
-  let R = call(s:cw.start, a:000, s:cw)
-  if empty(R) | return | endif
-  let s:choosewin_swap_last = R
-  call s:cw.swap(R)
-endfunction
-
-function! choosewin#swap_again() "{{{1
-  call s:cw.swap_again()
 endfunction
 
 function! choosewin#tabline() "{{{1

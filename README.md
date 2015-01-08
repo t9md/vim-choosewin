@@ -51,9 +51,9 @@ More configuration is explained in help file. See `:help choosewin`.
 | $      | tab_last   | choose LAST     tab           | 
 | ;      | win_land   | land to current window        | 
 | -      | previous   | land to previous window       | 
-| s      | swap       | swap buffer with you chose [^1] | 
+| s      | swap       | swap buffer with you chose *1 | 
 | `<CR>` | win_land   | land to current window        | 
 |        | <NOP>      | disable predefined keymap     | 
 
-[^1] If you chose 'swap' again, swapping with previous window's buffer
+*1 if you chose 'swap' again, swapping with previous window's buffer
 ex) with default keymap, double 's'(ss) swap with previous buffer.
