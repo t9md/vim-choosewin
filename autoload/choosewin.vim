@@ -3,8 +3,6 @@ let s:NOT_FOUND       = -1
 let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
 let s:choosewin_swap_last = []
-" let s:choosewin_win_prev  = []
-let g:choosewin_win_prev  = []
 
 " Utility:
 function! s:msg(msg) "{{{1
@@ -189,6 +187,9 @@ function! s:cw.init() "{{{1
   let self.win_dest        = ''
   let self.env             = self.get_env()
   let self.env_orig        = deepcopy(self.env)
+  if !has_key(self, 'previous')
+    let self.previous = []
+  endif
   let self.keymap          = filter(
         \ extend(self.keymap_default(), self.conf['keymap']),
         \ "v:val !=# '<NOP>'")
@@ -206,6 +207,8 @@ function! s:cw.keymap_default() "{{{1
         \ ']':     'tab_next',
         \ '$':     'tab_last',
         \ ';':     'win_land',
+        \ '-':     'previous',
+        \ 's':     'swap',
         \ "\<CR>": 'win_land',
         \ }
 endfunction
@@ -262,20 +265,30 @@ endfunction
 
 function! s:cw.choose(winnum, winlabel) "{{{1
   let [action, num] = self.get_action(self.read_input())
+  call self.label_clear()
+
   if action ==# 'tab'
-    if num ==# self.env.tab.cur
-      return
-    endif
-    call self.label_clear()
     call self.tab_choose(num)
     call self.label_show(self.win_all(), a:winlabel)
     return
   elseif action ==# 'win'
     let self.win_dest = num
-    call self.label_clear()
-    throw 'CHOOSED'
+    throw 'CHOSE'
+  elseif action ==# 'previous'
+    if empty(self.previous)
+      throw 'NO_PREVIOUS_WINDOW'
+    endif
+    let [ tab_dst, self.win_dest ] = self.previous
+    call self.tab_choose(tab_dst)
+    throw 'CHOSE'
+  " elseif action ==# 'swap'
+    " if empty(self.previous)
+      " throw 'NO_PREVIOUS_WINDOW'
+    " endif
+    " let [ tab_dst, self.win_dest ] = self.previous
+    " call self.tab_choose(tab_dst)
+    " throw 'CHOSE'
   elseif action ==# 'cancel'
-    call self.label_clear()
     call self.tab_choose(self.env_orig.tab.cur)
     call self.win_choose(self.env_orig.win.cur)
     throw 'CANCELED'
@@ -308,6 +321,10 @@ function! s:cw.get_action(input) "{{{1
       return [ 'tab', tabn ]
     elseif action ==# 'win_land'
       return [ 'win', winnr() ]
+    elseif action ==# 'previous'
+      return [ 'previous', 1]
+    elseif action ==# 'swap'
+      call self.label_clear()
     else
       throw 'UNKNOWN_ACTION'
     endif
@@ -345,20 +362,6 @@ function! s:cw.swap_again() "{{{1
     return
   endif
   call self.swap(s:choosewin_swap_last)
-endfunction
-
-function! s:cw.previous() "{{{1
-  " FIXME: very dirty hack but work
-  " ideally it should be implemented as keymap within chooswin invocation not
-  " vim's keymap
-  if empty(g:choosewin_win_prev)
-    call s:msg('No previous window')
-    return
-  endif
-  let [tab_dst, win_dst] = g:choosewin_win_prev
-  let g:choosewin_win_prev = [ tabpagenr(), winnr() ]
-  silent execute 'tabnext ' tab_dst
-  silent execute win_dst 'wincmd w'
 endfunction
 "}}}
 
@@ -444,7 +447,7 @@ function! s:cw.first_path(winnums) "{{{1
   if len(a:winnums) ==# 1
     if self.conf['auto_choose']
       let self.win_dest = a:winnums[0]
-      throw 'CHOOSED'
+      throw 'CHOSE'
     elseif self.conf['return_on_single_win']
       throw 'RETURN'
     endif
@@ -484,7 +487,7 @@ function! s:cw.state_update(state) "{{{1
 endfunction
 
 function! s:cw.message() "{{{1
-  if self.exception =~# 'CHOOSED\|RETURN'
+  if self.exception =~# 'CHOSE\|RETURN'
     return
   endif
   call s:msg(self.exception)
@@ -498,8 +501,10 @@ function! s:cw.finish() "{{{1
   endif
   if !empty(self.win_dest)
     call self.land_win(self.win_dest)
+    if !self.conf['noop']
+      let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
+    endif
   endif
-  let g:choosewin_win_prev  = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
   call self.message()
 endfunction
 
@@ -518,10 +523,6 @@ function! choosewin#swap_again() "{{{1
   call s:cw.swap_again()
 endfunction
 
-function! choosewin#previous() "{{{1
-  call s:cw.previous()
-endfunction
-
 function! choosewin#tabline() "{{{1
   return s:cw.tabline()
 endfunction
@@ -532,6 +533,10 @@ endfunction
 
 function! choosewin#get_tablabel(tabnum) "{{{1
   return s:cw.get_tablabel(a:tabnum)
+endfunction
+
+function! choosewin#get_previous() "{{{1
+  return s:cw.previous
 endfunction
 "}}}
 " vim: foldmethod=marker

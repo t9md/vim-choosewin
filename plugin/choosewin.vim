@@ -43,7 +43,7 @@ let s:options = {
       \   { 'gui':[ '', '#777777'], 'cterm': ['', 'grey'] },
       \ 'g:choosewin_blink_on_land': 1,
       \ 'g:choosewin_return_on_single_win': 0,
-      \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRTUVWXYZ',
       \ 'g:choosewin_keymap': {},
       \ 'g:choosewin_tablabel': '123456789',
       \ }
@@ -75,12 +75,8 @@ nnoremap <silent> <Plug>(choosewin-swap)
 nnoremap <silent> <Plug>(choosewin-swap-again)
       \ :<C-u>call choosewin#swap_again()<CR>
 
-nnoremap <silent> <Plug>(choosewin-prev)
-      \ :<C-u>call choosewin#previous()<CR>
-
 " Command:
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
-command! -bar ChooseWinPrevious call choosewin#previous()
 
 " Finish:
 let &cpo = s:old_cpo
