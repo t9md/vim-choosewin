@@ -42,16 +42,14 @@ MAPPINGS					*choowsewin-mappings*
 <Plug>(choosewin)
 	land to window you chose
 
-<Plug>(choosewin-swap)
-	swap current buffer with the buffer of window you chose.
-
-<Plug>(choosewin-swap-again)
-	swap current buffer with the buffer of window you chose last.
-
 ==============================================================================
 COMMANDS						*choowsewin-commands*
 
 *:ChooseWin*
+	start choosewin
+
+*:ChooseWinSwap*
+	start choosewin for swapping chosen window withc current window.
 
 ==============================================================================
 VARIABLES						*choowsewin-variables*
