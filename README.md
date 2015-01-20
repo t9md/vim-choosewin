@@ -64,15 +64,18 @@ nmap - <Plug>(choosewin)
 ```
 
 * Move around tab, and choose window
+
 First of all, open mustiple windows and tabs.  
 Invoke choosewin with typing `-` in normal mode.  
 Then you can move around tabs by `]` and `[` or directly choose target tab by number labeled on tabline.  
 After you chose target tab, you can choose target window by typing alphabet which is labeled on statusline or on middle of window(if you enabled overlay feature).  
 
 * Choose previouse window
+
 Type `-` again to invoke choosewin, then input `-` again to choose previous window, previous window is the window last time you were on before you choose current window.  
 
 * Swap window
+
 Type `-` to invoke choosein, then type `s` to swap window.  
 Then choose target window label you want to swap content(=buffer) of window with buffer of current window.  
 After you chose, the current window's buffer is swapped with the buffer shown in the window you chose.  
