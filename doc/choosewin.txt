@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 1.4
+Version: 1.5
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -384,6 +384,8 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2015-01-20: v1.5
+	- verup again because of document mistake.
 2015-01-20: v1.4
 	- verup
 2015-01-08:
