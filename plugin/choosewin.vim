@@ -72,7 +72,8 @@ nnoremap <silent> <Plug>(choosewin)
 
 " Command:
 command! -bar ChooseWin call choosewin#start(range(1, winnr('$')))
-command! -bar ChooseWinSwap call choosewin#start(range(1, winnr('$')), {'swap': 1})
+command! -bar ChooseWinSwap call choosewin#start(range(1, winnr('$')), {'swap': 1, 'swap_stay': 0 })
+command! -bar ChooseWinSwapStay call choosewin#start(range(1, winnr('$')), {'swap': 1, 'swap_stay': 1 })
 
 " Finish:
 let &cpo = s:old_cpo

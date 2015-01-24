@@ -209,6 +209,7 @@ function! s:cw.keymap_default() "{{{1
         \ ';':     'win_land',
         \ '-':     'previous',
         \ 's':     'swap',
+        \ 'S':     'swap_stay',
         \ "\<CR>": 'win_land',
         \ }
 endfunction
@@ -284,9 +285,14 @@ function! s:cw.choose(winnum, winlabel) "{{{1
       let [ tab_dst, self.win_dest ] = self.previous
       call self.tab_choose(tab_dst)
       throw 'CHOSE'
-    elseif action ==# 'swap'
+    elseif action =~# '^swap'
       if !self.conf['swap']
         let self.conf['swap'] = 1
+
+        if !has_key(self.conf, 'swap_stay')
+          let self.conf['swap_stay'] = action ==# 'swap_stay'
+        endif
+
         call self.label_show(self.win_all(), a:winlabel)
         return
       else
@@ -312,7 +318,7 @@ function! s:cw.get_action(input) "{{{1
 
   let action = get(self.keymap, a:input)
   if !empty(action)
-    if action =~# 'tab_'
+    if action =~# '^tab_'
       let tabn =
             \ action ==# 'tab_first' ? 1 :
             \ action ==# 'tab_prev'  ? max([1, self.env.tab.cur - 1]) :
@@ -329,8 +335,8 @@ function! s:cw.get_action(input) "{{{1
       return [ 'win', winnr() ]
     elseif action ==# 'previous'
       return [ 'previous', -1]
-    elseif action ==# 'swap'
-      return [ 'swap', -1]
+    elseif action =~# '^swap'
+      return [ action, -1]
     else
       throw 'UNKNOWN_ACTION'
     endif
@@ -344,7 +350,6 @@ function! s:cw.land_win(winnum) "{{{1
   if self.conf['swap']
     return
   endif
-  call self.blink_cword()
 endfunction
 "}}}
 
@@ -492,15 +497,22 @@ function! s:cw.finish() "{{{1
     if self.conf['swap']
       let buf_dst = winbufnr('')
       execute 'hide buffer' self.env_orig.buf.cur
-
       silent execute 'tabnext ' self.env_orig.tab.cur
       silent execute self.env_orig.win.cur 'wincmd w'
       execute 'hide buffer' buf_dst
-      let self.previous = [ self.env.tab.cur, self.env.win.cur ]
+
+      if self.conf['swap_stay']
+        let self.previous = [ self.env.tab.cur, self.env.win.cur ]
+      else
+        silent execute 'tabnext ' self.env.tab.cur
+        silent execute self.env.win.cur 'wincmd w'
+        let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
+      endif
     else
       let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
     endif
   endif
+  call self.blink_cword()
   call self.message()
 endfunction
 

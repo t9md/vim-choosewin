@@ -49,7 +49,10 @@ COMMANDS						*choowsewin-commands*
 	start choosewin
 
 *:ChooseWinSwap*
-	start choosewin for swapping chosen window withc current window.
+	start choosewin for swapping chosen window with current window.
+
+*:ChooseWinSwapStay*
+	start choosewin for swapping chosen window with current window.
 
 ==============================================================================
 VARIABLES						*choowsewin-variables*
@@ -143,10 +146,11 @@ VARIABLES						*choowsewin-variables*
 	| ;    | win_land   | land to current window        |
 	| -    | previous   | land to previous window       |
 	| s    | swap       | swap buffer with you chose *1 |
+	| S    | swap_stay  | swap buffer with you chose *1 |
 	| <CR> | win_land   | land to current window        |
 	|      | <NOP>      | disable predefined keymap     |
 	*1 if you chose 'swap' again, swapping with previous window's buffer
-	ex) with default keymap, double 's'(ss) swap with previous buffer.
+	ex) with default keymap, double 's'(ss) swap with previous window.
 
 	Disabling default keymap~
 
@@ -384,6 +388,9 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2015-01-25:
+	- [enhance] now swap don't stay same window, original swap is now 
+	  swap_stay.
 2015-01-20: v1.5
 	- verup again because of document mistake.
 2015-01-20: v1.4

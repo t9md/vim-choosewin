@@ -49,6 +49,7 @@ More configuration is explained in help file. See `:help choosewin`.
 | ;      | win_land   | land to current window        | 
 | -      | previous   | land to previous window       | 
 | s      | swap       | swap buffer with you chose *1 | 
+| S      | swap_stay  | swap buffer with you chose *1 | 
 | `<CR>` | win_land   | land to current window        | 
 |        | <NOP>      | disable predefined keymap     | 
 
