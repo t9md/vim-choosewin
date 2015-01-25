@@ -258,12 +258,11 @@ function! s:cw.tab_choose(num) "{{{1
 endfunction
 
 function! s:cw.win_choose(num, ...) "{{{1
-  let self.env.win.cur = a:num
   let noop = get(a:000, 0)
-  if noop
-    return
+  if ! noop
+    silent execute a:num 'wincmd w'
   endif
-  silent execute a:num 'wincmd w'
+  let self.env.win.cur = a:num
 endfunction
 
 function! s:cw.choose(winnum, winlabel) "{{{1
@@ -343,13 +342,6 @@ function! s:cw.get_action(input) "{{{1
   endif
 
   return [ 'cancel', 1 ]
-endfunction
-
-function! s:cw.land_win(winnum) "{{{1
-  call self.win_choose(a:winnum, self.conf['noop'])
-  if self.conf['swap']
-    return
-  endif
 endfunction
 "}}}
 
@@ -488,7 +480,7 @@ function! s:cw.finish() "{{{1
     silent execute 'tabnext ' self.env_orig.tab.cur
   endif
   if !empty(self.win_dest)
-    call self.land_win(self.win_dest)
+    call self.win_choose(self.win_dest, self.conf['noop'])
 
     if self.conf['noop']
       return
@@ -500,6 +492,7 @@ function! s:cw.finish() "{{{1
       silent execute 'tabnext ' self.env_orig.tab.cur
       silent execute self.env_orig.win.cur 'wincmd w'
       execute 'hide buffer' buf_dst
+
 
       if self.conf['swap_stay']
         let self.previous = [ self.env.tab.cur, self.env.win.cur ]
