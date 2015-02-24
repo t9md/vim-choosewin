@@ -1,4 +1,4 @@
-let s:font_list = map(range(33, 126), 'nr2char(v:val)')
+let s:font_list  = map(range(33, 126), 'nr2char(v:val)')
 let s:font_large = expand("<sfile>:h") . '/data/large'
 let s:font_small = expand("<sfile>:h") . '/data/small'
 
@@ -31,28 +31,15 @@ endfunction
 
 function! s:font.info() "{{{1
   return {
-        \ 'data': self._data,
-        \ 'height': self.height,
-        \ 'width': self.width,
+        \ 'data':    self._data,
+        \ 'height':  self.height,
+        \ 'width':   self.width,
         \ 'pattern': self.pattern,
         \ }
 endfunction
 
-function! s:font.print() "{{{1
+function! s:font.string() "{{{1
   return join(self._data, "\n")
-endfunction
-
-function! s:font._parse_old() "{{{1
-  let R = []
-  for idx in range(0, len(self._data) - 1)
-    let indexes = s:scan_match(self._data[idx], '\$')
-    let line_anchor = '%{line+' . idx . '}l'
-    let pattern = join(map(indexes,
-          \ 'line_anchor . "%{col+" . v:val . "}c"'), '|')
-    call add(R, pattern)
-  endfor
-  call filter(R, '!empty(v:val)')
-  return R
 endfunction
 
 function! s:font._parse() "{{{1
@@ -110,6 +97,7 @@ function! s:table.read_data(file) "{{{1
   return R
 endfunction
 
+" API:
 function! choosewin#font#large() "{{{1
   return s:table.new(s:font_large)
 endfunction
@@ -118,4 +106,11 @@ function! choosewin#font#small() "{{{1
   return s:table.new(s:font_small)
 endfunction
 "}}}
+" Test:
+if expand("%:p") !=# expand("<sfile>:p")
+  finish
+endif
+" echo PP(s:font_list)
+" echo PP(s:font_small)
+
 " vim: foldmethod=marker
