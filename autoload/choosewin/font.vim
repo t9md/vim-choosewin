@@ -13,12 +13,12 @@ if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
 
-function! s:Test(size)
-  return choosewin#font#{a:size}()
-endfunction
+" function! s:Test(size)
+  " return choosewin#font#{a:size}()
+" endfunction
 
-let R = s:Test('small')
-PP R
+" let R = s:Test('small')
+" PP R
 " let R = s:Test('large')
 " echo R
 

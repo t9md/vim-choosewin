@@ -11,6 +11,12 @@ function! s:table.new(data_file) "{{{1
         \ 'choosewin#font#font#new(v:val)')
 endfunction
 
+" function! s:table.new2(data_file) "{{{1
+  " return map(
+        " \ self.read_data(a:data_file),
+        " \ 'choosewin#font#font#new2(v:val)')
+" endfunction
+
 function! s:table.read_data(file) "{{{1
   let fonts = copy(s:font_list)
 
@@ -32,6 +38,7 @@ function! s:table.read_data(file) "{{{1
   endwhile
   return R
 endfunction
+" echo s:table.read_data(s:font_large)['"']
 
 " API:
 function! choosewin#font#table#small() "{{{1
@@ -41,19 +48,17 @@ endfunction
 function! choosewin#font#table#large() "{{{1
   return s:table.new(s:font_large)
 endfunction
+
+" function! choosewin#font#table#small2() "{{{1
+  " return s:table.new2(s:font_small)
+" endfunction
+
+" function! choosewin#font#table#large2() "{{{1
+  " return s:table.new2(s:font_large)
+" endfunction
 "}}}
 
 " Test:
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
-
-echo PP(s:table.read_data(s:font_small))
-finish
-let R = s:table.new(s:font_large)
-echo PP(R)
-" for [key, ]
-" for [char, font] in items(R)
-  " echo [font.height, font.width]
-" endfor
-" vim: foldmethod=marker
