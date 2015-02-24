@@ -1,12 +1,4 @@
-let s:font_list  = map(range(33, 126), 'nr2char(v:val)')
-let s:font_large = expand("<sfile>:h") . '/data/large'
-let s:font_small = expand("<sfile>:h") . '/data/small'
-
 " Util:
-function! s:str_split(str) "{{{1
-  return split(a:str, '\zs')
-endfunction
-
 function! s:scan_match(str, pattern) "{{{1
   let R = []
   let start = 0
@@ -22,6 +14,7 @@ endfunction
 
 " Font:
 let s:font = {}
+
 function! s:font.new(char, data) "{{{1
   let self._data   = a:data
   let self.width   = len(self._data[0])
@@ -78,6 +71,13 @@ endfunction
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
+let s:data = { '!': ['   ##   ', '   ##   ', '   ##   ', '        ', '   ##   '],}
+let R =  choosewin#font#font#new('!', s:data)
+echo PP(R)
+
+
+" function! choosewin#font#font#new(...) "{{{1
+  " return call(s:font.new, a:000, s:font)
+" endfunction
 
 " vim: foldmethod=marker
-
