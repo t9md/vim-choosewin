@@ -8,7 +8,7 @@ let s:table = {}
 function! s:table.new(data_file) "{{{1
   return map(
         \ self.read_data(a:data_file),
-        \ 'choosewin#font#font#new(v:key, v:val)')
+        \ 'choosewin#font#font#new(v:val)')
 endfunction
 
 function! s:table.read_data(file) "{{{1
@@ -48,6 +48,12 @@ if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
 
-" echo PP(s:table.read_data(s:font_small))
-echo PP(s:table.new(s:font_small))
+echo PP(s:table.read_data(s:font_small))
+finish
+let R = s:table.new(s:font_large)
+echo PP(R)
+" for [key, ]
+" for [char, font] in items(R)
+  " echo [font.height, font.width]
+" endfor
 " vim: foldmethod=marker

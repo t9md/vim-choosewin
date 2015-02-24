@@ -15,26 +15,28 @@ endfunction
 " Font:
 let s:font = {}
 
-function! s:font.new(char, data) "{{{1
+function! s:font.new(data) "{{{1
   let self._data   = a:data
   let self.width   = len(self._data[0])
   let [ self.height, self.pattern ] = self._parse()
-  return deepcopy(self)
+  return self.info()
+  " return deepcopy(self)
 endfunction
 
 function! s:font.info() "{{{1
   return {
-        \ 'data':    self._data,
         \ 'height':  self.height,
         \ 'width':   self.width,
         \ 'pattern': self.pattern,
         \ }
 endfunction
 
-function! s:font.string() "{{{1
-  return join(self._data, "\n")
-endfunction
-
+" {
+"   'height': 5,
+"   'pattern':
+"     '\v%{line+0}l%{col+3}c..|%{line+1}l%{col+3}c..|%{line+2}l%{col+3}c..|%{line+4}l%{col+3}c..',
+"   'width': 8
+" }
 function! s:font._parse() "{{{1
   let height = 0
   let R = []
@@ -71,9 +73,15 @@ endfunction
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
-let s:data = { '!': ['   ##   ', '   ##   ', '   ##   ', '        ', '   ##   '],}
-let R =  choosewin#font#font#new('!', s:data)
+let s:data = {
+      \ '!': ['   ##   ', '   ##   ', '   ##   ', '        ', '   ##   '],
+      \ 'H': [' ##  ## ', ' ##  ## ', ' ###### ', ' ##  ## ', ' ##  ## '],
+      \ }
+
+let R =  choosewin#font#font#new(s:data['H'])
 echo PP(R)
+" echo R.info()
+" echo R.string()
 
 
 " function! choosewin#font#font#new(...) "{{{1
