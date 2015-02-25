@@ -1,5 +1,4 @@
 " Static Var:
-
 " char list of ['!'..'~'].
 let s:font_list  = map(range(33, 126), 'nr2char(v:val)')
 
@@ -20,34 +19,35 @@ endfunction
 " Font:
 function! s:font_new(data) "{{{1
   let width = len(a:data[0])
-  let [ height, pattern ] = s:font_parse(a:data)
+  let height = len(a:data)
   return {
         \ 'width':   width,
         \ 'height':  height,
-        \ 'pattern': pattern,
+        \ 'pattern': s:patern_gen(a:data),
         \ }
 endfunction
 
-function! s:font_parse(data) "{{{1
+function! s:patern_gen(data) "{{{1
   let R = map(a:data, 's:scan_match(v:val, "#", 0, [])')
   call map(R,
         \ 's:_parse("%{line+".v:key."}l", v:val, -1, [])')
   call filter(R, '!empty(v:val)')
-  return [len(a:data), '\v' . join(R, '|')]
+  return '\v' . join(R, '|')
 endfunction
 
 function! s:_parse(prefix, pos_list, c_base, R) "{{{1
+  " R = result
+  " c_base = previous column position
   if empty(a:pos_list)
     return join(map(a:R, 'a:prefix . v:val'), "|")
   endif
-  let c = a:pos_list[0]
-  if c is (a:c_base + 1)
+  let col = remove(a:pos_list, 0)
+  if col is (a:c_base + 1)
     let a:R[-1] .= '.'
   else
-    let s = '%{col+' . c . '}c.'
-    call add(a:R, "" . s)
+    call add(a:R, '%{col+' . col . '}c.')
   endif
-  return s:_parse(a:prefix, a:pos_list[1:], c, a:R)
+  return s:_parse(a:prefix, a:pos_list, col, a:R)
 endfunction
 "}}}
 
@@ -84,19 +84,5 @@ function! choosewin#font#large() "{{{1
   return map(s:read_data(s:font_large),'s:font_new(v:val)')
 endfunction
 "}}}
-
-if expand("%:p") !=# expand("<sfile>:p")
-  finish
-endif
-
-function! s:perf_test(cnt) "{{{1
-  let start = reltime()
-  for i in range(1, a:cnt)
-    call choosewin#font#large()
-    call choosewin#font#small()
-  endfor
-  echo a:cnt . ": " . reltimestr(reltime(start))
-endfunction
-call s:perf_test(20)
 
 " vim: foldmethod=marker
