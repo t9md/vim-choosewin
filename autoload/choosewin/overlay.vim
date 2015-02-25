@@ -125,8 +125,8 @@ let s:overlay = {}
 function! s:overlay.init() "{{{1
   let self.hlter             = choosewin#highlighter#get()
   let self._font_table       = {}
-  let self._font_table.large = choosewin#font#large()
   let self._font_table.small = choosewin#font#small()
+  let self._font_table.large = choosewin#font#large()
   let self.color             = self.hlter.color
 endfunction
 
