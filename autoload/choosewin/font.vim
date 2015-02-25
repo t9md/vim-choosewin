@@ -18,7 +18,7 @@ endfunction
 
 " Font:
 function! s:font_new(data) "{{{1
-  let width = len(a:data[0])
+  let width  = len(a:data[0])
   let height = len(a:data)
   return {
         \ 'width':   width,
