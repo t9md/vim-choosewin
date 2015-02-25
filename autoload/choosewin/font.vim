@@ -30,7 +30,7 @@ endfunction
 function! s:patern_gen(data) "{{{1
   let R = map(a:data, 's:scan_match(v:val, "#", 0, [])')
   call map(R,
-        \ 's:_parse("%{line+".v:key."}l", v:val, -1, [])')
+        \ 's:_parse("%{L+".v:key."}l", v:val, -1, [])')
   call filter(R, '!empty(v:val)')
   return '\v' . join(R, '|')
 endfunction
@@ -45,7 +45,7 @@ function! s:_parse(prefix, pos_list, c_base, R) "{{{1
   if col is (a:c_base + 1)
     let a:R[-1] .= '.'
   else
-    call add(a:R, '%{col+' . col . '}c.')
+    call add(a:R, '%{C+' . col . '}c.')
   endif
   return s:_parse(a:prefix, a:pos_list, col, a:R)
 endfunction

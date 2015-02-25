@@ -317,11 +317,11 @@ function! s:vars(pos, width, height) "{{{1
   let R    = { 'line': line, 'col': col }
 
   for line_offset in range(0, a:height - 1)
-    let R['line+' . line_offset] = line + line_offset
+    let R["L+" . line_offset] = line + line_offset
   endfor
 
   for col_offset in range(0, a:width)
-    let R['col+' . col_offset] = col + col_offset
+    let R["C+" . col_offset] = col + col_offset
   endfor
   return R
 endfunction
