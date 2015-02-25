@@ -1,11 +1,9 @@
 " Constant:
-
-
 let s:NOT_FOUND       = -1
 let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
 
-" Utility:
+" Util::
 function! s:msg(msg) "{{{1
   if !empty(a:msg)
     echohl Type
@@ -64,6 +62,7 @@ endfunction
 
 " Main:
 let s:cw = {}
+
 function! s:cw.get_env() "{{{1
   return {
         \ 'win': { 'cur': winnr(),     'all': self.win_all() },
@@ -394,7 +393,7 @@ function! s:cw.label_show(winnums, winlabel) "{{{1
     call self.statusline_replace(winnums)
   endif
   if self.conf['overlay_enable']
-    call self.overlay.render(winnums, self.conf)
+    call self.overlay.start(winnums, self.conf)
   endif
   redraw
 endfunction
@@ -438,8 +437,7 @@ endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
   let self.conf  = extend(self.config(), get(a:000, 0, {}), 'force')
-  let self.hlter = choosewin#highlighter#get()
-  let self.color = self.hlter.color
+  let self.color = choosewin#highlighter#colors()
   let winnums    = self.valid_winnums(a:winnums)
 
   try
@@ -510,7 +508,9 @@ function! s:cw.finish() "{{{1
   call self.blink_cword()
   call self.message()
 endfunction
+"}}}
 
+" API:
 function! choosewin#start(...) "{{{1
   return call(s:cw.start, a:000, s:cw)
 endfunction
@@ -531,4 +531,5 @@ function! choosewin#get_previous() "{{{1
   return s:cw.previous
 endfunction
 "}}}
+
 " vim: foldmethod=marker

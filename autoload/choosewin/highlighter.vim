@@ -24,11 +24,20 @@ function! s:h.refresh() "{{{1
   if !has_key(self, 'hlmgr') | call s:h.init() | endif
   call self.hlmgr.refresh()
 endfunction
+"}}}
 
+" API:
 function! choosewin#highlighter#get() "{{{1
   return s:h.get()
+endfunction
+
+function! choosewin#highlighter#colors() "{{{1
+  return s:h.get().color
 endfunction
 
 function! choosewin#highlighter#refresh() "{{{1
   call s:h.refresh()
 endfunction
+"}}}
+
+" vim: foldmethod=marker

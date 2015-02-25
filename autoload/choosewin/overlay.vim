@@ -1,21 +1,22 @@
-let s:FONT_MAX = {}
-let s:FONT_MAX.small = { 'width':  5, 'height':  8 }
-let s:FONT_MAX.large = { 'width': 16, 'height': 10 }
+" Vars:
+let s:FONT_MAX = {
+      \ 'small': { 'width':  5, 'height':  8 },
+      \ 'large': { 'width': 16, 'height': 10 },
+      \ }
 
-let s:vim_options_global = {
+let s:vim_options = {}
+let s:vim_options.global = {
       \ '&cursorline': 0,
       \ '&scrolloff':  0,
       \ '&lazyredraw': 1,
       \ }
-
-let s:vim_options_buffer = {
+let s:vim_options.buffer = {
       \ '&modified':   0,
       \ '&modifiable': 1,
       \ '&readonly':   0,
       \ '&buftype':    '',
       \ }
-
-let s:vim_options_window = {
+let s:vim_options.window = {
       \ '&wrap':         0,
       \ '&list':         0,
       \ '&foldenable':   0,
@@ -28,8 +29,19 @@ function! s:intrpl(string, vars) "{{{1
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction
 
-function! s:str_split(str) "{{{1
-  return split(a:str, '\zs')
+function! s:vars(pos, width, height) "{{{1
+  let line = a:pos[0]
+  let col  = a:pos[1]
+  let R    = { 'line': line, 'col': col }
+
+  for line_offset in range(0, a:height - 1)
+    let R["L+" . line_offset] = line + line_offset
+  endfor
+
+  for col_offset in range(0, a:width)
+    let R["C+" . col_offset] = col + col_offset
+  endfor
+  return R
 endfunction
 
 function! s:uniq(list) "{{{1
@@ -40,7 +52,12 @@ function! s:uniq(list) "{{{1
   return map(keys(R), 'str2nr(v:val)')
 endfunction
 
-function! s:buffer_options_set(bufnr, options) "{{{1
+" Options Operation:
+let s:options = {}
+let s:options.buffer = {}
+let s:options.window = {}
+
+function! s:options.buffer.set(bufnr, options) "{{{1
   let R = {}
   for [var, val] in items(a:options)
     let R[var] = getbufvar(a:bufnr, var)
@@ -50,14 +67,14 @@ function! s:buffer_options_set(bufnr, options) "{{{1
   return R
 endfunction
 
-function! s:buffer_options_restore(bufnr, options) "{{{1
+function! s:options.buffer.restore(bufnr, options) "{{{1
   for [var, val] in items(a:options)
     call setbufvar(a:bufnr, var, val)
     unlet var val
   endfor
 endfunction
 
-function! s:window_options_set(winnr, options) "{{{1
+function! s:options.window.set(winnr, options) "{{{1
   let R = {}
   for [var, val] in items(a:options)
     let R[var] = getwinvar(a:winnr, var)
@@ -67,13 +84,14 @@ function! s:window_options_set(winnr, options) "{{{1
   return R
 endfunction
 
-function! s:window_options_restore(winnr, options) "{{{1
+function! s:options.window.restore(winnr, options) "{{{1
   for [var, val] in items(a:options)
     call setwinvar(a:winnr, var, val)
     unlet var val
   endfor
 endfunction
 
+" Undo:
 function! s:undobreak() "{{{1
   let &undolevels = &undolevels
   " silent exec 'normal!' "i\<C-g>u\<ESC>"
@@ -86,6 +104,7 @@ function! s:undoclear() "{{{1
   let &undolevels = undolevels_org
 endfunction
 
+" Multi Byte Char Handling:
 " s:strchars() "{{{1
 if exists('*strchars')
   function! s:strchars(str)
@@ -97,51 +116,35 @@ else
   endfunction
 endif
 "}}}
+
 function! s:include_multibyte_char(str) "{{{1
   return strlen(a:str) !=# s:strchars(a:str)
 endfunction
-
-function! s:mbstrpart(s, col) "{{{1
-  let str = ''
-  for c in split(a:s, '\zs')
-    let str .= c
-    if strdisplaywidth(str) > a:col
-      break
-    endif
-  endfor
-  return str
-endfunction
-
-" function! s:mb_fill_space(str, col, width) "{{{1
-  " let str = s:mbstrpart(a:str, a:col)
-  " let pad = a:width - strdisplaywidth(str)
-  " return [ str . repeat(' ', pad) , strlen(str)]
-" endfunction
 "}}}
 
 " Overlay:
 let s:overlay = {}
 
+function! s:overlay.get() "{{{1
+  if !has_key(self, '_font_table')
+    call s:overlay.init()
+  endif
+  return self
+endfunction
+
 function! s:overlay.init() "{{{1
-  let self.hlter             = choosewin#highlighter#get()
+  " let self.hlter             = choosewin#highlighter#get()
   let self._font_table       = {}
   let self._font_table.small = choosewin#font#small()
   let self._font_table.large = choosewin#font#large()
-  let self.color             = self.hlter.color
+  let self.color             = choosewin#highlighter#colors()
 endfunction
 
-function! s:overlay._fill_space(lines, width, offset) "{{{1
-  let width = (a:width + s:FONT_MAX.large.width) / 2 + a:offset
-  for line in a:lines
-    let line_s = getline(line)
-    if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
-      let line_new = repeat(' ', width)
-    else
-      let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
-      let line_new .= repeat(' ' , max([ width - len(line_new), 0 ]))
-    endif
-    call setline(line, line_new)
-  endfor
+function! s:overlay.start(wins, conf) "{{{1
+  call self.setup(a:wins, a:conf)
+  call self.setup_winvar()
+  call self.setup_buffer()
+  call self.label_show()
 endfunction
 
 function! s:overlay.setup_winvar() "{{{1
@@ -151,7 +154,7 @@ function! s:overlay.setup_winvar() "{{{1
     let wv          = {}
     let wv.pos_org  = getpos('.')
     let wv.winview  = winsaveview()
-    let wv.options  = s:window_options_set(winnr, s:vim_options_window)
+    let wv.options  = s:options.window.set(winnr, s:vim_options.window)
     let wv['w0']    = line('w0')
     let wv['w$']    = line('w$')
     let wh = winheight(0)
@@ -181,11 +184,28 @@ function! s:overlay.setup_winvar() "{{{1
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
+
+function! s:overlay.setup_buffer() "{{{1
+  for bufnr in self.bufs
+    noautocmd execute bufwinnr(bufnr) 'wincmd w'
+
+    execute 'wundo' b:choosewin.undofile
+    let b:choosewin.options = s:options.buffer.set(bufnr, s:vim_options.buffer)
+    call s:undobreak()
+
+    let render_lines = s:uniq(b:choosewin.render_lines)
+    let append         = max([max(render_lines) - line('$'), 0 ])
+    call append(line('$'), map(range(append), '""'))
+    call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
+  endfor
+  noautocmd execute self.winnr_org 'wincmd w'
+endfunction
+
 function! s:overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
-  let self.options_global = s:buffer_options_set(bufnr(''), s:vim_options_global)
+  let self.options_global = s:options.buffer.set(bufnr(''), s:vim_options.global)
   let self.font_idx       = 0
-  let self.captions       = self.conf['label']
+  let self.labels         = self.conf['label']
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = s:uniq(tabpagebuflist(tabpagenr()))
@@ -201,23 +221,21 @@ function! s:overlay.setup(wins, conf) "{{{1
   endfor
 endfunction
 
-function! s:overlay.setup_buffer()
-  for bufnr in self.bufs
-    noautocmd execute bufwinnr(bufnr) 'wincmd w'
-
-    execute 'wundo' b:choosewin.undofile
-    let b:choosewin.options = s:buffer_options_set(bufnr, s:vim_options_buffer)
-    call s:undobreak()
-
-    let render_lines = s:uniq(b:choosewin.render_lines)
-    let append         = max([max(render_lines) - line('$'), 0 ])
-    call append(line('$'), map(range(append), '""'))
-    call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
+function! s:overlay._fill_space(lines, width, offset) "{{{1
+  let width = (a:width + s:FONT_MAX.large.width) / 2 + a:offset
+  for line in a:lines
+    let line_s = getline(line)
+    if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
+      let line_new = repeat(' ', width)
+    else
+      let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
+      let line_new .= repeat(' ' , max([ width - len(line_new), 0 ]))
+    endif
+    call setline(line, line_new)
   endfor
-  noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
-function! s:overlay.show_label() "{{{1
+function! s:overlay.label_show() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
     call self.hl_shade()
@@ -227,12 +245,16 @@ function! s:overlay.show_label() "{{{1
   noautocmd execute self.winnr_org 'wincmd w'
   redraw
 endfunction
+"}}}
 
-function! s:overlay.render(wins, label) "{{{1
-  call self.setup(a:wins, a:label)
-  call self.setup_winvar()
-  call self.setup_buffer()
-  call self.show_label()
+" Overlay Restore:
+function! s:overlay.restore() "{{{1
+  try
+    call self.restore_buffer()
+    call self.restore_window()
+  finally
+    call s:options.buffer.restore(bufnr(''), self.options_global)
+  endtry
 endfunction
 
 function! s:overlay.restore_buffer() "{{{1
@@ -248,7 +270,7 @@ function! s:overlay.restore_buffer() "{{{1
       else
         call s:undoclear()
       endif
-      call s:buffer_options_restore(str2nr(bufnr), b:choosewin.options)
+      call s:options.buffer.restore(str2nr(bufnr), b:choosewin.options)
     catch
       unlet b:choosewin
     endtry
@@ -265,7 +287,7 @@ function! s:overlay.restore_window() "{{{1
         call matchdelete(mid)
       endfor
       call setpos('.', w:choosewin.pos_org)
-      call s:window_options_restore(str2nr(winnr), w:choosewin.options)
+      call s:options.window.restore(str2nr(winnr), w:choosewin.options)
       call winrestview(w:choosewin.winview)
     catch
       unlet w:choosewin
@@ -274,15 +296,15 @@ function! s:overlay.restore_window() "{{{1
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
-function! s:overlay.restore() "{{{1
-  try
-    call self.restore_buffer()
-    call self.restore_window()
-  finally
-    call s:buffer_options_restore(bufnr(''), self.options_global)
-  endtry
-endfunction
 
+function! s:overlay.next_font(size) "{{{1
+  let font = self._font_table[a:size][self.labels[self.font_idx]]
+  let self.font_idx += 1
+  return font
+endfunction
+"}}}
+
+" Highight:
 function! s:overlay.hl_shade() "{{{1
   if !self.conf['overlay_shade']
     return
@@ -297,11 +319,6 @@ function! s:overlay.hl_shade_trailingWS() "{{{1
         \ matchadd(self.color.Shade, '\s\+$', self.conf['overlay_shade_priority']))
 endfunction
 
-function! s:overlay.next_font(size) "{{{1
-  let font = self._font_table[a:size][self.captions[self.font_idx]]
-  let self.font_idx += 1
-  return font
-endfunction
 
 function! s:overlay.hl_label(is_current) "{{{1
   let mid = matchadd(
@@ -311,32 +328,14 @@ function! s:overlay.hl_label(is_current) "{{{1
   call add(w:choosewin.matchids, mid)
 endfunction
 
-function! s:vars(pos, width, height) "{{{1
-  let line = a:pos[0]
-  let col  = a:pos[1]
-  let R    = { 'line': line, 'col': col }
 
-  for line_offset in range(0, a:height - 1)
-    let R["L+" . line_offset] = line + line_offset
-  endfor
+"}}}
+call s:overlay.init()
 
-  for col_offset in range(0, a:width)
-    let R["C+" . col_offset] = col + col_offset
-  endfor
-  return R
-endfunction
-
-function! s:overlay.get() "{{{1
-  if !has_key(self, '_font_table')
-    call s:overlay.init()
-  endif
-  return self
-endfunction
-
+" API:
 function! choosewin#overlay#get() "{{{1
   return s:overlay.get()
 endfunction
 "}}}
 
-call s:overlay.init()
 " vim: foldmethod=marker
