@@ -46,6 +46,7 @@ let s:options = {
       \ 'g:choosewin_label': 'ABCDEFGHIJKLMNOPQRTUVWXYZ',
       \ 'g:choosewin_keymap': {},
       \ 'g:choosewin_tablabel': '123456789',
+      \ 'g:choosewin_debug': 0,
       \ }
 
 
@@ -62,7 +63,7 @@ call s:options_set(s:options)
 
 augroup plugin-choosewin
   autocmd!
-  autocmd ColorScheme,SessionLoadPost * call choosewin#highlighter#refresh()
+  autocmd ColorScheme,SessionLoadPost * call choosewin#color#refresh()
 augroup END
 
 " KeyMap:

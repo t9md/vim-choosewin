@@ -247,6 +247,7 @@ function! s:cw.config() "{{{1
         \ 'hook':                      g:choosewin_hook,
         \ 'hook_enable':               g:choosewin_hook_enable,
         \ 'hook_bypass':               g:choosewin_hook_bypass,
+        \ 'debug':                     g:choosewin_debug,
         \ 'auto_choose':               0,
         \ 'noop':                      0,
         \ 'swap':                      0,
@@ -437,7 +438,7 @@ endfunction
 
 function! s:cw.start(winnums, ...) "{{{1
   let self.conf  = extend(self.config(), get(a:000, 0, {}), 'force')
-  let self.color = choosewin#highlighter#colors()
+  let self.color = choosewin#color#get()
   let winnums    = self.valid_winnums(a:winnums)
 
   try

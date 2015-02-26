@@ -8,6 +8,10 @@ let s:font_small = expand("<sfile>:h") . '/data/small'
 
 " Util:
 function! s:scan_match(str, pattern, start, R) "{{{1
+  " Return List of index where pattern mached to string
+  " ex)
+  "   s:scan_match('   ##   ', '#', 0, []) => [3, 4]
+  "   s:scan_match('        ', '#', 0, []) => []
   let m = match(a:str, a:pattern, a:start)
   if m is -1
     return a:R
@@ -18,6 +22,7 @@ endfunction
 
 " Font:
 function! s:font_new(data) "{{{1
+  " Generate Font(=Dictionary) used by Overlay.
   let width  = len(a:data[0])
   let height = len(a:data)
   return {
@@ -28,6 +33,8 @@ function! s:font_new(data) "{{{1
 endfunction
 
 function! s:patern_gen(data) "{{{1
+  " Return Regexp pattern font_data represent.
+  " This Regexp can't use without replacing special vars like '%{L+1}, %{C+1} ..'
   let R = map(a:data, 's:scan_match(v:val, "#", 0, [])')
   call map(R,
         \ 's:_parse("%{L+".v:key."}l", v:val, -1, [])')
@@ -53,6 +60,13 @@ endfunction
 
 " Table:
 function! s:read_data(file) "{{{1
+  " file = font data file path
+  " return Dictionary where key=char, val=fontdata as List.
+  "   {
+  "     '!': ['   ##   ', '   ##   ', '   ##   ', '        ', '   ##   '],
+  "     '"': [' ##  ## ', ' ##  ## ', '  #  #  ', '        ', '        '],
+  "     .......
+  "   }
   let fonts = copy(s:font_list)
 
   let R = {}
