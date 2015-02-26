@@ -142,16 +142,17 @@ endfunction
 
 function! s:overlay.start(wins, conf) "{{{1
   call self.setup(a:wins, a:conf)
-  call self.setup_winvar()
+  call self.setup_window()
   call self.setup_buffer()
   call self.label_show()
 endfunction
 
-function! s:overlay.setup_winvar() "{{{1
+function! s:overlay.setup_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
 
     let wv          = {}
+    let wv.winnr    = winnr
     let wv.pos_org  = getpos('.')
     let wv.winview  = winsaveview()
     let wv.options  = s:options.window.set(winnr, s:vim_options.window)
@@ -240,7 +241,7 @@ function! s:overlay.label_show() "{{{1
     noautocmd execute winnr 'wincmd w'
     call self.hl_shade()
     call self.hl_shade_trailingWS()
-    call self.hl_label(winnr ==# self.winnr_org)
+    call self.hl_label()
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
   redraw
@@ -309,7 +310,7 @@ function! s:overlay.hl_shade() "{{{1
   if !self.conf['overlay_shade']
     return
   endif
-  let pattern = printf('\v%%%dl\_.*%%%dl', w:choosewin['w0'], w:choosewin['w$'])
+  let pattern = '\v%'. w:choosewin['w0'] .'l\_.*%'. w:choosewin['w$'] .'l'
   call add(w:choosewin.matchids,
         \ matchadd(self.color.Shade, pattern, self.conf['overlay_shade_priority']))
 endfunction
@@ -320,9 +321,11 @@ function! s:overlay.hl_shade_trailingWS() "{{{1
 endfunction
 
 
-function! s:overlay.hl_label(is_current) "{{{1
+function! s:overlay.hl_label() "{{{1
+  let color =
+        \ w:choosewin['winnr'] is self.winnr_org ? 'OverlayCurrent': 'Overlay'
   let mid = matchadd(
-        \ self.color[ a:is_current ? 'OverlayCurrent': 'Overlay' ],
+        \ self.color[color],
         \ w:choosewin.pattern,
         \ self.conf['overlay_label_priority'])
   call add(w:choosewin.matchids, mid)
