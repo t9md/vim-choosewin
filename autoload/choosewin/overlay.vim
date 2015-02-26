@@ -72,10 +72,11 @@ function! s:Overlay.get() "{{{1
 endfunction
 
 function! s:Overlay.init() "{{{1
-  let self._font_table       = {}
-  let self._font_table.small = choosewin#font#small()
-  let self._font_table.large = choosewin#font#large()
-  let self.color             = choosewin#color#get()
+  let self._font_table = {
+        \ 'small': choosewin#font#small(),
+        \ 'large': choosewin#font#large(),
+        \ }
+  let self.color = choosewin#color#get()
 endfunction
 
 function! s:Overlay.start(wins, conf) "{{{1
@@ -87,10 +88,10 @@ endfunction
 
 function! s:Overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
-  let self.options_global = s:_.buffer_options_set(bufnr(''), s:vim_options.global)
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = s:_.uniq(tabpagebuflist(tabpagenr()))
+  let self.options_global = s:_.buffer_options_set(bufnr(''), s:vim_options.global)
 
   for bufnr in self.bufs
     call setbufvar(bufnr, 'choosewin', {
@@ -108,32 +109,29 @@ function! s:Overlay.setup_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
 
-    let wv          = {}
-    let wv.winnr    = winnr
-    let wv.pos_org  = getpos('.')
-    let wv.winview  = winsaveview()
-    let wv.options  = s:_.window_options_set(winnr, s:vim_options.window)
-    let wv['w0']    = line('w0')
-    let wv['w$']    = line('w$')
-
-    let font_size = self.conf['overlay_font_size'] isnot 'auto'
-          \ ? self.conf['overlay_font_size'] 
-          \ : winheight(0) > s:FONT_MAX.large.height ? 'large' : 'small'
-
-    let char = self.conf['label'][font_idx]
-    let font = self._font_table[font_size][char]
-    let font_idx += 1
-    let wv.font   = font
-    let line_s    = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
-    let line_e    = line_s + font.height - 1
-    let col       = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
-    let offset    = col('.') - wincol()
-    let col      += offset
-
-    let wv.matchids = []
-    let wv.pattern  = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
-
-    let w:choosewin = wv
+    let wv           = {}
+    let wv.winnr     = winnr
+    let wv.pos_org   = getpos('.')
+    let wv.winview   = winsaveview()
+    let wv.options   = s:_.window_options_set(winnr, s:vim_options.window)
+    let wv['w0']     = line('w0')
+    let wv['w$']     = line('w$')
+    let font_size    =
+          \ self.conf['overlay_font_size'] isnot 'auto' ?
+          \ self.conf['overlay_font_size'] :
+          \ winheight(0) > s:FONT_MAX.large.height ? 'large' : 'small'
+    let char         = self.conf['label'][font_idx]
+    let font         = self._font_table[font_size][char]
+    let font_idx    += 1
+    let wv.font      = font
+    let line_s       = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
+    let line_e       = line_s + font.height - 1
+    let col          = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
+    let offset       = col('.') - wincol()
+    let col         += offset
+    let wv.matchids  = []
+    let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
+    let w:choosewin  = wv
 
     let b:choosewin.render_lines += range(line_s, line_e)
     let b:choosewin.offset       += [offset]
@@ -141,7 +139,6 @@ function! s:Overlay.setup_window() "{{{1
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
-
 
 function! s:Overlay.setup_buffer() "{{{1
   for bufnr in self.bufs
@@ -152,7 +149,7 @@ function! s:Overlay.setup_buffer() "{{{1
     call s:undobreak()
 
     let render_lines = s:_.uniq(b:choosewin.render_lines)
-    let append         = max([max(render_lines) - line('$'), 0 ])
+    let append       = max([max(render_lines) - line('$'), 0 ])
     call append(line('$'), map(range(append), '""'))
     call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
   endfor
@@ -178,7 +175,7 @@ function! s:Overlay.label_show() "{{{1
     noautocmd execute winnr 'wincmd w'
 
     " Shade overall window
-    if !self.conf['overlay_shade']
+    if self.conf['overlay_shade']
       let pattern = '\v%'. w:choosewin['w0'] .'l\_.*%'. w:choosewin['w$'] .'l'
       call self.matchadd(self.color.Shade, pattern, self.conf['overlay_shade_priority'])
     endif
