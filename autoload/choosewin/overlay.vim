@@ -24,15 +24,16 @@ let s:vim_options.window = {
       \ }
 
 " Util:
+let s:_ = choosewin#util#get()
+
 function! s:intrpl(string, vars) "{{{1
   let mark = '\v\{(.{-})\}'
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction
 
 function! s:vars(pos, width, height) "{{{1
-  let line = a:pos[0]
-  let col  = a:pos[1]
-  let R    = { 'line': line, 'col': col }
+  let [line, col] = a:pos
+  let R = { 'line': line, 'col': col }
 
   for line_offset in range(0, a:height - 1)
     let R["L+" . line_offset] = line + line_offset
@@ -40,49 +41,6 @@ function! s:vars(pos, width, height) "{{{1
 
   for col_offset in range(0, a:width)
     let R["C+" . col_offset] = col + col_offset
-  endfor
-  return R
-endfunction
-
-function! s:uniq(list) "{{{1
-  let R = {}
-  for l in a:list
-    let R[l] = 1
-  endfor
-  return map(keys(R), 'str2nr(v:val)')
-endfunction
-
-function! s:debug(msg) "{{{1
-  if !get(g:,'choosewin_debug')
-    return
-  endif
-  if exists('*Plog')
-    call Plog(a:msg)
-  endif
-endfunction
-"}}}
-
-" Options Operation:
-let s:options = {}
-let s:options.buffer = {}
-let s:options.window = {}
-
-function! s:options.buffer.set(bufnr, options) "{{{1
-  let R = {}
-  for [var, val] in items(a:options)
-    let R[var] = getbufvar(a:bufnr, var)
-    call setbufvar(a:bufnr, var, val)
-    unlet var val
-  endfor
-  return R
-endfunction
-
-function! s:options.window.set(winnr, options) "{{{1
-  let R = {}
-  for [var, val] in items(a:options)
-    let R[var] = getwinvar(a:winnr, var)
-    call setwinvar(a:winnr, var, val)
-    unlet var val
   endfor
   return R
 endfunction
@@ -101,22 +59,6 @@ function! s:undoclear() "{{{1
   let &undolevels = undolevels_org
 endfunction
 "}}}
-
-" Multi Byte Char Handling:
-" s:strchars() "{{{1
-if exists('*strchars')
-  function! s:strchars(str)
-    return strchars(a:str)
-  endfunction
-else
-  function! s:strchars(str)
-    return strlen(substitute(str, ".", "x", "g"))
-  endfunction
-endif
-
-function! s:include_multibyte_char(str) "{{{1
-  return strlen(a:str) !=# s:strchars(a:str)
-endfunction
 "}}}
 
 " Overlay:
@@ -145,10 +87,10 @@ endfunction
 
 function! s:Overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
-  let self.options_global = s:options.buffer.set(bufnr(''), s:vim_options.global)
+  let self.options_global = s:_.buffer_options_set(bufnr(''), s:vim_options.global)
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
-  let self.bufs           = s:uniq(tabpagebuflist(tabpagenr()))
+  let self.bufs           = s:_.uniq(tabpagebuflist(tabpagenr()))
 
   for bufnr in self.bufs
     call setbufvar(bufnr, 'choosewin', {
@@ -170,7 +112,7 @@ function! s:Overlay.setup_window() "{{{1
     let wv.winnr    = winnr
     let wv.pos_org  = getpos('.')
     let wv.winview  = winsaveview()
-    let wv.options  = s:options.window.set(winnr, s:vim_options.window)
+    let wv.options  = s:_.window_options_set(winnr, s:vim_options.window)
     let wv['w0']    = line('w0')
     let wv['w$']    = line('w$')
 
@@ -206,10 +148,10 @@ function! s:Overlay.setup_buffer() "{{{1
     noautocmd execute bufwinnr(bufnr) 'wincmd w'
 
     execute 'wundo' b:choosewin.undofile
-    let b:choosewin.options = s:options.buffer.set(bufnr, s:vim_options.buffer)
+    let b:choosewin.options = s:_.buffer_options_set(bufnr, s:vim_options.buffer)
     call s:undobreak()
 
-    let render_lines = s:uniq(b:choosewin.render_lines)
+    let render_lines = s:_.uniq(b:choosewin.render_lines)
     let append         = max([max(render_lines) - line('$'), 0 ])
     call append(line('$'), map(range(append), '""'))
     call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
@@ -221,7 +163,7 @@ function! s:Overlay._fill_space(lines, width, offset) "{{{1
   let width = (a:width + s:FONT_MAX.large.width) / 2 + a:offset
   for line in a:lines
     let line_s = getline(line)
-    if self.conf['overlay_clear_multibyte'] && s:include_multibyte_char(line_s)
+    if self.conf['overlay_clear_multibyte'] && s:_.include_multibyte_char(line_s)
       let line_new = repeat(' ', width)
     else
       let line_new = substitute(line_s, "\t", repeat(" ", &tabstop), 'g')
@@ -260,7 +202,7 @@ function! s:Overlay.restore() "{{{1
     call self.restore_buffer()
     call self.restore_window()
   finally
-    call s:options.buffer.set(bufnr(''), self.options_global)
+    call s:_.buffer_options_set(bufnr(''), self.options_global)
   endtry
 endfunction
 
@@ -277,7 +219,7 @@ function! s:Overlay.restore_buffer() "{{{1
       else
         call s:undoclear()
       endif
-      call s:options.buffer.set(str2nr(bufnr), b:choosewin.options)
+      call s:_.buffer_options_set(str2nr(bufnr), b:choosewin.options)
     catch
       unlet b:choosewin
     endtry
@@ -288,17 +230,17 @@ function! s:Overlay.restore_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
     if !exists('w:choosewin')
-      call s:debug('Overlay: w:choosewin not exist winnr = ' . winnr)
+      call s:_.debug('Overlay: w:choosewin not exist winnr = ' . winnr)
       continue
     endif
 
     try
       call map(w:choosewin.matchids,'matchdelete(v:val)')
-      call s:options.window.set(winnr, w:choosewin.options)
+      call s:_.window_options_set(winnr, w:choosewin.options)
       call winrestview(w:choosewin.winview)
       call setpos('.', w:choosewin.pos_org)
     catch
-      call s:debug("Overlay:" . v:exception)
+      call s:_.debug("Overlay:" . v:exception)
       unlet w:choosewin
     endtry
   endfor

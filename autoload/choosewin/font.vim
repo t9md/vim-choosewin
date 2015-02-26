@@ -7,17 +7,20 @@ let s:font_large = expand("<sfile>:h") . '/data/large'
 let s:font_small = expand("<sfile>:h") . '/data/small'
 
 " Util:
-function! s:scan_match(str, pattern, start, R) "{{{1
+function! s:scan_match(str, pat) "{{{1
   " Return List of index where pattern mached to string
   " ex)
-  "   s:scan_match('   ##   ', '#', 0, []) => [3, 4]
-  "   s:scan_match('        ', '#', 0, []) => []
-  let m = match(a:str, a:pattern, a:start)
-  if m is -1
-    return a:R
-  endif
-  return s:scan_match(a:str, a:pattern, m + 1, add(a:R, m))
+  "   s:scan_match('   ##   ', '#') => [3, 4]
+  "   s:scan_match('        ', '#') => []
+  let R = []
+  for [i, c] in map(split(a:str, '\zs'), '[v:key, v:val]')
+    if c is a:pat
+      call add(R, i)
+    endif
+  endfor
+  return R
 endfunction
+
 "}}}
 
 " Font:
@@ -35,26 +38,29 @@ endfunction
 function! s:patern_gen(data) "{{{1
   " Return Regexp pattern font_data represent.
   " This Regexp can't use without replacing special vars like '%{L+1}, %{C+1} ..'
-  let R = map(a:data, 's:scan_match(v:val, "#", 0, [])')
-  call map(R,
-        \ 's:_parse("%{L+".v:key."}l", v:val, -1, [])')
+  let R = map(a:data, 's:scan_match(v:val, "#")')
+  call map(R, 's:_parse_column(v:key, v:val)')
   call filter(R, '!empty(v:val)')
+
   return '\v' . join(R, '|')
 endfunction
 
-function! s:_parse(prefix, pos_list, c_base, R) "{{{1
-  " R = result
+
+function! s:_parse_column(line, column_list) "{{{1
   " c_base = previous column position
-  if empty(a:pos_list)
-    return join(map(a:R, 'a:prefix . v:val'), "|")
-  endif
-  let col = remove(a:pos_list, 0)
-  if col is (a:c_base + 1)
-    let a:R[-1] .= '.'
-  else
-    call add(a:R, '%{C+' . col . '}c.')
-  endif
-  return s:_parse(a:prefix, a:pos_list, col, a:R)
+  let R = []
+  let c_previous = -1
+  for c in a:column_list
+    if c is c_previous
+      let R[-1] .= '.'
+    else
+      call add(R, '%{C+'. c .'}c.')
+    endif
+    let col_previous = c
+  endfor
+
+  let prefix = "%{L+". a:line ."}l"
+  return join(map(R, 'prefix . v:val'), "|")
 endfunction
 "}}}
 

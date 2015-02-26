@@ -4,6 +4,8 @@ let s:TYPE_FUNCTION   = 2
 let s:TYPE_DICTIONARY = 4
 
 " Util::
+let s:_ = choosewin#util#get()
+
 function! s:msg(msg) "{{{1
   if !empty(a:msg)
     echohl Type
@@ -23,40 +25,6 @@ endfunction
 
 function! s:echohl(hlname) "{{{1
   execute 'echohl' a:hlname
-endfunction
-
-function! s:get_ic(table, char, default) "{{{1
-  " get ignore case
-  let R = ''
-  for char in [ a:char, tolower(a:char), toupper(a:char) ]
-    let R = get(a:table, char, a:default)
-    if R != a:default
-      return R
-    endif
-  endfor
-  return R
-endfunction
-
-function! s:options_replace(options) "{{{1
-  let R = {}
-  let curbuf = bufnr('')
-  for [var, val] in items(a:options)
-    let R[var] = getbufvar(curbuf, var)
-    call setbufvar(curbuf, var, val)
-    unlet var val
-  endfor
-  return R
-endfunction
-
-function! s:options_restore(options) "{{{1
-  for [var, val] in items(a:options)
-    call setbufvar(bufnr(''), var, val)
-    unlet var val
-  endfor
-endfunction
-
-function! s:str_split(str) "{{{1
-  return split(a:str, '\zs')
 endfunction
 "}}}
 
@@ -158,7 +126,7 @@ function! s:cw.label2num(nums, label) "{{{1
     return R
   endif
   let nums = copy(a:nums)
-  let label = s:str_split(a:label)
+  let label = s:_.str_split(a:label)
   while 1
     let R[remove(label, 0)] = remove(nums, 0)
     if empty(nums) || empty(label)
@@ -183,7 +151,7 @@ function! s:cw.init() "{{{1
   let self.exception       = ''
   let self.statusline      = {}
   let self.tablabel        = self.conf['tablabel']
-  let self._tablabel_split = s:str_split(self.tablabel)
+  let self._tablabel_split = s:_.str_split(self.tablabel)
   let self.tab_options     = {}
   let self.win_dest        = ''
   let self.env             = self.get_env()
@@ -311,7 +279,7 @@ endfunction
 function! s:cw.get_action(input) "{{{1
   " [ kind, arg ] style
   for kind in [ 'tab', 'win']
-    let num = s:get_ic(self['label2'. kind], a:input, s:NOT_FOUND)
+    let num = s:_.get_ic(self['label2'. kind], a:input, s:NOT_FOUND)
     if num isnot s:NOT_FOUND
       return [ kind, num ]
     endif
@@ -412,14 +380,14 @@ function! s:cw.tab_replace() "{{{1
   if !self.conf['tabline_replace']
     return
   endif
-  let self.tab_options = s:options_replace(s:vim_tab_options)
+  let self.tab_options = s:_.buffer_options_set(bufnr(''), s:vim_tab_options)
 endfunction
 
 function! s:cw.tab_restore() "{{{1
   if !self.conf['tabline_replace']
     return
   endif
-  call s:options_restore(self.tab_options)
+  call s:_.buffer_options_set(winnr(''), self.tab_options)
 endfunction
 
 function! s:cw.first_path(winnums) "{{{1
