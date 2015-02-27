@@ -1,9 +1,11 @@
 " Vars:
+" Max font size used to determine appropriate font size for each window.
 let s:FONT_MAX = {
       \ 'small': { 'width':  5, 'height':  8 },
       \ 'large': { 'width': 16, 'height': 10 },
       \ }
 
+" These are variables that need to be changed for overlay work properly.
 let s:vim_options = {}
 let s:vim_options.global = {
       \ '&cursorline': 0,
@@ -27,6 +29,11 @@ let s:vim_options.window = {
 let s:_ = choosewin#util#get()
 
 function! s:intrpl(string, vars) "{{{1
+  " String interpolation from vars Dictionary.
+  " ex)
+  "   string = "%{L+1}l%{C+2}c" 
+  "   vars   = { "L+1": 1, "C+2", 2 }
+  "   Result => "%1l%2c"
   let mark = '\v\{(.{-})\}'
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction
@@ -56,7 +63,6 @@ function! s:undoclear() "{{{1
   noautocmd execute "normal! a \<BS>\<Esc>"
   let &undolevels = undolevels_org
 endfunction
-"}}}
 "}}}
 
 " Overlay:
@@ -123,7 +129,7 @@ function! s:Overlay.setup_window() "{{{1
     let font         = self._font_table[font_size][char]
     let font_idx    += 1
     let wv.font      = font
-    let line_s       = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])                  
+    let line_s       = line('w0') + max([ 1 + (winheight(0) - font.height)/2, 0 ])                  
     let line_e       = line_s + font.height - 1
     let offset       = col('.') - wincol()
     let col          = max([(winwidth(0) - font.width)/2 , 1 ]) + offset
@@ -247,7 +253,7 @@ endfunction
 "}}}
 
 " Highight:
-function! s:Overlay.matchadd(color, pattern, priority)
+function! s:Overlay.matchadd(color, pattern, priority) "{{{1
   call add(w:choosewin.matchids,
         \ matchadd(a:color, a:pattern, a:priority))
 endfunction

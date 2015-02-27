@@ -13,6 +13,7 @@ let s:default = {
       \ 'blink_on_land':           1,
       \ 'return_on_single_win':    0,
       \ 'label':                   'ABCDEFGHIJKLMNOPQRTUVWXYZ',
+      \ 'keymap':                  {},
       \ 'hook':                    {},
       \ 'hook_enable':             0,
       \ 'hook_bypass':             [],
@@ -21,7 +22,7 @@ let s:default = {
       \ 'debug':                   0,
       \ }
 
-let s:default.keymap = {
+let s:keymap = {
       \ '0':     'tab_first',
       \ '[':     'tab_prev',
       \ ']':     'tab_next',
@@ -54,7 +55,10 @@ function! s:config.user() "{{{1
 endfunction
 
 function! s:config.get() "{{{1
-  return extend(self.user(), s:internal)
+  let conf = extend(self.user(), s:internal)
+  call extend(conf['keymap'], s:keymap, 'keep')
+  call filter(conf['keymap'], "v:val isnot '<NOP>'")
+  return conf
 endfunction
 "}}}
 
@@ -62,6 +66,7 @@ endfunction
 function! choosewin#config#get() "{{{1
   return s:config.get()
 endfunction
+"}}}
 
 
 " Test:

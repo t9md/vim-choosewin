@@ -25,6 +25,28 @@ else
 endif
 "}}}
 
+function! s:define_type_checker() "{{{1
+  " dynamically define s:is_Number(v)  etc..
+  let types = {
+        \ "Number":     0,
+        \ "String":     1,
+        \ "Funcref":    2,
+        \ "List":       3,
+        \ "Dictionary": 4,
+        \ "Float":      5,
+        \ }
+
+  for [type, number] in items(types)
+    let s = ''
+    let s .= 'function! s:is_' . type . '(v)' . "\n"
+    let s .= '  return type(a:v) ==# ' . number . "\n"
+    let s .= 'endfunction' . "\n"
+    execute s
+  endfor
+endfunction
+"}}}
+call s:define_type_checker()
+unlet! s:define_type_checker
 
 function! s:debug(msg) "{{{1
   if !get(g:,'choosewin_debug')
@@ -91,7 +113,7 @@ function! s:define_type_checker() "{{{1
   for [type, number] in items(types)
     let s = ''
     let s .= 'function! s:is_' . type . '(v)' . "\n"
-    let s .= '  return type(a:v) ==# ' . number . "\n"
+    let s .= '  return type(a:v) is ' . number . "\n"
     let s .= 'endfunction' . "\n"
     execute s
   endfor
@@ -99,7 +121,6 @@ endfunction
 "}}}
 call s:define_type_checker()
 unlet! s:define_type_checker
-
 
 function! s:get_ic(table, char, default) "{{{1
   " get ignore case
@@ -109,12 +130,26 @@ function! s:get_ic(table, char, default) "{{{1
   endif
   return items(a:table)[i][1]
 endfunction
-"}}}
 
+function! s:dict_invert(d) "{{{1
+  return s:dict_create(values(a:d), keys(a:d))
+endfunction
+
+function! s:dict_create(keys, values) "{{{1
+  " Create dict from two List.
+  let R = {}
+  for i in range(0, min([len(a:keys), len(a:values)]) - 1)
+    let R[a:keys[i]] = a:values[i]
+  endfor
+  return R
+endfunction
+"}}}
 
 let s:functions = [
       \ "debug",
       \ "uniq",
+      \ "dict_invert",
+      \ "dict_create",
       \ "str_split",
       \ "buffer_options_set",
       \ "window_options_set",
@@ -137,3 +172,5 @@ function! choosewin#util#get() "{{{1
   return R
 endfunction
 "}}}
+
+" vim: foldmethod=marker

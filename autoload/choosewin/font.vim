@@ -54,7 +54,7 @@ function! s:pattern_gen(data) "{{{1
     call add(line_used, i)
     call add(R, s:_parse_column(i, val))
   endfor
-  let col_used = uniq(col_used)
+  let col_used = s:_.uniq(col_used)
   return [line_used, col_used, '\v' . join(R, '|')]
 endfunction
 
