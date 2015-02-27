@@ -5,15 +5,26 @@ endfunction
 "}}}
 let s:sid = s:SID()
 
-function! s:uniq(list) "{{{1
-  let R = []
-  for e in a:list
-    if index(R, e) is -1
-      call add(R, e)
-    endif
-  endfor
-  return R
-endfunction
+" s:uniq() "{{{1
+if exists('*uniq')
+  function! s:uniq(...)
+    return call('uniq', a:000 )
+  endfunction
+else
+  function! s:uniq(list) "{{{1
+    " implementation is not exactly same, this version of uniq is not affect
+    " of original argment(list).
+    let R = []
+    for e in a:list
+      if index(R, e) is -1
+        call add(R, e)
+      endif
+    endfor
+    return R
+  endfunction
+endif
+"}}}
+
 
 function! s:debug(msg) "{{{1
   if !get(g:,'choosewin_debug')

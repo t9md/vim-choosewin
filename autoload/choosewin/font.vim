@@ -28,9 +28,9 @@ endfunction
 " Font:
 function! s:font_new(data) "{{{1
   " Generate Font(=Dictionary) used by Overlay.
-  let width  = len(a:data[0])
-  let height = len(a:data)
   let [line_used, col_used, pattern] = s:pattern_gen(a:data)
+  let height = max(line_used) + 1
+  let width  = max(col_used)
   return {
         \ 'width':     width,
         \ 'height':    height,
@@ -54,7 +54,7 @@ function! s:pattern_gen(data) "{{{1
     call add(line_used, i)
     call add(R, s:_parse_column(i, val))
   endfor
-  let col_used = s:_.uniq(col_used)
+  let col_used = uniq(col_used)
   return [line_used, col_used, '\v' . join(R, '|')]
 endfunction
 
@@ -117,12 +117,11 @@ function! choosewin#font#large() "{{{1
   return map(s:read_data(s:font_large),'s:font_new(v:val)')
 endfunction
 "}}}
-if expand("%:p") !=# expand("<sfile>:p")
-  finish
-endif
-" let small_data = s:read_data(s:font_small)
-let large_data = s:read_data(s:font_large)
-" echo small_data
-echo s:pattern_gen(large_data['H'])
-
+"
+" if expand("%:p") !=# expand("<sfile>:p")
+  " finish
+" endif
+" let L = choosewin#font#large()
+" let R = map(L, 'v:val["width"]')
+" echo PP(R)
 " vim: foldmethod=marker

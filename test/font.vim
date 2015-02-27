@@ -19,6 +19,10 @@ function! s:test.check() "{{{1
   " let self.conf    = choosewin#config()
   " echo s:_.str_split(self.conf['label'])
 endfunction                            
+
+let g:choosewin_color_overlay_current = { 'gui': ['DarkGreen', 'DarkGreen' ], 'cterm': [ 22, 22 ] }
+
+
                                        
 function! s:test.review() "{{{1        
   call self.setup()                    
@@ -26,7 +30,7 @@ function! s:test.review() "{{{1
   for char in self.chars()
     let self.conf.label = char
     call self.overlay.start([1], self.conf)
-    sleep 20m
+    sleep 50m
     call self.overlay.restore()
   endfor
 endfunction

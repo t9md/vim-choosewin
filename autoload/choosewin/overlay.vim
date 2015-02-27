@@ -88,7 +88,7 @@ function! s:Overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
-  let self.bufs           = s:_.uniq(tabpagebuflist(tabpagenr()))
+  let self.bufs           = uniq(tabpagebuflist(tabpagenr()))
   let self.options_global = s:_.buffer_options_set(bufnr(''), s:vim_options.global)
 
   for bufnr in self.bufs
@@ -98,6 +98,7 @@ function! s:Overlay.setup(wins, conf) "{{{1
           \ 'offset':       [],
           \ 'options':      {},
           \ 'undofile':     tempname(),
+          \ 'font_width':   [],
           \ })
   endfor
 endfunction
@@ -122,16 +123,15 @@ function! s:Overlay.setup_window() "{{{1
     let font         = self._font_table[font_size][char]
     let font_idx    += 1
     let wv.font      = font
-    let line_s       = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])
+    let line_s       = line('w0') + max([ 1 + (winheight(0) - s:FONT_MAX[font_size].height)/2, 0 ])                  
     let line_e       = line_s + font.height - 1
-    let col          = max([(winwidth(0) - s:FONT_MAX[font_size].width)/2 , 1 ])
     let offset       = col('.') - wincol()
-    let col         += offset
+    let col          = max([(winwidth(0) - font.width)/2 , 1 ]) + offset
     let wv.matchids  = []
-    " let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
     let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font))
     let w:choosewin  = wv
 
+    let b:choosewin.font_width   += [font.width]
     let b:choosewin.render_lines += range(line_s, line_e)
     let b:choosewin.offset       += [offset]
     let b:choosewin.winwidth     += [winwidth(0)]
@@ -147,16 +147,18 @@ function! s:Overlay.setup_buffer() "{{{1
     let b:choosewin.options = s:_.buffer_options_set(bufnr, s:vim_options.buffer)
     call s:undobreak()
 
-    let render_lines = s:_.uniq(b:choosewin.render_lines)
+    let render_lines = uniq(b:choosewin.render_lines)
     let append       = max([max(render_lines) - line('$'), 0 ])
     call append(line('$'), map(range(append), '""'))
-    call self._fill_space(render_lines, max(b:choosewin.winwidth),  max(b:choosewin.offset))
+    call self._fill_space(
+          \ render_lines,
+          \ max(b:choosewin.font_width), max(b:choosewin.winwidth),  max(b:choosewin.offset))
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
 endfunction
 
-function! s:Overlay._fill_space(lines, width, offset) "{{{1
-  let width = (a:width + s:FONT_MAX.large.width) / 2 + a:offset
+function! s:Overlay._fill_space(lines, font_width, width, offset) "{{{1
+  let width = (a:width + a:font_width) / 2 + a:offset
   for line in a:lines
     let line_s = getline(line)
     if self.conf['overlay_clear_multibyte'] && s:_.include_multibyte_char(line_s)
