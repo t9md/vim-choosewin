@@ -41,15 +41,6 @@ function! s:vars(pos, font) "{{{1
     let R[var] = val
   endfor
   return R
-
-  " for line_relative in a:font.line_used
-    " let R["L+" . line_relative] = line + line_relative
-  " endfor
-
-  " for col_relative in a:font.col_used
-    " let R["C+" . col_relative] = col + col_relative
-  " endfor
-  " return R
 endfunction
 "}}}
 
