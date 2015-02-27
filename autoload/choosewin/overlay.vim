@@ -31,18 +31,25 @@ function! s:intrpl(string, vars) "{{{1
   return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
 endfunction
 
-function! s:vars(pos, width, height) "{{{1
+function! s:vars(pos, font) "{{{1
   let [line, col] = a:pos
-  let R = { 'line': line, 'col': col }
-
-  for line_offset in range(0, a:height - 1)
-    let R["L+" . line_offset] = line + line_offset
+  let R = {}
+  for [var, val] in map(copy(a:font.line_used), '["L+". v:val, line + v:val ]')
+    let R[var] = val
   endfor
-
-  for col_offset in range(0, a:width)
-    let R["C+" . col_offset] = col + col_offset
+  for [var, val] in map(copy(a:font.col_used), '["C+". v:val, col + v:val ]')
+    let R[var] = val
   endfor
   return R
+
+  " for line_relative in a:font.line_used
+    " let R["L+" . line_relative] = line + line_relative
+  " endfor
+
+  " for col_relative in a:font.col_used
+    " let R["C+" . col_relative] = col + col_relative
+  " endfor
+  " return R
 endfunction
 "}}}
 
@@ -130,7 +137,8 @@ function! s:Overlay.setup_window() "{{{1
     let offset       = col('.') - wincol()
     let col         += offset
     let wv.matchids  = []
-    let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
+    " let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font.width, font.height))
+    let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font))
     let w:choosewin  = wv
 
     let b:choosewin.render_lines += range(line_s, line_e)

@@ -4,91 +4,75 @@ let s:FONT_SMALL_WIDTH_MAX =  8
 let s:hl_shade_priority = 100
 let s:hl_label_priority = 101
 
-function! s:intrpl(string, vars) "{{{1
-  let mark = '\v\{(.{-})\}'
-  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
-endfunction
+let s:_ = choosewin#util#get()
 
-function! s:vars(pos, height, width) "{{{1
-  let line = a:pos[0]
-  let col  = a:pos[1]
-  let R    = { 'line': line, 'col': col }
+let s:test = {}                        
+function! s:test.setup() "{{{1         
+  unlet! b:choosewin
+  unlet! w:choosewin
+  let self.overlay = choosewin#overlay#get()
+  let self.conf    = choosewin#config()
+endfunction                            
 
-  for line_offset in range(0, a:height - 1)
-    let R['line+' . line_offset] = line + line_offset
+function! s:test.check() "{{{1         
+  " let self.overlay = choosewin#overlay#get()
+  " let self.conf    = choosewin#config()
+  " echo s:_.str_split(self.conf['label'])
+endfunction                            
+                                       
+function! s:test.review() "{{{1        
+  call self.setup()                    
+
+  for char in self.chars()
+    let self.conf.label = char
+    call self.overlay.start([1], self.conf)
+    sleep 20m
+    call self.overlay.restore()
   endfor
-
-  for col_offset in range(0, a:width)
-    let R['col+' . col_offset] = col + col_offset
-  endfor
-  return R
 endfunction
 
-let s:test = {}
-function! s:test.setup() "{{{1
-  let self.table = {}
-  let self.table.small = choosewin#font#small()
-  let self.table.large = choosewin#font#large()
-endfunction
-
-function! s:test.font_list() "{{{1
+function! s:test.chars() "{{{1        
   return map(range(33, 126), 'nr2char(v:val)')
 endfunction
 
-function! s:test.review() "{{{1
-  call self.setup()
-  let start = reltime()
-
-  for char in self.font_list()
-    call clearmatches()
-    let large = self.table.large[char]
-    let small = self.table.small[char]
-    call self.view(large.pattern, s:vars([1, 1], large.height, large.width))
-    call self.view(small.pattern, s:vars([1,17], small.height, small.width))
-    redraw
-    sleep 100m
-  endfor
-
-  echo reltimestr(reltime(start))
-endfunction
-
-function! s:test.perf(size, time) "{{{1
-  if !has_key(self, 'table')
-    call self.setup()
-  endif
+function! s:test.perf(size, count) "{{{1
+  let g:choosewin_overlay_font_size = a:size
+  call self.setup()                    
   let start = reltime()
   
-  let vars = s:vars([1, 1], 16, 16 )
-  let table = self.table[a:size]
-  for n in range(a:time)
-    for char in self.font_list()
-      let font = table[char]
-      " call self.overlay(font.pattern, s:vars([1, 1], font.height, font.width))
-      call self.overlay(font.pattern, vars)
+  for n in range(a:count)
+    for char in self.chars()
+      let self.conf.label = char
+      call self.overlay.start([1], self.conf)
+      " sleep 20m
+      call self.overlay.restore()
     endfor
   endfor
-  let result = a:size . ':' . reltimestr(reltime(start))
+
+  let result = 'cnt='. a:count .' '. a:size .':'. reltimestr(reltime(start))
   echom result
-endfunction
-
-function! s:test.perf_all(time) "{{{1
-  call self.perf('large', a:time)
-  call self.perf('small', a:time)
-endfunction
-
-function! s:test.view(pattern, vars) "{{{1
-  return matchadd('Search',
-        \ s:intrpl(a:pattern, a:vars))
-endfunction
-
-function! s:test.overlay(pattern, vars) "{{{1
-  " redraw
-  let id = matchadd('Search', s:intrpl(a:pattern, a:vars))
-  call matchdelete(id)
 endfunction
 
 command! FontReview call s:test.review()
 command! -count=1 FontPerfLarge call s:test.perf('large', <count>)
 command! -count=1 FontPerfSmall call s:test.perf('small', <count>)
-command! -count=1 FontPerfAll   call s:test.perf_all(<count>)
+
+" NEW
+" --------------------------
+" FontPerfLarge
+" cnt=3 large: 13.211046
+" cnt=3 large: 13.317207 
+
+" FontPerfSmall
+" cnt=3 small: 11.024480
+" cnt=3 small: 10.595363
+
+" OLD
+" --------------------------
+" FontPerfLarge
+" cnt=3 large: 26.530380
+
+" FontPerfSmall
+" cnt=3 small: 26.280097 
+
 " vim: foldmethod=marker
