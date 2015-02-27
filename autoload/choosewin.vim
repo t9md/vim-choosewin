@@ -159,7 +159,7 @@ function! s:cw.init() "{{{1
   if !has_key(self, 'previous')
     let self.previous = []
   endif
-  let self.keymap          = filter(
+  let self.keymap = filter(
         \ extend(self.keymap_default(), self.conf['keymap']),
         \ "v:val !=# '<NOP>'")
 
