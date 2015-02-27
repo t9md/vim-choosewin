@@ -60,19 +60,17 @@ command! -count=1 FontPerfSmall call s:test.perf('small', <count>)
 " NEW
 " --------------------------
 " FontPerfLarge
-" cnt=3 large: 13.211046
-" cnt=3 large: 13.317207 
+" cnt=10 large: 19.119745 
 
 " FontPerfSmall
-" cnt=3 small: 11.024480
-" cnt=3 small: 10.595363
+" cnt=10 small: 15.231822
 
 " OLD
 " --------------------------
 " FontPerfLarge
-" cnt=3 large: 26.530380
+" cnt=10 large: 19.615394  ;
 
 " FontPerfSmall
-" cnt=3 small: 26.280097 
+" cnt=10 small: 18.969902  
 
 " vim: foldmethod=marker
