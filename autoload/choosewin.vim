@@ -83,7 +83,6 @@ function! s:cw.statusline_restore() "{{{1
   endfor
 endfunction
 
-
 function! s:cw.prepare_label(win, align) "{{{1
   let pad   = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
@@ -104,8 +103,6 @@ function! s:cw.prepare_label(win, align) "{{{1
           \ self.color.Other, padding, color, win_s, self.color.Other)
   endif
 endfunction
-
-
 
 function! s:cw.tab_choose(num) "{{{1
   silent execute 'tabnext ' a:num
@@ -244,8 +241,6 @@ function! s:cw.label_clear() "{{{1
   endif
 endfunction
 
-
-
 function! s:cw.first_path(winnums) "{{{1
   if empty(a:winnums)
     throw 'RETURN'
@@ -259,7 +254,6 @@ function! s:cw.first_path(winnums) "{{{1
     endif
   endif
 endfunction
-
 "}}}
 
 " Tabline:
