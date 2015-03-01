@@ -113,6 +113,32 @@ function! s:dict_create(keys, values) "{{{1
   endfor
   return R
 endfunction
+
+function! s:blink(count, color, pattern) "{{{1
+  for i in range(a:count)
+    let id = matchadd(a:color, a:pattern)
+    redraw
+    sleep 80m
+    call matchdelete(id)
+    redraw 
+    sleep 80m
+  endfor
+endfunction
+
+function! s:message(msg) "{{{1
+  echohl Type
+  echon 'choosewin: '
+  echohl Normal
+  echon a:msg
+endfunction
+
+function! s:read_char(prompt) "{{{1
+  redraw
+  echohl PreProc
+  echon a:prompt
+  echohl Normal
+  return nr2char(getchar())
+endfunction
 "}}}
 
 let s:functions = [
@@ -132,6 +158,9 @@ let s:functions = [
       \ "is_Dictionary",
       \ "is_Float",
       \ "get_ic",
+      \ "blink",
+      \ "message",
+      \ "read_char",
       \ ]
 
 function! choosewin#util#get() "{{{1

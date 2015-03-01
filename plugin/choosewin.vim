@@ -49,12 +49,16 @@ nnoremap <silent> <Plug>(choosewin)
       \ :<C-u>call choosewin#start(range(1, winnr('$')))<CR>
 
 " Command:
+function! s:win_all()
+  return range(1, winnr('$'))
+endfunction
+
 command! -bar ChooseWin
-      \ call choosewin#start(range(1, winnr('$')))
+      \ call choosewin#start(s:win_all())
 command! -bar ChooseWinSwap
-      \ call choosewin#start(range(1, winnr('$')), {'swap': 1, 'swap_stay': 0 })
+      \ call choosewin#start(s:win_all(), {'swap': 1, 'swap_stay': 0 })
 command! -bar ChooseWinSwapStay
-      \ call choosewin#start(range(1, winnr('$')), {'swap': 1, 'swap_stay': 1 })
+      \ call choosewin#start(s:win_all(), {'swap': 1, 'swap_stay': 1 })
 
 " Finish:
 let &cpo = s:old_cpo

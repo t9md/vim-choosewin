@@ -1,4 +1,9 @@
+let s:_ = choosewin#util#get()
 " Misc:
+function! s:win_all() "{{{1
+  return range(1, winnr('$'))
+endfunction
+
 function! s:win_swap(tab, win) "{{{1
   let [ tab_dst, win_dst ] = [ a:tab, a:win]
   let [ tab_src, win_src ] = [ tabpagenr(), winnr() ]
@@ -31,13 +36,13 @@ endfunction
 let s:ac = {}
 
 function! s:ac.init(app) "{{{1
-  self.app = a:app
+  let self.app = a:app
   return self
 endfunction
 
 function! s:ac.do_win(num) "{{{1
   call s:goto_win(a:num)
-  let self.app.env.update()
+  " let self.app.env.update()
   throw 'CHOSE'
 endfunction
 
@@ -48,7 +53,7 @@ endfunction
 function! s:ac.do_tab(num) "{{{1
   call s:goto_tab(a:num)
   let self.app.env.update()
-  let self.app.wins = self.app.win_all()
+  let self.app.wins = s:win_all()
 endfunction
 
 function! s:ac.do_tab_first() "{{{1
@@ -56,11 +61,11 @@ function! s:ac.do_tab_first() "{{{1
 endfunction
 
 function! s:ac.do_tab_prev() "{{{1
-  call self.do_tab(max([1, self.env.tab_cur - 1]))
+  call self.do_tab(max([1, tabpagenr() - 1]))
 endfunction
 
 function! s:ac.do_tab_next() "{{{1
-  call self.do_tab(min([tabpagenr('$'), self.env.tab_cur + 1]))
+  call self.do_tab(min([tabpagenr('$'), tabpagenr() + 1]))
 endfunction
 
 function! s:ac.do_tab_last() "{{{1
@@ -79,39 +84,40 @@ function! s:ac.do_previous() "{{{1
 
   let [ tab_dst, win_dst ] = self.app.previous
   call s:goto_tabwin(tab_dst, win_dst)
-  let self.app.env.update()
-  let self.app.wins = self.app.win_all()
+  " let self.app.env.update()
+  " let self.app.wins = s:win_all()
   throw 'CHOSE'
 endfunction
 
-function! s:ac._swap(win) "{{{1
-  call s:win_swap(tabpagenr(), a:win)
-  if self.conf['swap_stay']
-    call s:goto_win(a:win)
+function! s:ac._swap(tab, win) "{{{1
+  call s:win_swap(a:tab, a:win)
+  if self.app.conf['swap_stay']
+    call s:goto_tabwin(
+          \ self.app.env_org.tab_cur, self.app.env_org.win_cur)
   endif
   throw 'SWAP'
 endfunction
 
 function! s:ac.do_swap() "{{{1
-  if self.conf['swap']
+  if self.app.conf['swap']
     " if user invoke do_swap() twice then swap with previous window
-    call self.do_previous()
+    if empty(self.app.previous)
+      throw 'NO_PREVIOUS_WINDOW'
+    endif
+    let [ tab_dst, win_dst ] = self.app.previous
+    call self._swap(tab_dst, win_dst)
   else
-    let self.conf['swap'] = 1
+    let self.app.conf['swap'] = 1
   endif
 endfunction
 
 function! s:ac.do_swap_stay() "{{{1
-  if self.conf['swap']
-    call self.do_previous()
-  else
-    let self.conf['swap']      = 1
-    let self.conf['swap_stay'] = 1
-  endif
+  let self.app.conf['swap_stay'] = 1
+  call self.do_swap()
 endfunction
 
 function! s:ac.do_cancel() "{{{1
-  call self.goto_tab(self.app.env_org.tab_cur)
+  call s:goto_tab(self.app.env_org.tab_cur)
   throw 'CANCELED'
 endfunction
 "}}}

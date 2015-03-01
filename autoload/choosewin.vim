@@ -8,15 +8,23 @@ let s:vim_tab_options = {
 " Util::
 let s:_ = choosewin#util#get()
 
+function! s:win_all() "{{{1
+  return range(1, winnr('$'))
+endfunction
+
+function! s:tab_all() "{{{1
+  return range(1, tabpagenr('$'))
+endfunction
+
 " Env:
 let s:env = {}
 
 function! s:env.update() "{{{1
   return extend(self, {
         \ 'win_cur': winnr(),
-        \ 'win_all': range(1, winnr('$')),
+        \ 'win_all': s:win_all(),
         \ 'tab_cur': tabpagenr(),
-        \ 'tab_all': range(1, tabpagenr('$')),
+        \ 'tab_all': s:tab_all(),
         \ 'buf_cur': bufnr(''),
         \ })
 endfunction
@@ -31,7 +39,7 @@ function! s:cw.start(wins, ...) "{{{1
   let self.action = choosewin#action#init(self)
 
   " Elminate non-exsiting window.
-  let self.wins = filter(a:wins, 'index(self.win_all(), v:val) isnot -1')
+  let self.wins = filter(a:wins, 'index(s:win_all(), v:val) isnot -1')
   let status = []
   try
     " Some status bar plugin need to know if choosewin active or not.
@@ -46,8 +54,13 @@ function! s:cw.start(wins, ...) "{{{1
     call self.setup()
     call self.choose()
   catch /\v^(CHOSE|SWAP|RETURN|CANCELED)$/
+    let status = [ tabpagenr(), winnr() ]
+    let self.previous = [ self.env_org.tab_cur, self.env_org.win_cur ]
+  catch /\v^(RETURN|CANCELED)$/
+    let status = []
   catch
     let self.exception = v:exception
+    let status = []
   finally
     call self.finish()
     let g:choosewin_active = 0
@@ -60,9 +73,9 @@ function! s:cw.setup() "{{{1
   let self.win_dest    = ''
   let self.tab_options = {}
   let self.env         = s:env.update()
-  let self.env_orig    = deepcopy(self.env)
+  let self.env_org     = deepcopy(self.env)
   let self.label2tab   = s:_.dict_create(self.conf['tablabel'], self.env.tab_all)
-  let self.tab2label   = s:_.dict_create(self.env.tab_all, self.conf['tablabel'])
+  " let self.tab2label   = s:_.dict_create(self.env.tab_all, self.conf['tablabel'])
 
   if !has_key(self, 'previous')
     let self.previous = []
@@ -97,9 +110,7 @@ function! s:cw.prepare_label(win, align) "{{{1
   let pad   = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
-  let color = winnr() ==# a:win
-        \ ? self.color.LabelCurrent
-        \ : self.color.Label
+  let color = self.color[ winnr() is a:win ? "LabelCurrent" : "Label" ]
 
   if a:align is 'left'
     return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
@@ -116,39 +127,39 @@ function! s:cw.prepare_label(win, align) "{{{1
   endif
 endfunction
 
-
 function! s:cw.choose() "{{{1
   while 1
     call self.label_show()
-    let  input = self.read_input()
+    let prompt = (self.conf['swap'] ? '[swap] ' : '') . 'chooose > '
+    let char = s:_.read_char(prompt)
+
     call self.label_clear()
 
     " Tab label is chosen.
-    let num = s:_.get_ic(self.label2tab, input)
+    let num = s:_.get_ic(self.label2tab, char)
     if !empty(num)
-      call self.do_tab(num)
+      call self.action.do_tab(num)
       continue
     endif
 
     " Win label is chosen.
-    let num = s:_.get_ic(self.label2win, input)
+    let num = s:_.get_ic(self.label2win, char)
     if !empty(num)
       if self.conf['swap']
-        call self.action._swap(num)
+        call self.action._swap(tabpagenr(), num)
       else
         call self.action.do_win(num)
       endif
     endif
 
-    let action = get(self.conf['keymap'], input, 'cancel')
-    let action_func = 'do_' . action
-    if !s:_.is_Funcref(get(self.action, action_func))
+    let action_name = 'do_' . get(self.conf['keymap'], char, 'cancel')
+    if !s:_.is_Funcref(get(self.action, action_name))
       throw 'UNKNOWN_ACTION'
     endif
-    call self.action[action_func]()
+    call self.action[action_name]()
   endwhile
 endfunction
-"}}}
+
 function! s:cw.call_hook(hook_point, arg) "{{{1
   if !self.conf['hook_enable']
         \ || index(self.conf['hook_bypass'], a:hook_point ) !=# -1
@@ -199,7 +210,7 @@ function! s:cw.first_path() "{{{1
 
   if self.conf['auto_choose']
     " never return
-    call self.do_win(self.wins[0])
+    call self.action.do_win(self.wins[0])
   endif
 endfunction
 "}}}
@@ -209,7 +220,7 @@ function! s:cw.tabline() "{{{1
   let R   = ''
   let pad = repeat(' ', self.conf['label_padding'])
   let sepalator = printf('%%#%s# ', self.color.Other)
-  let tab_all = self.tab_all()
+  let tab_all = s:tab_all()
   for tabnum in tab_all
     let color = self.color[ tabpagenr() is tabnum ? "LabelCurrent" : "Label" ]
     let R .= printf('%%#%s# %s ', color,  pad . self.get_tablabel(tabnum) . pad)
@@ -226,58 +237,19 @@ function! s:cw.get_tablabel(num) "{{{1
 endfunction
 "}}}
 
-" Misc:
-function! s:cw.read_input() "{{{1
-  redraw
-  let prompt = ( self.conf['swap'] ? '[swap] ' : '' ) . 'chooose > '
-  echohl PreProc
-  echon prompt
-  echohl Normal
-  return nr2char(getchar())
-endfunction
-
-function! s:cw.blink_cword() "{{{1
-  if ! self.conf['blink_on_land']
-    return
-  endif
-  for i in range(2)
-    let id = matchadd(self.color.Land, s:cword_pattern)
-    redraw
-    sleep 80m
-    call matchdelete(id)
-    redraw 
-    sleep 80m
-  endfor
-endfunction
-let s:cword_pattern = '\k*\%#\k*'
-
-function! s:cw.win_all() "{{{1
-  return range(1, winnr('$'))
-endfunction
-
-function! s:cw.tab_all() "{{{1
-  return range(1, tabpagenr('$'))
-endfunction
-
-function! s:cw.message() "{{{1
-  if !empty(self.exception)
-    echohl Type
-    echon 'choosewin: '
-    echohl Normal
-  endif
-  echon self.exception
-endfunction
-"}}}
-
 " Restore:
 function! s:cw.finish() "{{{1
-  if self.conf['tabline_replace'] && !empty(self.tab_options)
+  if !empty(self.tab_options)
     call s:_.buffer_options_set(bufnr(''), self.tab_options)
   endif
   echo ''
   redraw
-  call self.blink_cword()
-  call self.message()
+  if self.conf['blink_on_land']
+    call s:_.blink(2, self.color.Land, '\k*\%#\k*')
+  endif
+  if !empty(self.exception)
+    call s:_.message(self.exception)
+  endif
 endfunction
 "}}}
 
