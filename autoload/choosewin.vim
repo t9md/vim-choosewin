@@ -47,7 +47,7 @@ function! s:cw.setup() "{{{1
         \ 'win_cur': winnr(),
         \ 'win_all': self.win_all(),
         \ 'tab_cur': tabpagenr(),
-        \ 'tab_all': range(1, tabpagenr('$')),
+        \ 'tab_all': self.tab_all(),
         \ 'buf_cur': bufnr(''),
         \ }
   
@@ -116,23 +116,27 @@ function! s:cw.win_choose(num) "{{{1
 endfunction
 
 function! s:cw.choose() "{{{1
-  call s:_.debug('choose start')
-  call self.label_show()
-  let  input = self.read_input()
-  call self.label_clear()
-
   while 1
-    " Tab label or window label is chosen.
-    for kind in [ 'tab', 'win']
-      let num = s:_.get_ic(self['label2'. kind], input, s:NOT_FOUND)
-      if num isnot s:NOT_FOUND
-        call self['do_'.kind](num)
-      endif
-    endfor
+    call self.label_show()
+    let  input = self.read_input()
+    call self.label_clear()
+
+    " Tab label is chosen.
+    let num = s:_.get_ic(self.label2tab, input, s:NOT_FOUND)
+    if num isnot s:NOT_FOUND
+      call self.do_tab(num)
+      continue
+    endif
+
+    " Win label is chosen.
+    let num = s:_.get_ic(self.label2win, input, s:NOT_FOUND)
+    if num isnot s:NOT_FOUND
+      call self.do_win(num)
+    endif
 
     let action = get(self.conf['keymap'], input, 'cancel')
     let action_func = 'do_' . action
-    if !s:_.is_Funcref(action_func)
+    if !s:_.is_Funcref(self[action_func])
       throw 'UNKNOWN_ACTION'
     endif
     call self[action_func]()
@@ -147,10 +151,8 @@ function! s:cw.do_win(num) "{{{1
 endfunction
 
 function! s:cw.do_tab(num) "{{{1
-  call Plog('called!!')
   call self.tab_choose(a:num)
   let self.wins = self.win_all()
-  call self.label_show()
 endfunction
 
 function! s:cw.do_tab_first() "{{{1
@@ -167,6 +169,10 @@ endfunction
 
 function! s:cw.do_tab_last() "{{{1
   call self.do_tab(tabpagenr('$'))
+endfunction
+
+function! s:cw.do_tab_close() "{{{1
+  silent tabclose
 endfunction
 
 function! s:cw.do_win_land() "{{{1
@@ -276,16 +282,14 @@ endfunction
 
 " Tabline:
 function! s:cw.tabline() "{{{1
-  call s:_.debug('in tabline()')
-  call s:_.debug(self.conf)
-  call s:_.debug('in tabline2()')
   let R   = ''
   let pad = repeat(' ', self.conf['label_padding'])
   let sepalator = printf('%%#%s# ', self.color.Other)
-  for tabnum in self.env.tab_all
-    let color = self.color[ tabpagenr() is tabnum ? "LabelCurent" : "Label" ]
+  let tab_all = self.tab_all()
+  for tabnum in tab_all
+    let color = self.color[ tabpagenr() is tabnum ? "LabelCurrent" : "Label" ]
     let R .= printf('%%#%s# %s ', color,  pad . self.get_tablabel(tabnum) . pad)
-    let R .= tabnum !=# self.env.tab_all[-1] ? sepalator : ''
+    let R .= tabnum isnot tab_all[-1] ? sepalator : ''
   endfor
   let R .= printf('%%#%s#', self.color.Other)
   return R
@@ -325,6 +329,10 @@ let s:cword_pattern = '\k*\%#\k*'
 
 function! s:cw.win_all() "{{{1
   return range(1, winnr('$'))
+endfunction
+
+function! s:cw.tab_all() "{{{1
+  return range(1, tabpagenr('$'))
 endfunction
 
 function! s:cw.status() "{{{1
@@ -395,22 +403,17 @@ function! choosewin#tabline() "{{{1
   return s:cw.tabline()
 endfunction
 
-function! choosewin#config() "{{{1
-  return s:cw.config()
-endfunction
-
 function! choosewin#get_tablabel(num) "{{{1
   return s:cw.get_tablabel(a:num)
 endfunction
 
-function! choosewin#get_previous() "{{{1
-  return s:cw.previous
-endfunction
+" function! choosewin#get_previous() "{{{1
+  " return s:cw.previous
+" endfunction
 "}}}
 
 if expand("%:p") !=# expand("<sfile>:p")
   finish
 endif
-" echo s:cw.tabline()
 
 " vim: foldmethod=marker

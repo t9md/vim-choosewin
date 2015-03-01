@@ -27,6 +27,7 @@ let s:keymap = {
       \ '[':     'tab_prev',
       \ ']':     'tab_next',
       \ '$':     'tab_last',
+      \ 'x':     'tab_close',
       \ ';':     'win_land',
       \ '-':     'previous',
       \ 's':     'swap',
@@ -67,13 +68,6 @@ function! choosewin#config#get() "{{{1
   return s:config.get()
 endfunction
 "}}}
-
-
-" Test:
-" if expand("%:p") !=# expand("<sfile>:p")
-  " finish
-" endif
-" echo PP(choosewin#config#get())
 
 " vim: fdm=marker:
 
