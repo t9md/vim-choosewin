@@ -229,7 +229,9 @@ function! s:Overlay.restore_buffer() "{{{1
         call s:undoclear()
       endif
       call s:_.buffer_options_set(str2nr(bufnr), b:choosewin.options)
+      unlet b:choosewin
     catch
+      call s:_.debug("Overlay restore_buffer():" . v:exception)
       unlet b:choosewin
     endtry
   endfor
@@ -248,8 +250,9 @@ function! s:Overlay.restore_window() "{{{1
       call s:_.window_options_set(winnr, w:choosewin_ovl.options)
       call winrestview(w:choosewin_ovl.winview)
       call setpos('.', w:choosewin_ovl.pos_org)
+      unlet w:choosewin_ovl
     catch
-      call s:_.debug("Overlay:" . v:exception)
+      call s:_.debug("Overlay restore_window():" . v:exception)
       unlet w:choosewin_ovl
     endtry
   endfor

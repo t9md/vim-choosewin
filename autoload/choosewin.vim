@@ -1,5 +1,4 @@
 " Vars:
-let s:NOT_FOUND       = -1
 let s:vim_tab_options = {
       \ '&tabline':     '%!choosewin#tabline()',
       \ '&guitablabel': '%{choosewin#get_tablabel(v:lnum)}',
@@ -15,6 +14,7 @@ endfunction
 function! s:tab_all() "{{{1
   return range(1, tabpagenr('$'))
 endfunction
+"}}}
 
 " Env:
 let s:env = {}
@@ -32,7 +32,6 @@ endfunction
 
 " Main:
 let s:cw = {}
-
 function! s:cw.start(wins, ...) "{{{1
   let self.conf   = extend(choosewin#config#get(), get(a:000, 0, {}))
   let self.color  = choosewin#color#get()
@@ -53,7 +52,7 @@ function! s:cw.start(wins, ...) "{{{1
     endif
     call self.setup()
     call self.choose()
-  catch /\v^(CHOSE|SWAP|RETURN|CANCELED)$/
+  catch /\v^(CHOSE|SWAP)$/
     let status = [ tabpagenr(), winnr() ]
     let self.previous = [ self.env_org.tab_cur, self.env_org.win_cur ]
   catch /\v^(RETURN|CANCELED)$/
@@ -265,10 +264,6 @@ endfunction
 function! choosewin#get_tablabel(num) "{{{1
   return s:cw.get_tablabel(a:num)
 endfunction
-
-" function! choosewin#get_previous() "{{{1
-  " return s:cw.previous
-" endfunction
 "}}}
 
 " vim: foldmethod=marker

@@ -34,7 +34,6 @@ endfunction
 
 " Action:
 let s:ac = {}
-
 function! s:ac.init(app) "{{{1
   let self.app = a:app
   return self
@@ -42,7 +41,6 @@ endfunction
 
 function! s:ac.do_win(num) "{{{1
   call s:goto_win(a:num)
-  " let self.app.env.update()
   throw 'CHOSE'
 endfunction
 
@@ -84,8 +82,6 @@ function! s:ac.do_previous() "{{{1
 
   let [ tab_dst, win_dst ] = self.app.previous
   call s:goto_tabwin(tab_dst, win_dst)
-  " let self.app.env.update()
-  " let self.app.wins = s:win_all()
   throw 'CHOSE'
 endfunction
 

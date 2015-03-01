@@ -117,11 +117,4 @@ function! choosewin#font#large() "{{{1
   return map(s:read_data(s:font_large),'s:font_new(v:val)')
 endfunction
 "}}}
-"
-" if expand("%:p") !=# expand("<sfile>:p")
-  " finish
-" endif
-" let L = choosewin#font#large()
-" let R = map(L, 'v:val["width"]')
-" echo PP(R)
 " vim: foldmethod=marker
