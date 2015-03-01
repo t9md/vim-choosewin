@@ -25,29 +25,6 @@ else
 endif
 "}}}
 
-function! s:define_type_checker() "{{{1
-  " dynamically define s:is_Number(v)  etc..
-  let types = {
-        \ "Number":     0,
-        \ "String":     1,
-        \ "Funcref":    2,
-        \ "List":       3,
-        \ "Dictionary": 4,
-        \ "Float":      5,
-        \ }
-
-  for [type, number] in items(types)
-    let s = ''
-    let s .= 'function! s:is_' . type . '(v)' . "\n"
-    let s .= '  return type(a:v) ==# ' . number . "\n"
-    let s .= 'endfunction' . "\n"
-    execute s
-  endfor
-endfunction
-"}}}
-call s:define_type_checker()
-unlet! s:define_type_checker
-
 function! s:debug(msg) "{{{1
   if !get(g:,'choosewin_debug')
     return

@@ -39,6 +39,10 @@ function! s:intrpl(string, vars) "{{{1
 endfunction
 
 function! s:vars(pos, font) "{{{1
+  " Return Dictionary which is used for string inerpolation.
+  " For only necessary lines and columns to render " passed font.
+  " ex)
+  "   { "L+1": 1, "C+2", 2 }
   let [line, col] = a:pos
   let R = {}
   for [var, val] in map(copy(a:font.line_used), '["L+". v:val, line + v:val ]')
@@ -135,7 +139,7 @@ function! s:Overlay.setup_window() "{{{1
     let col          = max([(winwidth(0) - font.width)/2 , 1 ]) + offset
     let wv.matchids  = []
     let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font))
-    let w:choosewin  = wv
+    let w:choosewin_ovl  = wv
 
     let b:choosewin.font_width   += [font.width]
     let b:choosewin.render_lines += range(line_s, line_e)
@@ -183,7 +187,7 @@ function! s:Overlay.label_show() "{{{1
 
     " Shade overall window
     if self.conf['overlay_shade']
-      let pattern = '\v%'. w:choosewin['w0'] .'l\_.*%'. w:choosewin['w$'] .'l'
+      let pattern = '\v%'. w:choosewin_ovl['w0'] .'l\_.*%'. w:choosewin_ovl['w$'] .'l'
       call self.matchadd(self.color.Shade, pattern, self.conf['overlay_shade_priority'])
     endif
 
@@ -192,8 +196,8 @@ function! s:Overlay.label_show() "{{{1
 
     " Show Label
     let label_color =
-          \ w:choosewin['winnr'] is self.winnr_org ? 'OverlayCurrent': 'Overlay'
-    call self.matchadd(self.color[label_color], w:choosewin.pattern, self.conf['overlay_label_priority'])
+          \ w:choosewin_ovl['winnr'] is self.winnr_org ? 'OverlayCurrent': 'Overlay'
+    call self.matchadd(self.color[label_color], w:choosewin_ovl.pattern, self.conf['overlay_label_priority'])
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
   redraw
@@ -233,19 +237,19 @@ endfunction
 function! s:Overlay.restore_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
-    if !exists('w:choosewin')
-      call s:_.debug('Overlay: w:choosewin not exist winnr = ' . winnr)
+    if !exists('w:choosewin_ovl')
+      call s:_.debug('Overlay: w:choosewin_ovl not exist winnr = ' . winnr)
       continue
     endif
 
     try
-      call map(w:choosewin.matchids,'matchdelete(v:val)')
-      call s:_.window_options_set(winnr, w:choosewin.options)
-      call winrestview(w:choosewin.winview)
-      call setpos('.', w:choosewin.pos_org)
+      call map(w:choosewin_ovl.matchids,'matchdelete(v:val)')
+      call s:_.window_options_set(winnr, w:choosewin_ovl.options)
+      call winrestview(w:choosewin_ovl.winview)
+      call setpos('.', w:choosewin_ovl.pos_org)
     catch
       call s:_.debug("Overlay:" . v:exception)
-      unlet w:choosewin
+      unlet w:choosewin_ovl
     endtry
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
@@ -254,7 +258,7 @@ endfunction
 
 " Highight:
 function! s:Overlay.matchadd(color, pattern, priority) "{{{1
-  call add(w:choosewin.matchids,
+  call add(w:choosewin_ovl.matchids,
         \ matchadd(a:color, a:pattern, a:priority))
 endfunction
 "}}}
