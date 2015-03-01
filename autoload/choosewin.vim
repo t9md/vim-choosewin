@@ -10,30 +10,31 @@ let s:_ = choosewin#util#get()
 
 " Main:
 let s:cw = {}
+
 function! s:cw.start(wins, ...) "{{{1
-  let conf       = get(a:000, 0, {})
-  let self.conf  = extend(choosewin#config#get(), conf)
+  let self.conf  = extend(choosewin#config#get(), get(a:000, 0, {}))
   let self.color = choosewin#color#get()
 
   " Elminate non-exsiting window.
   let self.wins = filter(a:wins, 'index(self.win_all(), v:val) != -1')
 
   try
-    call self.state_update(1)
+    " Some status bar plugin need to know if choosewin active or not.
+    let g:choosewin_active = 1
     call self.setup()
     call self.first_path()
     if self.conf['tabline_replace']
-      call self.setup_tab()
+      let self.tab_options = s:_.buffer_options_set(bufnr(''), s:vim_tab_options)
     endif
-
-    call self.label_show()
     call self.choose()
   catch
     let self.exception = v:exception
   finally
-    call self.restore()
+    if self.conf['tabline_replace'] && !empty(self.tab_options)
+      call s:_.buffer_options_set(bufnr(''), self.tab_options)
+    endif
     call self.finish()
-    call self.state_update(0)
+    let g:choosewin_active = 0
     return self.status()
   endtry
 endfunction
@@ -41,16 +42,18 @@ endfunction
 function! s:cw.setup() "{{{1
   let self.exception   = ''
   let self.win_dest    = ''
-  let self.win_option  = {}
   let self.tab_options = {}
   let self.env         = {
-        \ 'win': { 'cur': winnr(),     'all': self.win_all() },
-        \ 'tab': { 'cur': tabpagenr(), 'all': range(1, tabpagenr('$'))},
-        \ 'buf': { 'cur': bufnr('') },
+        \ 'win_cur': winnr(),
+        \ 'win_all': self.win_all(),
+        \ 'tab_cur': tabpagenr(),
+        \ 'tab_all': range(1, tabpagenr('$')),
+        \ 'buf_cur': bufnr(''),
         \ }
+  
   let self.env_orig  = deepcopy(self.env)
-  let self.label2tab = s:_.dict_create(self.conf['tablabel'], self.env.tab.all)
-  let self.tab2label = s:_.dict_create(self.env.tab.all, self.conf['tablabel'])
+  let self.label2tab = s:_.dict_create(self.conf['tablabel'], self.env.tab_all)
+  let self.tab2label = s:_.dict_create(self.env.tab_all, self.conf['tablabel'])
 
   if !has_key(self, 'previous')
     let self.previous = []
@@ -59,10 +62,6 @@ function! s:cw.setup() "{{{1
   if self.conf['overlay_enable']
     let self.overlay = choosewin#overlay#get()
   endif
-endfunction
-
-function! s:cw.setup_tab() "{{{1
-  let self.tab_options = s:_.buffer_options_set(bufnr(''), s:vim_tab_options)
 endfunction
 
 function! s:cw.statusline_replace() "{{{1
@@ -106,18 +105,20 @@ endfunction
 
 function! s:cw.tab_choose(num) "{{{1
   silent execute 'tabnext ' a:num
-  let self.env.tab.cur = a:num
+  let self.env.tab_cur = a:num
 endfunction
 
 function! s:cw.win_choose(num) "{{{1
   if !self.conf['noop']
     silent execute a:num 'wincmd w'
   endif
-  let self.env.win.cur = a:num
+  let self.env.win_cur = a:num
 endfunction
 
 function! s:cw.choose() "{{{1
-  let input = self.read_input()
+  call s:_.debug('choose start')
+  call self.label_show()
+  let  input = self.read_input()
   call self.label_clear()
 
   while 1
@@ -146,6 +147,7 @@ function! s:cw.do_win(num) "{{{1
 endfunction
 
 function! s:cw.do_tab(num) "{{{1
+  call Plog('called!!')
   call self.tab_choose(a:num)
   let self.wins = self.win_all()
   call self.label_show()
@@ -156,11 +158,11 @@ function! s:cw.do_tab_first() "{{{1
 endfunction
 
 function! s:cw.do_tab_prev() "{{{1
-  call self.do_tab(max([1, self.env.tab.cur - 1]))
+  call self.do_tab(max([1, self.env.tab_cur - 1]))
 endfunction
 
 function! s:cw.do_tab_next() "{{{1
-  call self.do_tab(min([tabpagenr('$'), self.env.tab.cur + 1]))
+  call self.do_tab(min([tabpagenr('$'), self.env.tab_cur + 1]))
 endfunction
 
 function! s:cw.do_tab_last() "{{{1
@@ -208,8 +210,8 @@ function! s:cw.do_swap_stay() "{{{1
 endfunction
 
 function! s:cw.do_cancel()
-  call self.tab_choose(self.env_orig.tab.cur)
-  call self.win_choose(self.env_orig.win.cur)
+  call self.tab_choose(self.env_orig.tab_cur)
+  call self.win_choose(self.env_orig.win_cur)
   throw 'CANCELED'
 endfunction
 "}}}
@@ -277,13 +279,10 @@ function! s:cw.tabline() "{{{1
   let R   = ''
   let pad = repeat(' ', self.conf['label_padding'])
   let sepalator = printf('%%#%s# ', self.color.Other)
-  for tabnum in self.env.tab.all
-    let color = tabpagenr() is tabnum
-          \ ? self.color.LabelCurrent
-          \ : self.color.Label
-
+  for tabnum in self.env.tab_all
+    let color = self.color[ tabpagenr() is tabnum ? "LabelCurent" : "Label" ]
     let R .= printf('%%#%s# %s ', color,  pad . self.get_tablabel(tabnum) . pad)
-    let R .= tabnum !=# self.env.tab.all[-1] ? sepalator : ''
+    let R .= tabnum !=# self.env.tab_all[-1] ? sepalator : ''
   endfor
   let R .= printf('%%#%s#', self.color.Other)
   return R
@@ -311,8 +310,12 @@ function! s:cw.blink_cword() "{{{1
     return
   endif
   for i in range(2)
-    let id = matchadd(self.color.Land, s:cword_pattern) | redraw | sleep 80m
-    call matchdelete(id)                                | redraw | sleep 80m
+    let id = matchadd(self.color.Land, s:cword_pattern)
+    redraw
+    sleep 80m
+    call matchdelete(id)
+    redraw 
+    sleep 80m
   endfor
 endfunction
 let s:cword_pattern = '\k*\%#\k*'
@@ -322,26 +325,17 @@ function! s:cw.win_all() "{{{1
 endfunction
 
 function! s:cw.status() "{{{1
-  if !empty(self.exception)
-    if self.exception =~# 'CANCELED\|RETURN'
-      return []
-    else
-      return [ self.env.tab.cur, self.env.win.cur ]
-    endif
+  if empty(self.exception)
+    return
   endif
-endfunction
-
-function! s:cw.state_update(state) "{{{1
-  " for statusline plugin
-  let g:choosewin_active = a:state
-  " let &readonly = &readonly
-  " redraw
+  if self.exception =~# 'CANCELED\|RETURN'
+    return []
+  else
+    return [ self.env.tab_cur, self.env.win_cur ]
+  endif
 endfunction
 
 function! s:cw.message() "{{{1
-  if self.exception =~# 'CHOSE\|RETURN'
-    return
-  endif
   if !empty(self.exception)
     echohl Type
     echon 'choosewin: '
@@ -352,21 +346,10 @@ endfunction
 "}}}
 
 " Restore:
-function! s:cw.restore() "{{{1
-  call self.tab_restore()
-endfunction
-
-function! s:cw.tab_restore() "{{{1
-  if !self.conf['tabline_replace']
-    return
-  endif
-  call s:_.buffer_options_set(bufnr(''), self.tab_options)
-endfunction
-
 function! s:cw.finish() "{{{1
   echo '' | redraw
-  if self.conf['noop'] && self.env.tab.cur !=# self.env_orig.tab.cur
-    silent execute 'tabnext ' self.env_orig.tab.cur
+  if self.conf['noop'] && self.env.tab_cur !=# self.env_orig.tab_cur
+    silent execute 'tabnext ' self.env_orig.tab_cur
   endif
   if !empty(self.win_dest)
     call self.win_choose(self.win_dest)
@@ -377,24 +360,26 @@ function! s:cw.finish() "{{{1
 
     if self.conf['swap']
       let buf_dst = winbufnr('')
-      execute 'hide buffer' self.env_orig.buf.cur
-      silent execute 'tabnext ' self.env_orig.tab.cur
-      silent execute self.env_orig.win.cur 'wincmd w'
+      execute 'hide buffer' self.env_orig.buf_cur
+      silent execute 'tabnext ' self.env_orig.tab_cur
+      silent execute self.env_orig.win_cur 'wincmd w'
       execute 'hide buffer' buf_dst
 
       if self.conf['swap_stay']
-        let self.previous = [ self.env.tab.cur, self.env.win.cur ]
+        let self.previous = [ self.env.tab_cur, self.env.win_cur ]
       else
-        silent execute 'tabnext ' self.env.tab.cur
-        silent execute self.env.win.cur 'wincmd w'
-        let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
+        silent execute 'tabnext ' self.env.tab_cur
+        silent execute self.env.win_cur 'wincmd w'
+        let self.previous = [ self.env_orig.tab_cur, self.env_orig.win_cur ]
       endif
     else
-      let self.previous = [ self.env_orig.tab.cur, self.env_orig.win.cur ]
+      let self.previous = [ self.env_orig.tab_cur, self.env_orig.win_cur ]
     endif
   endif
   call self.blink_cword()
-  call self.message()
+  if !self.exception =~# 'CHOSE\|RETURN'
+    call self.message()
+  endif
 endfunction
 "}}}
 
