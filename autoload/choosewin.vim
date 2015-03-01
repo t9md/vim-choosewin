@@ -276,6 +276,9 @@ endfunction
 
 " Tabline:
 function! s:cw.tabline() "{{{1
+  call s:_.debug('in tabline()')
+  call s:_.debug(self.conf)
+  call s:_.debug('in tabline2()')
   let R   = ''
   let pad = repeat(' ', self.conf['label_padding'])
   let sepalator = printf('%%#%s# ', self.color.Other)
@@ -404,5 +407,10 @@ function! choosewin#get_previous() "{{{1
   return s:cw.previous
 endfunction
 "}}}
+
+if expand("%:p") !=# expand("<sfile>:p")
+  finish
+endif
+" echo s:cw.tabline()
 
 " vim: foldmethod=marker
