@@ -5,24 +5,15 @@ endfunction
 "}}}
 let s:sid = s:SID()
 
-" s:uniq() "{{{1
-if exists('*uniq')
-  function! s:uniq(...)
-    return call('uniq', a:000 )
-  endfunction
-else
-  function! s:uniq(list) "{{{1
-    " implementation is not exactly same, this version of uniq is not affect
-    " of original argment(list).
-    let R = []
-    for e in a:list
-      if index(R, e) is -1
-        call add(R, e)
-      endif
-    endfor
-    return R
-  endfunction
-endif
+function! s:uniq(list) "{{{1
+  let R = []
+  for e in a:list
+    if index(R, e) is -1
+      call add(R, e)
+    endif
+  endfor
+  return R
+endfunction
 "}}}
 
 function! s:debug(msg) "{{{1
@@ -99,13 +90,15 @@ endfunction
 call s:define_type_checker()
 unlet! s:define_type_checker
 
-function! s:get_ic(table, char, default) "{{{1
-  " get ignore case
-  let i = index(keys(a:table), a:char, 0, 1)
+function! s:get_ic(table, char, ...) "{{{1
+  let default = get(a:000, 0)
+  " get() with ignore case
+  let keys = keys(a:table)
+  let i = index(keys, a:char, 0, 1)
   if i is -1
-    return a:default
+    return default
   endif
-  return items(a:table)[i][1]
+  return a:table[keys[i]]
 endfunction
 
 function! s:dict_invert(d) "{{{1

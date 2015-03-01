@@ -28,14 +28,14 @@ let s:vim_options.window = {
 " Util:
 let s:_ = choosewin#util#get()
 
-function! s:intrpl(string, vars) "{{{1
+function! s:template(string, data) "{{{1
   " String interpolation from vars Dictionary.
   " ex)
   "   string = "%{L+1}l%{C+2}c" 
-  "   vars   = { "L+1": 1, "C+2", 2 }
+  "   data   = { "L+1": 1, "C+2", 2 }
   "   Result => "%1l%2c"
   let mark = '\v\{(.{-})\}'
-  return substitute(a:string, mark,'\=a:vars[submatch(1)]', 'g')
+  return substitute(a:string, mark,'\=a:data[submatch(1)]', 'g')
 endfunction
 
 function! s:vars(pos, font) "{{{1
@@ -99,7 +99,8 @@ function! s:Overlay.setup(wins, conf) "{{{1
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
   let self.bufs           = uniq(tabpagebuflist(tabpagenr()))
-  let self.options_global = s:_.buffer_options_set(bufnr(''), s:vim_options.global)
+  let self.options_global =
+        \ s:_.buffer_options_set(bufnr(''), s:vim_options.global)
 
   for bufnr in self.bufs
     call setbufvar(bufnr, 'choosewin', {
@@ -118,14 +119,14 @@ function! s:Overlay.setup_window() "{{{1
   for winnr in self.wins
     noautocmd execute winnr 'wincmd w'
 
-    let wv           = {}
-    let wv.winnr     = winnr
-    let wv.pos_org   = getpos('.')
-    let wv.winview   = winsaveview()
-    let wv.options   = s:_.window_options_set(winnr, s:vim_options.window)
-    let wv['w0']     = line('w0')
-    let wv['w$']     = line('w$')
-    let font_size    =
+    let wv         = {}
+    let wv.winnr   = winnr
+    let wv.pos_org = getpos('.')
+    let wv.winview = winsaveview()
+    let wv.options = s:_.window_options_set(winnr, s:vim_options.window)
+    let wv['w0']   = line('w0')
+    let wv['w$']   = line('w$')
+    let font_size  =
           \ self.conf['overlay_font_size'] isnot 'auto' ?
           \ self.conf['overlay_font_size'] :
           \ winheight(0) > s:FONT_MAX.large.height ? 'large' : 'small'
@@ -138,7 +139,7 @@ function! s:Overlay.setup_window() "{{{1
     let offset       = col('.') - wincol()
     let col          = max([(winwidth(0) - font.width)/2 , 1 ]) + offset
     let wv.matchids  = []
-    let wv.pattern   = s:intrpl(font.pattern, s:vars([line_s, col], font))
+    let wv.pattern   = s:template(font.pattern, s:vars([line_s, col], font))
     let w:choosewin_ovl  = wv
 
     let b:choosewin.font_width   += [font.width]

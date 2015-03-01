@@ -16,11 +16,12 @@ function! s:cw.start(wins, ...) "{{{1
   let self.color = choosewin#color#get()
 
   " Elminate non-exsiting window.
-  let self.wins = filter(a:wins, 'index(self.win_all(), v:val) != -1')
+  let self.wins = filter(a:wins, 'index(self.win_all(), v:val) isnot -1')
 
   try
     " Some status bar plugin need to know if choosewin active or not.
     let g:choosewin_active = 1
+
     call self.setup()
     call self.first_path()
     if self.conf['tabline_replace']
@@ -122,21 +123,21 @@ function! s:cw.choose() "{{{1
     call self.label_clear()
 
     " Tab label is chosen.
-    let num = s:_.get_ic(self.label2tab, input, s:NOT_FOUND)
-    if num isnot s:NOT_FOUND
+    let num = s:_.get_ic(self.label2tab, input)
+    if !empty(num)
       call self.do_tab(num)
       continue
     endif
 
     " Win label is chosen.
-    let num = s:_.get_ic(self.label2win, input, s:NOT_FOUND)
-    if num isnot s:NOT_FOUND
+    let num = s:_.get_ic(self.label2win, input)
+    if !empty(num)
       call self.do_win(num)
     endif
 
     let action = get(self.conf['keymap'], input, 'cancel')
     let action_func = 'do_' . action
-    if !s:_.is_Funcref(self[action_func])
+    if !s:_.is_Funcref(get(self, action_func))
       throw 'UNKNOWN_ACTION'
     endif
     call self[action_func]()
@@ -172,7 +173,8 @@ function! s:cw.do_tab_last() "{{{1
 endfunction
 
 function! s:cw.do_tab_close() "{{{1
-  silent tabclose
+  silent! tabclose
+  call self.do_tab(tabpagenr())
 endfunction
 
 function! s:cw.do_win_land() "{{{1
@@ -195,9 +197,6 @@ function! s:cw.do_swap() "{{{1
     call self.do_previous()
   else
     let self.conf['swap'] = 1
-    let self.wins = self.win_all()
-    call self.label_show()
-    return
   endif
 endfunction
 
@@ -238,7 +237,7 @@ endfunction
 function! s:cw.label_show() "{{{1
   try
     let wins_save     = self.wins
-    let wins_filtered = self.call_hook('filter_window', wins_save)
+    let wins_filtered = self.call_hook('filter_window', self.wins)
     let self.wins     = wins_filtered
   catch
     let self.wins = wins_save
