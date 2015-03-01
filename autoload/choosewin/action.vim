@@ -1,0 +1,125 @@
+" Misc:
+function! s:win_swap(tab, win) "{{{1
+  let [ tab_dst, win_dst ] = [ a:tab, a:win]
+  let [ tab_src, win_src ] = [ tabpagenr(), winnr() ]
+  let buf_src = bufnr('')
+
+  " go
+  call s:goto_tabwin(tab_dst, win_dst)
+  let  buf_dst = bufnr('')
+  call s:goto_tabwin(tab_src, win_src)
+  silent execute 'hide buffer' buf_dst
+  call s:goto_tabwin(tab_dst, win_dst)
+  silent execute 'hide buffer' buf_src
+endfunction
+
+function! s:goto_tabwin(tab, win) "{{{1
+  call s:goto_tab(a:tab)
+  call s:goto_win(a:win)
+endfunction
+
+function! s:goto_tab(num) "{{{1
+  silent execute 'tabnext' a:num
+endfunction
+
+function! s:goto_win(num) "{{{1
+  silent execute a:num 'wincmd w'
+endfunction
+"}}}
+
+" Action:
+let s:ac = {}
+
+function! s:ac.init(app) "{{{1
+  self.app = a:app
+  return self
+endfunction
+
+function! s:ac.do_win(num) "{{{1
+  call s:goto_win(a:num)
+  let self.app.env.update()
+  throw 'CHOSE'
+endfunction
+
+function! s:ac.do_win_land() "{{{1
+  cal self.do_win(winnr())
+endfunction
+
+function! s:ac.do_tab(num) "{{{1
+  call s:goto_tab(a:num)
+  let self.app.env.update()
+  let self.app.wins = self.app.win_all()
+endfunction
+
+function! s:ac.do_tab_first() "{{{1
+  call self.do_tab(1)
+endfunction
+
+function! s:ac.do_tab_prev() "{{{1
+  call self.do_tab(max([1, self.env.tab_cur - 1]))
+endfunction
+
+function! s:ac.do_tab_next() "{{{1
+  call self.do_tab(min([tabpagenr('$'), self.env.tab_cur + 1]))
+endfunction
+
+function! s:ac.do_tab_last() "{{{1
+  call self.do_tab(tabpagenr('$'))
+endfunction
+
+function! s:ac.do_tab_close() "{{{1
+  silent! tabclose
+  call self.do_tab(tabpagenr())
+endfunction
+
+function! s:ac.do_previous() "{{{1
+  if empty(self.app.previous)
+    throw 'NO_PREVIOUS_WINDOW'
+  endif
+
+  let [ tab_dst, win_dst ] = self.app.previous
+  call s:goto_tabwin(tab_dst, win_dst)
+  let self.app.env.update()
+  let self.app.wins = self.app.win_all()
+  throw 'CHOSE'
+endfunction
+
+function! s:ac._swap(win) "{{{1
+  call s:win_swap(tabpagenr(), a:win)
+  if self.conf['swap_stay']
+    call s:goto_win(a:win)
+  endif
+  throw 'SWAP'
+endfunction
+
+function! s:ac.do_swap() "{{{1
+  if self.conf['swap']
+    " if user invoke do_swap() twice then swap with previous window
+    call self.do_previous()
+  else
+    let self.conf['swap'] = 1
+  endif
+endfunction
+
+function! s:ac.do_swap_stay() "{{{1
+  if self.conf['swap']
+    call self.do_previous()
+  else
+    let self.conf['swap']      = 1
+    let self.conf['swap_stay'] = 1
+  endif
+endfunction
+
+function! s:ac.do_cancel() "{{{1
+  call self.goto_tab(self.app.env_org.tab_cur)
+  throw 'CANCELED'
+endfunction
+"}}}
+
+" API:
+function! choosewin#action#init(...) "{{{1
+  return call(s:ac.init, a:000, s:ac)
+endfunction
+"}}}
+
+" vim: foldmethod=marker

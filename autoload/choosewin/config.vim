@@ -38,6 +38,7 @@ let s:keymap = {
 " These are variables cannot set directly via global variable.
 let s:internal = {
       \ 'swap':        0,
+      \ 'swap_stay':   0,
       \ 'auto_choose': 0,
       \ 'noop':        0,
       \ }
