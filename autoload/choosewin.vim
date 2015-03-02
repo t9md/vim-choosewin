@@ -19,8 +19,10 @@ endfunction
 " Wins:
 let s:wins = {}
 
-function! s:wins.get() "{{{1
-  return self._data
+function! s:wins.get(...) "{{{1
+  let amt = get(a:000, 0)
+  let idx = empty(amt) ? -1 : amt - 1
+  return self._data[0 : idx]
 endfunction
 
 function! s:wins.set(wins) "{{{1
@@ -161,7 +163,7 @@ function! s:cw.label_show() "{{{1
     call self.wins.set(wins_new)
   endif
 
-  let wins = self.wins.get()
+  let wins = self.wins.get(len(self.conf['label']))
 
   let self.label2win = s:_.dict_create(self.conf.label, wins)
   let self.win2label = s:_.dict_create(wins, self.conf.label)
@@ -181,7 +183,7 @@ endfunction
 
 function! s:cw.label_clear() "{{{1
   if self.conf['statusline_replace']
-    for n in self.wins.get()
+    for n in self.wins.get(len(self.conf['label']))
       call s:_.window_options_set(n, self.statusline[n])
     endfor
   endif

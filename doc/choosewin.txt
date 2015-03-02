@@ -406,6 +406,8 @@ TODO							    *choowsewin-todo*
 CHANGELOG						*choowsewin-changelog*
 
 2015-03-02:
+	- [fix] Didn't work properly when number of label are shorter than
+	  number of windows.
 	- [default_change] 'g:choosewin_overlay_clear_multibyte' is now
 	  default enabled.
 	- [improve] Overlay font rendering performance improve.
