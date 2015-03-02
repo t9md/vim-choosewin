@@ -1,6 +1,6 @@
 " Static Var:
 " char list of ['!'..'~'].
-let s:font_list  = map(range(33, 126), 'nr2char(v:val)')
+let s:chars  = map(range(33, 126), 'nr2char(v:val)')
 
 " data file path
 let s:font_large = expand("<sfile>:h") . '/data/large'
@@ -86,24 +86,21 @@ function! s:read_data(file) "{{{1
   "     '"': [' ##  ## ', ' ##  ## ', '  #  #  ', '        ', '        '],
   "     .......
   "   }
-  let fonts = copy(s:font_list)
-
   let R = {}
-  for f in fonts
-    let R[f] = []
+  for c in s:chars
+    let R[c] = []
   endfor
 
   let lines = readfile(a:file)
-  while !empty(fonts)
-    let char = remove(fonts, 0)
+  for c in s:chars
     while 1
       let line = remove(lines, 0)
       if line =~# '\v^---'
         break
       endif
-      call add(R[char], line)
+      call add(R[c], line)
     endwhile
-  endwhile
+  endfor
   return R
 endfunction
 "}}}
