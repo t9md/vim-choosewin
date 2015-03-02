@@ -98,7 +98,7 @@ function! s:Overlay.setup(wins, conf) "{{{1
   let self.conf           = a:conf
   let self.wins           = a:wins
   let self.winnr_org      = winnr()
-  let self.bufs           = uniq(tabpagebuflist(tabpagenr()))
+  let self.bufs           = s:_.uniq(tabpagebuflist(tabpagenr()))
   let self.options_global =
         \ s:_.buffer_options_set(bufnr(''), s:vim_options.global)
 
