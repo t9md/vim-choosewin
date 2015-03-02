@@ -1,6 +1,6 @@
 *choowsewin.txt* land to window you choose like tmux's 'display-pane'.
 
-Version: 1.5
+Version: 1.8
 Author : t9md <taqumd@gmail.com>
 GitHub : https://github.com/t9md/vim-choowsewin
 ==============================================================================
@@ -26,40 +26,43 @@ window interactively.
 
 This plugin should be useful especially when you are working on high
 resolution wide display.
-Since with wide display, you are likely to open multiple window and
-moving around window is a little bit tiresome.
+Since with wide display, you are likely to open multiple windows and
+moving around between windows is a little bit tiresome.
 
+This plugin simplifies windows excursion.
 
-This plugin simplifies window excursion.
-
-	1. Display window label on statusbar.
+	1. Display window label on statusbar(or middle of window).
 	2. Read input from user.
-	3. You can land window you choose.
+	3. land window you chose.
 
 ==============================================================================
 MAPPINGS					*choowsewin-mappings*
 
 <Plug>(choosewin)
-	land to window you chose
 
 ==============================================================================
 COMMANDS						*choowsewin-commands*
 
 *:ChooseWin*
-	start choosewin
+	choose window interactively
 
 *:ChooseWinSwap*
-	start choosewin for swapping chosen window with current window.
+	swap current window to window you chose
 
 *:ChooseWinSwapStay*
-	start choosewin for swapping chosen window with current window.
+	swap current window to window you chose
+	your window remain unchanged
 
 ==============================================================================
 VARIABLES						*choowsewin-variables*
 
+[NOTE]
+All config option in this section is set in 'autoload/choosewin/config.vim'.
+
 *g:choosewin_statusline_replace*
 	Default: 1
 	Type: Number
+	Control whether window label is shown on |&statusline|.
 
 *g:choosewin_color_label*
 	Default: See 'autoload/choosewin/config.vim'
@@ -67,13 +70,14 @@ VARIABLES						*choowsewin-variables*
 
 	Set color with collowing fomrat.
 	{
-	  'gui': [ {guibg}, {guifg}, {gui} ],
+	  'gui':   [ {guibg}, {guifg}, {gui} ],
 	  'cterm': [ {ctermbg}, {ctermfg}, {cterm}]
 	}
 
-	You can omit unused color, means if you use vim only GUI, you don't
+	You can omit unused color, so if you never use vim from CUI, you don't
 	need to configure 'cterm' field.
-	And if you want set {guifg} but not {guibg}, use empty string('') like
+	And if you only want to set specific field color, use empty string for
+	other field like following.
 >
 	let g:choosewin_color_label = { 'gui': ['', 'white'] }
 <
@@ -91,39 +95,43 @@ VARIABLES						*choowsewin-variables*
 <
 
 *g:choosewin_color_overlay*
-	color of overlay window caption
+	Color of overlay window label
+
 *g:choosewin_color_overlay_current*
-	color of overlay window caption for current window
+	Color of overlay window label for current window
+
 *g:choosewin_color_shade*
-	color of shade
+	Color of shade
+
 *g:choosewin_color_label_current*
-	color of label for current win/tab
+	Color of label for current win/tab used in &statsline and &tabline
+
 *g:choosewin_color_other*
-	color of around-label win/tab
+	Color of around-label win/tab
+
 *g:choosewin_color_land*
-	Used to blink cursor word when landing to window.
+	Used to blink cursor word when land on window.
 
 *g:choosewin_blink_on_land*
 	Default: 1
 	Type: |Number| 0 or 1
-	Control whether blinking cursor word when landing window.
+	Control whether blinking cursor word when land on window.
 	Set 0 to disable blinking.
 
 *g:choosewin_label*
-	Default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	Default: 'ABCDEFGHIJKLMNOPQRTUVWYZ'
 	Type: |String|
+
+	[NOTE] 'S' and 'X' is intentionally deleted from here.
+	Since its used as keymap.
 
 	[CAUTION] You need to manage to avoid conflict to
 	|g:choosewin_tablabel| or you can't choose label you want.
 
-	[NOTE] choosewin ignore case you input so that you don't need to
-	press Shift. This is for show label with upper case to standout and
-	choose label with minimal key stroke.
+	[NOTE] choosewin ignore character case when matching label you type.
+	This is for showing label with capital letter, and choose label with
+	minimal key stroke.
 
-	Example~
->
-	let g:choosewin_label = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-<
 *g:choosewin_tablabel*
 	Default: '123456789'
 	Type: |String|
@@ -139,34 +147,52 @@ VARIABLES						*choowsewin-variables*
 
 	| Key  | Action     | Description                   |
 	| ---- | ---------- | ----------------------------- |
-	| 0    | tab_first  | choose FIRST    tab           |
-	| [    | tab_prev   | choose PREVIOUS tab           |
-	| ]    | tab_next   | choose NEXT     tab           |
-	| $    | tab_last   | choose LAST     tab           |
-	| ;    | win_land   | land to current window        |
-	| -    | previous   | land to previous window       |
-	| s    | swap       | swap buffer with you chose *1 |
-	| S    | swap_stay  | swap buffer with you chose *1 |
-	| <CR> | win_land   | land to current window        |
-	|      | <NOP>      | disable predefined keymap     |
-	*1 if you chose 'swap' again, swapping with previous window's buffer
+	| 0    | tab_first  | Choose FIRST    tab           |
+	| [    | tab_prev   | Choose PREVIOUS tab           |
+	| ]    | tab_next   | Choose NEXT     tab           |
+	| $    | tab_last   | Choose LAST     tab           |
+	| x    | tab_close  | Close current tab             |
+	| ;    | win_land   | Land to current window        |
+	| -    | previous   | Land to previous window       |
+	| s    | swap       | Swap window                #1 |
+	| S    | swap_stay  | Swap window but stay       #1 |
+	| <CR> | win_land   | Land to current window        |
+	|      | <NOP>      | Disable predefined keymap     |
+	[NOTE] #1
+	If you chose 'swap' again, swapping with previous window's buffer
 	ex) with default keymap, double 's'(ss) swap with previous window.
 
-	Disabling default keymap~
+	How keymap like?~
+	below is excerpto of keymap configurtion.
+>
+	let s:keymap = {
+	      \ '0':     'tab_first',
+	      \ '[':     'tab_prev',
+	      \ ']':     'tab_next',
+	      \ '$':     'tab_last',
+	      \ 'x':     'tab_close',
+	      \ ';':     'win_land',
+	      \ '-':     'previous',
+	      \ 's':     'swap',
+	      \ 'S':     'swap_stay',
+	      \ "\<CR>": 'win_land',
+	      \ }
+<
 
+	Disabling default keymap~
 	To disable default keymap, you can use special action '<NOP>'.
 	The key set to '<NOP>' will be deleted(unmapped) from keytable.
 
 	Customization example~
 >
 	let g:choosewin_keymap   = {}         " initialize as Dictionary
-	let g:choosewin_keymap.m = 'win_land' " land with 'm'
-	let g:choosewin_keymap.0 = '<NOP>'    " disable default 0 keybind
+	let g:choosewin_keymap.m = 'win_land' " Land with 'm'
+	let g:choosewin_keymap.0 = '<NOP>'    " Disable default 0 keybind
 <
-
 *g:choosewin_label_align*
 	Default: 'center'
-	One of 'right', 'center', 'left'
+	Type: String
+	Value: 'right', 'center', 'left'
 
 *g:choosewin_label_padding*
 	Default: 3
@@ -188,70 +214,62 @@ VARIABLES						*choowsewin-variables*
 	Type: |Number|
 	Enable overlay window caption.
 
-	Limitation~
-	Not work properly in following situation.
-		- buffer includes multibyte characters
-		  You can use |g:choosewin_overlay_clear_multibyte| as
-		  workaround.
+	Trade-off~
 
-	How It works~
-	Purpose of this section is make you understand trade-off of overlay.
-		Good:	Easy to spot window label than it on |&statusline|.
-		Bad:	Too aggressive for merely show caption and slow.
+	Good: Easy to spot window label than it on |&statusline|.
+	Bad:  Too aggressive for merely show caption and slow.
 
 	What 'too agressive' means,
-		- change buffer temporarily
-			1. Substitute tab to space
-			2. Append space to rendering area
-			3. Append empty line to EOF.
-		- Then highlight caption font with matchadd()
-		- when reverting undo all changes.
+	- change buffer temporarily
+	  1. Substitute tab to space
+	  2. Append space to rendering area
+	  3. Replace multibyte chars.
+	  3. Append empty line to EOF.
+	- Then highlight caption font with matchadd()
+	- when reverting undo all changes.
 
 *g:choosewin_overlay_font_size*
 	Default: 'auto'
-	Type: |String|
-	Value: must be 'auto', 'small', 'large'
-	Specify overlay font size.
-	'auto' determine appropriate font size based on window height.
+	Type: String
+	Value: 'auto', 'small', 'large'
+	'auto' determine appropriate font size from window height.
 
 *g:choosewin_overlay_shade*
 	Default: 0
 	Type: |Number|
-	Enable shade where overlay window caption is rendered.
+	Enable shade when overlay window caption is rendered.
 
 *g:choosewin_overlay_clear_multibyte*
-	Default: 0
+	Default: 1
 	Type: |Number|
-	When caption rendering area include multiple chars, clear out caption
-	rendering area first before overlay.
-	Useful when buffer contains multibyte character, which break window
-	caption font because 1 char is not necessarily 1 byte.
+	When label rendering area include multiple chars, clear out that line.
+	Since multibyte character break form of font.
 
 *g:choosewin_overlay_shade_priority*
 	Default: 100
 	Type: |Number|
-	Highlight priority value, this value passed to matchadd() at overlay.
+	Highlight priority value, this value passed to matchadd() on overlay.
 
 *g:choosewin_overlay_label_priority*
 	Default: 101
 	Type: |Number|
-	Highlight priority value, this value passed to matchadd() at overlay.
+	Highlight priority value, this value passed to matchadd() on overlay.
 
-*g:choosewin_hook_enable*
+*g:choosewin_hook_enable*  [PLAN_TO_DELETE]
 	Default: 0
 	Type: |Number|
 	Value: 0 or 1
 
 	Need to set 1 if you want to use hook.
 
-*g:choosewin_hook_bypass*
+*g:choosewin_hook_bypass*  [PLAN_TO_DELETE]
 	Default: []
 	Type: |List|
 	Value: |List| of {hook_point}
 
 	See |choosewin-hook_point| for {hook_point}
 
-*g:choosewin_hook*
+*g:choosewin_hook*  [PLAN_TO_DELETE]
 	Default: {}
 	Type: |Dictionary|
 	Values: { '{hookpoint}': {funcref}, ... }
@@ -261,7 +279,7 @@ VARIABLES						*choowsewin-variables*
 							*choosewin-hook_point*
 Available Hook Point~
 
-- filter_window~
+'filter_window'
 	Args: {winnums}
 	Type: |List|
 	Return: {winnums}
@@ -269,8 +287,7 @@ Available Hook Point~
 	{winnums}:
 		|List| of window number which is subject to chose by user.
 
-	[Example]: show label for specific window  >
-
+	[Example]: show label for specific window >
 	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
 
 	let g:choosewin_hook = {}
@@ -279,7 +296,7 @@ Available Hook Point~
 		\ 'index(s:ignore_filtype,
 		\   getwinvar(v:val, "&filetype")) == -1' )
 	endfunction
-
+<
 ==============================================================================
 FUNCTIONS						*choowsewin-functions*
 
@@ -388,6 +405,13 @@ TODO							    *choowsewin-todo*
 ==============================================================================
 CHANGELOG						*choowsewin-changelog*
 
+2015-03-02:
+	- [default_change] 'g:choosewin_overlay_clear_multibyte' is now
+	  default enabled.
+	- [improve] Overlay font rendering performance improve.
+	  Prepare template variables only for used column and line.
+	- [improve] Rewrite, cleanup overall program.
+	- [enhance] add tab_close action with default keymap 'x'.
 2015-01-25:
 	- [enhance] now swap don't stay same window, original swap is now 
 	  swap_stay.

@@ -6,7 +6,7 @@ let s:default = {
       \ 'overlay_shade':           0,
       \ 'overlay_shade_priority':  100,
       \ 'overlay_label_priority':  101,
-      \ 'overlay_clear_multibyte': 0,
+      \ 'overlay_clear_multibyte': 1,
       \ 'label_align':             'center',
       \ 'label_padding':           3,
       \ 'tablabel':                '123456789',
@@ -59,7 +59,7 @@ function! s:config.user() "{{{1
   let prefix = 'choosewin_'
   for [name, default] in items(s:default)
     let R[name] = get(g:, prefix . name, default)
-    unlet val
+    unlet default
   endfor
   return R
 endfunction
