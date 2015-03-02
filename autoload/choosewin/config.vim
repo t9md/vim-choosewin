@@ -44,7 +44,7 @@ let s:keymap = {
       \ }
 
 " These are variables cannot set directly via global variable.
-let s:internal = {
+let s:api_options = {
       \ 'swap':        0,
       \ 'swap_stay':   0,
       \ 'auto_choose': 0,
@@ -57,15 +57,15 @@ let s:config = {}
 function! s:config.user() "{{{1
   let R = {}
   let prefix = 'choosewin_'
-  for [name, val] in items(s:default)
-    let R[name] = get(g:, prefix . name, val)
+  for [name, default] in items(s:default)
+    let R[name] = get(g:, prefix . name, default)
     unlet val
   endfor
   return R
 endfunction
 
 function! s:config.get() "{{{1
-  let conf = extend(self.user(), s:internal)
+  let conf = extend(self.user(), s:api_options)
   call extend(conf['keymap'], s:keymap, 'keep')
   call filter(conf['keymap'], "v:val isnot '<NOP>'")
   return conf
@@ -79,4 +79,3 @@ endfunction
 "}}}
 
 " vim: fdm=marker:
-

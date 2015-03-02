@@ -79,7 +79,7 @@ function! s:ac.do_tab_close() "{{{1
 endfunction
 
 function! s:ac.do_previous() "{{{1
-  if empty(self.app.previous)
+  if !has_key(self.app, 'previous')
     throw 'NO_PREVIOUS_WINDOW'
   endif
 

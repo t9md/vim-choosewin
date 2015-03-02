@@ -18,6 +18,7 @@ endfunction
 
 " Wins:
 let s:wins = {}
+
 function! s:wins.get() "{{{1
   return self._data
 endfunction
@@ -27,51 +28,45 @@ function! s:wins.set(wins) "{{{1
   let self._data = filter(a:wins, 'index(s:win_all(), v:val) isnot -1')
   return self
 endfunction
+"}}}
 
 " Main:
 let s:cw = {}
 
 function! s:cw.start(wins, ...) "{{{1
-  let self.conf   = extend(choosewin#config#get(), get(a:000, 0, {}))
-  let self.color  = choosewin#color#get()
-  let self.action = choosewin#action#init(self)
-  let self.wins   = s:wins.set(a:wins)
-  let status      = []
+  call self.init(a:wins, get(a:000, 0, {}))
+
   try
+    let status = []
     " Some status bar plugin need to know if choosewin active or not.
     let g:choosewin_active = 1
 
-    if empty(self.wins.get())
+    if empty(self.wins.get()) ||
+          \ ( len(self.wins.get()) is 1 && self.conf['return_on_single_win'] )
       throw 'RETURN'
     endif
-    if len(self.wins.get()) is 1
-      if self.conf['return_on_single_win']
-        throw 'RETURN'
-      endif
-
-      if self.conf['auto_choose']
-        call self.action.do_win(self.wins.get()[0])
-      endif
+    if len(self.wins.get()) is 1 && self.conf['auto_choose']
+      call self.action.do_win(self.wins.get()[0])
     endif
 
     call self.setup()
     call self.choose()
+
   catch /\v^(CHOSE \d+|SWAP)$/
     if self.conf['noop'] && v:exception =~# '^CHOSE'
-      if self.env_org.tab isnot tabpagenr()
+      let tab    = tabpagenr()
+      let win    = str2nr(matchstr(v:exception, '\v^CHOSE \zs\d+'))
+      let status = [ tab, win ]
+      if tab isnot self.env_org.tab
         call self.action.do_tab(self.env_org.tab)
       endif
-      let win = split(v:exception, '\v\s+')[-1]
-      let status = [ tabpagenr(), str2nr(win) ]
     else
       let status = [ tabpagenr(), winnr() ]
     endif
     let self.previous = [ self.env_org.tab, self.env_org.win ]
   catch /\v^(RETURN|CANCELED)$/
-    let status = []
   catch
     let self.exception = v:exception
-    let status = []
   finally
     call self.finish()
     let g:choosewin_active = 0
@@ -79,16 +74,19 @@ function! s:cw.start(wins, ...) "{{{1
   endtry
 endfunction
 
-function! s:cw.setup() "{{{1
+function! s:cw.init(wins, conf) "{{{1
+  let self.wins        = s:wins.set(a:wins)
+  let self.conf        = extend(choosewin#config#get(), a:conf)
+  let self.action      = choosewin#action#init(self)
+  let self.color       = choosewin#color#get()
   let self.exception   = ''
   let self.tab_options = {}
   let self.statusline  = {}
-  let self.env_org     = { 'win': winnr(), 'tab': tabpagenr(), }
-  let self.label2tab   = s:_.dict_create(self.conf['tablabel'], s:tab_all())
+  let self.env_org     = {'win': winnr(), 'tab': tabpagenr()}
+endfunction
 
-  if !has_key(self, 'previous')
-    let self.previous = []
-  endif
+function! s:cw.setup() "{{{1
+  let self.label2tab  = s:_.dict_create(self.conf['tablabel'], s:tab_all())
 
   if self.conf['overlay_enable']
     let self.overlay = choosewin#overlay#get()
@@ -96,27 +94,6 @@ function! s:cw.setup() "{{{1
 
   if self.conf['tabline_replace']
     let self.tab_options = s:_.buffer_options_set(bufnr(''), s:vim_tab_options)
-  endif
-endfunction
-
-function! s:cw.prepare_label(win, align) "{{{1
-  let pad   = repeat(' ', self.conf['label_padding'])
-  let label = self.win2label[a:win]
-  let win_s = pad . label . pad
-  let color = self.color[ winnr() is a:win ? "LabelCurrent" : "Label" ]
-
-  if a:align is 'left'
-    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
-  endif
-
-  if a:align is 'right'
-    return printf('%%#%s# %%= %%#%s# %s ', self.color.Other, color, win_s)
-  endif
-
-  if a:align is 'center'
-    let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
-    return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
-          \ self.color.Other, padding, color, win_s, self.color.Other)
   endif
 endfunction
 
@@ -153,6 +130,20 @@ function! s:cw.choose() "{{{1
   endwhile
 endfunction
 
+function! s:cw.finish() "{{{1
+  if !empty(self.tab_options)
+    call s:_.buffer_options_set(bufnr(''), self.tab_options)
+  endif
+  echo ''
+  redraw
+  if self.conf['blink_on_land']
+    call s:_.blink(2, self.color.Land, '\k*\%#\k*')
+  endif
+  if !empty(self.exception)
+    call s:_.message(self.exception)
+  endif
+endfunction
+
 function! s:cw.call_hook(hook_point, arg) "{{{1
   let HOOK = get(self.conf['hook'], a:hook_point, 0)
   if s:_.is_Funcref(HOOK)
@@ -161,7 +152,9 @@ function! s:cw.call_hook(hook_point, arg) "{{{1
     return a:arg
   endif
 endfunction
+"}}}
 
+" Label:
 function! s:cw.label_show() "{{{1
   if self.conf['hook_enable'] && index(self.conf['hook_bypass'], 'filter_window' ) is -1
     let wins_new = self.call_hook('filter_window', copy(self.wins.get()))
@@ -197,6 +190,27 @@ function! s:cw.label_clear() "{{{1
     call self.overlay.restore()
   endif
 endfunction
+
+function! s:cw.prepare_label(win, align) "{{{1
+  let pad   = repeat(' ', self.conf['label_padding'])
+  let label = self.win2label[a:win]
+  let win_s = pad . label . pad
+  let color = self.color[ winnr() is a:win ? "LabelCurrent" : "Label" ]
+
+  if a:align is 'left'
+    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
+  endif
+
+  if a:align is 'right'
+    return printf('%%#%s# %%= %%#%s# %s ', self.color.Other, color, win_s)
+  endif
+
+  if a:align is 'center'
+    let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
+    return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
+          \ self.color.Other, padding, color, win_s, self.color.Other)
+  endif
+endfunction
 "}}}
 
 " Tabline:
@@ -218,22 +232,6 @@ function! s:cw.get_tablabel(num) "{{{1
   return len(self.conf['tablabel']) > a:num
         \ ? self.conf['tablabel'][a:num-1]
         \ : '..'
-endfunction
-"}}}
-
-" Restore:
-function! s:cw.finish() "{{{1
-  if !empty(self.tab_options)
-    call s:_.buffer_options_set(bufnr(''), self.tab_options)
-  endif
-  echo ''
-  redraw
-  if self.conf['blink_on_land']
-    call s:_.blink(2, self.color.Land, '\k*\%#\k*')
-  endif
-  if !empty(self.exception)
-    call s:_.message(self.exception)
-  endif
 endfunction
 "}}}
 
