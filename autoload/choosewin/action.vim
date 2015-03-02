@@ -1,4 +1,5 @@
 let s:_ = choosewin#util#get()
+
 " Misc:
 function! s:win_all() "{{{1
   return range(1, winnr('$'))
@@ -18,7 +19,7 @@ function! s:win_swap(tab, win) "{{{1
   silent execute 'hide buffer' buf_src
 endfunction
 
-function! s:goto_tabwin(tab, win) "{{{1
+function! s:goto_tabwin(tab, actionwin) "{{{1
   call s:goto_tab(a:tab)
   call s:goto_win(a:win)
 endfunction
@@ -27,7 +28,10 @@ function! s:goto_tab(num) "{{{1
   silent execute 'tabnext' a:num
 endfunction
 
-function! s:goto_win(num) "{{{1
+function! s:goto_win(num, ...) "{{{1
+  if choosewin#noop()
+    return
+  endif
   silent execute a:num 'wincmd w'
 endfunction
 "}}}
@@ -41,7 +45,7 @@ endfunction
 
 function! s:ac.do_win(num) "{{{1
   call s:goto_win(a:num)
-  throw 'CHOSE'
+  throw 'CHOSE ' . a:num
 endfunction
 
 function! s:ac.do_win_land() "{{{1
@@ -50,8 +54,7 @@ endfunction
 
 function! s:ac.do_tab(num) "{{{1
   call s:goto_tab(a:num)
-  let self.app.env.update()
-  let self.app.wins = s:win_all()
+  let self.app.wins.set(s:win_all())
 endfunction
 
 function! s:ac.do_tab_first() "{{{1
@@ -82,14 +85,14 @@ function! s:ac.do_previous() "{{{1
 
   let [ tab_dst, win_dst ] = self.app.previous
   call s:goto_tabwin(tab_dst, win_dst)
-  throw 'CHOSE'
+  throw 'CHOSE ' . win_dst
 endfunction
 
 function! s:ac._swap(tab, win) "{{{1
   call s:win_swap(a:tab, a:win)
   if self.app.conf['swap_stay']
     call s:goto_tabwin(
-          \ self.app.env_org.tab_cur, self.app.env_org.win_cur)
+          \ self.app.env_org.tab, self.app.env_org.win)
   endif
   throw 'SWAP'
 endfunction
@@ -113,7 +116,7 @@ function! s:ac.do_swap_stay() "{{{1
 endfunction
 
 function! s:ac.do_cancel() "{{{1
-  call s:goto_tab(self.app.env_org.tab_cur)
+  call s:goto_tab(self.app.env_org.tab)
   throw 'CANCELED'
 endfunction
 "}}}
