@@ -3,21 +3,21 @@
 let s:chars  = map(range(33, 126), 'nr2char(v:val)')
 
 " data file path
-let s:font_large = expand("<sfile>:h") . '/data/large'
-let s:font_small = expand("<sfile>:h") . '/data/small'
+let s:data_large = expand("<sfile>:h") . '/data/large'
+let s:data_small = expand("<sfile>:h") . '/data/small'
 
 " Util:
 let s:_ = choosewin#util#get()
 
-function! s:scan_match(str, pat) "{{{1
-  " Return List of index where pattern mached to string
+function! s:scan_char(str, char) "{{{1
+  " Return List of index where char mached to string
   " ex)
-  "   s:scan_match('   ##   ', '#') => [3, 4]
-  "   s:scan_match('        ', '#') => []
+  "   s:scan_char('   ##   ', '#') => [3, 4]
+  "   s:scan_char('        ', '#') => []
   let R = []
-  for [i, c] in map(split(a:str, '\zs'), '[v:key, v:val]')
-    if c is a:pat
-      call add(R, i)
+  for [index, char] in map(split(a:str, '\zs'), '[v:key, v:val]')
+    if char is a:char
+      call add(R, index)
     endif
   endfor
   return R
@@ -45,8 +45,8 @@ function! s:pattern_gen(data) "{{{1
   " This Regexp can't use without replacing special vars like '%{L+1}, %{C+1} ..'
   let R = []
   let line_used = []
-  let col_used = []
-  for [i, val] in map(a:data, '[v:key, s:scan_match(v:val, "#")]')
+  let col_used  = []
+  for [i, val] in map(a:data, '[v:key, s:scan_char(v:val, "#")]')
     if empty(val)
       continue
     endif
@@ -87,9 +87,7 @@ function! s:read_data(file) "{{{1
   "     .......
   "   }
   let R = {}
-  for c in s:chars
-    let R[c] = []
-  endfor
+  for c in s:chars | let R[c] = [] | endfor
 
   let lines = readfile(a:file)
   for c in s:chars
@@ -107,11 +105,11 @@ endfunction
 
 " API:
 function! choosewin#font#small() "{{{1
-  return map(s:read_data(s:font_small),'s:font_new(v:val)')
+  return map(s:read_data(s:data_small),'s:font_new(v:val)')
 endfunction
 
 function! choosewin#font#large() "{{{1
-  return map(s:read_data(s:font_large),'s:font_new(v:val)')
+  return map(s:read_data(s:data_large),'s:font_new(v:val)')
 endfunction
 "}}}
 " vim: foldmethod=marker
