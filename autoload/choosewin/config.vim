@@ -20,6 +20,14 @@ let s:default = {
       \ 'land_char':               ';',
       \ 'active':                  0,
       \ 'debug':                   0,
+      \ 'label_fill':              0,
+      \ 'color_label':            { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
+      \ 'color_label_current':    { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
+      \ 'color_overlay':          { 'gui': ['DarkGreen', 'DarkGreen' ], 'cterm': [ 22, 22 ] },
+      \ 'color_overlay_current':  { 'gui': ['LimeGreen', 'LimeGreen' ], 'cterm': [ 40, 40 ] },
+      \ 'color_other':            { 'gui': ['gray20', 'black'], 'cterm': [ 240, 0] },
+      \ 'color_land':             { 'gui':[ 'LawnGreen', 'Black', 'bold,underline'], 'cterm': ['magenta', 'white'] },
+      \ 'color_shade':            { 'gui':[ '', '#777777'], 'cterm': ['', 'grey'] },
       \ }
 
 let s:keymap = {

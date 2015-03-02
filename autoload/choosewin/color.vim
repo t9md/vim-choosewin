@@ -4,21 +4,21 @@ function! s:Color.init() "{{{1
   if has_key(self, 'mgr')
     return
   endif
+  let config = choosewin#config#get()
 
-  let mgr = choosewin#hlmanager#new('ChooseWin')
-  let self.mgr = mgr
-  let color_Label = mgr.register(g:choosewin_color_label)
+  let self.mgr = choosewin#hlmanager#new('ChooseWin')
+  let color_Label = self.mgr.register(config.color_label)
   let color = {
         \ "Label":          color_Label,
-        \ "LabelCurrent":   mgr.register(g:choosewin_color_label_current),
-        \ "Overlay":        mgr.register(g:choosewin_color_overlay),
-        \ "OverlayCurrent": mgr.register(g:choosewin_color_overlay_current),
-        \ "Shade":          mgr.register(g:choosewin_color_shade),
+        \ "LabelCurrent":   self.mgr.register(config.color_label_current),
+        \ "Overlay":        self.mgr.register(config.color_overlay),
+        \ "OverlayCurrent": self.mgr.register(config.color_overlay_current),
+        \ "Shade":          self.mgr.register(config.color_shade),
         \ }
 
   let color.Other = g:choosewin_label_fill
-        \ ? color_Label : self.mgr.register(g:choosewin_color_other)
-  let color.Land = self.mgr.register(g:choosewin_color_land)
+        \ ? color_Label : self.mgr.register(config.color_other)
+  let color.Land = self.mgr.register(config.color_land)
   let self.color = color
 endfunction
 

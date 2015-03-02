@@ -62,7 +62,7 @@ VARIABLES						*choowsewin-variables*
 	Type: Number
 
 *g:choosewin_color_label*
-	Default: See plugin/choosewin.vim
+	Default: See 'autoload/choosewin/config.vim'
 	Type: |Dictionary|
 
 	Set color with collowing fomrat.
@@ -298,7 +298,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 
 		Pass configuration option with { "key": value } format.
 		The config you passed is merged to default_config,
-		See |choosewin#config()|.
+		See |choosewin#config#get()|.
 
 	Api-only parameters~
 	Following config parameter is not provided as global
@@ -340,8 +340,8 @@ choosewin#start({winnum-list}, [ {config} ] )
 	  execute win 'wincmd w'
 	endif
 
-						  *choosewin#config()*
-choosewin#config()
+						  *choosewin#config#get()*
+choosewin#config#get()
 	Return: |Dictionary|
 	You can check initial configuration set used by choosewin.
 	Initial means configuration at each choosewin start, 'not default',
