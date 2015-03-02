@@ -54,7 +54,7 @@ endfunction
 
 function! s:ac.do_tab(num) "{{{1
   call s:goto_tab(a:num)
-  let self.app.wins.set(s:win_all())
+  call self.app.wins.set(s:win_all())
 endfunction
 
 function! s:ac.do_tab_first() "{{{1
