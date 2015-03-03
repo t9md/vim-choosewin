@@ -19,7 +19,7 @@ function! s:win_swap(tab, win) "{{{1
   silent execute 'hide buffer' buf_src
 endfunction
 
-function! s:goto_tabwin(tab, actionwin) "{{{1
+function! s:goto_tabwin(tab, win) "{{{1
   call s:goto_tab(a:tab)
   call s:goto_win(a:win)
 endfunction
