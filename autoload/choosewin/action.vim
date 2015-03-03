@@ -1,10 +1,6 @@
 let s:_ = choosewin#util#get()
 
 " Misc:
-function! s:win_all() "{{{1
-  return range(1, winnr('$'))
-endfunction
-
 function! s:win_swap(tab, win) "{{{1
   let [ tab_dst, win_dst ] = [ a:tab, a:win]
   let [ tab_src, win_src ] = [ tabpagenr(), winnr() ]
@@ -25,6 +21,9 @@ function! s:goto_tabwin(tab, win) "{{{1
 endfunction
 
 function! s:goto_tab(num) "{{{1
+  if a:num is tabpagenr()
+    return
+  endif
   silent execute 'tabnext' a:num
 endfunction
 
@@ -38,6 +37,7 @@ endfunction
 
 " Action:
 let s:ac = {}
+
 function! s:ac.init(app) "{{{1
   let self.app = a:app
   return self
@@ -54,7 +54,7 @@ endfunction
 
 function! s:ac.do_tab(num) "{{{1
   call s:goto_tab(a:num)
-  call self.app.wins.set(s:win_all())
+  call self.app.wins.set(range(1, winnr('$')))
 endfunction
 
 function! s:ac.do_tab_first() "{{{1
@@ -90,10 +90,6 @@ endfunction
 
 function! s:ac._swap(tab, win) "{{{1
   call s:win_swap(a:tab, a:win)
-  if self.app.conf['swap_stay']
-    call s:goto_tabwin(
-          \ self.app.env_org.tab, self.app.env_org.win)
-  endif
   throw 'SWAP'
 endfunction
 
@@ -116,8 +112,12 @@ function! s:ac.do_swap_stay() "{{{1
 endfunction
 
 function! s:ac.do_cancel() "{{{1
-  call s:goto_tab(self.app.env_org.tab)
+  call s:goto_tab(self.app.src.tab)
   throw 'CANCELED'
+endfunction
+
+function! s:ac._goto_tabwin(tab, win) "{{{1
+  call s:goto_tabwin(a:tab, a:win)
 endfunction
 "}}}
 

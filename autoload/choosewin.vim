@@ -54,18 +54,26 @@ function! s:cw.start(wins, ...) "{{{1
     call self.setup()
     call self.choose()
 
-  catch /\v^(CHOSE \d+|SWAP)$/
-    if self.conf['noop'] && v:exception =~# '^CHOSE'
+  catch /\v^(CHOSE \d+)$/
+    if self.conf['noop'] 
       let tab    = tabpagenr()
       let win    = str2nr(matchstr(v:exception, '\v^CHOSE \zs\d+'))
-      let status = [ tab, win ]
-      if tab isnot self.env_org.tab
-        call self.action.do_tab(self.env_org.tab)
+      if tab isnot self.src.tab
+        call self.action.do_tab(self.src.tab)
       endif
+      let status = [ tab, win ]
     else
       let status = [ tabpagenr(), winnr() ]
     endif
-    let self.previous = [ self.env_org.tab, self.env_org.win ]
+    let self.previous = [ self.src.tab, self.src.win ]
+  catch /\v^SWAP$/
+    let status = [ tabpagenr(), winnr() ]
+    if self.conf['swap_stay']
+      let self.previous = status
+      call self.action._goto_tabwin(self.src.tab, self.src.win)
+    else
+      let self.previous = [ self.src.tab, self.src.win ]
+    endif
   catch /\v^(RETURN|CANCELED)$/
   catch
     let self.exception = v:exception
@@ -84,7 +92,7 @@ function! s:cw.init(wins, conf) "{{{1
   let self.exception   = ''
   let self.tab_options = {}
   let self.statusline  = {}
-  let self.env_org     = {'win': winnr(), 'tab': tabpagenr()}
+  let self.src         = {'win': winnr(), 'tab': tabpagenr()}
 endfunction
 
 function! s:cw.setup() "{{{1
@@ -171,7 +179,7 @@ function! s:cw.label_show() "{{{1
   if self.conf['statusline_replace']
     for n in wins
       let self.statusline[n] = s:_.window_options_set(n,
-            \ { '&statusline': self.prepare_label(n, self.conf['label_align']) })
+            \ { '&statusline': self.prepare_label(n) })
     endfor
   endif
 
@@ -193,21 +201,22 @@ function! s:cw.label_clear() "{{{1
   endif
 endfunction
 
-function! s:cw.prepare_label(win, align) "{{{1
+function! s:cw.prepare_label(win) "{{{1
+  let align = self.conf['label_align']
   let pad   = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
   let color = self.color[ winnr() is a:win ? "LabelCurrent" : "Label" ]
 
-  if a:align is 'left'
+  if align is 'left'
     return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
   endif
 
-  if a:align is 'right'
+  if align is 'right'
     return printf('%%#%s# %%= %%#%s# %s ', self.color.Other, color, win_s)
   endif
 
-  if a:align is 'center'
+  if align is 'center'
     let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
     return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
           \ self.color.Other, padding, color, win_s, self.color.Other)
