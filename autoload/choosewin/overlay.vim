@@ -158,7 +158,7 @@ function! s:Overlay.setup_buffer() "{{{1
     let b:choosewin.options = s:_.buffer_options_set(bufnr, s:vim_options.buffer)
     call s:undobreak()
 
-    let render_lines = uniq(b:choosewin.render_lines)
+    let render_lines = s:_.uniq(b:choosewin.render_lines)
     let append       = max([max(render_lines) - line('$'), 0 ])
     call append(line('$'), map(range(append), '""'))
     call self._fill_space(
