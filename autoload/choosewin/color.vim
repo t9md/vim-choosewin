@@ -4,42 +4,33 @@ function! s:Color.init() "{{{1
   if has_key(self, 'mgr')
     return
   endif
-  let config = choosewin#config#get()
 
-  let self.mgr = choosewin#hlmanager#new('ChooseWin')
-  let color_Label = self.mgr.register(config['color_label'])
-  let color = {
-        \ "Label":          color_Label,
-        \ "LabelCurrent":   self.mgr.register(config['color_label_current']),
-        \ "Overlay":        self.mgr.register(config['color_overlay']),
-        \ "OverlayCurrent": self.mgr.register(config['color_overlay_current']),
-        \ "Shade":          self.mgr.register(config['color_shade']),
+  let config   = choosewin#config#get()
+  let self.mgr = mgr
+
+  let colors = {
+        \ "Label":          config['color_label'],
+        \ "LabelCurrent":   config['color_label_current'],
+        \ "Overlay":        config['color_overlay'],
+        \ "OverlayCurrent": config['color_overlay_current'],
+        \ "Shade":          config['color_shade'],
+        \ "Land":           config['color_land'],
+        \ "Other":          config.get(config.label_fill ? "color_label" : "color_other"),
         \ }
-
-  let color.Other = config['label_fill']
-        \ ? color_Label : self.mgr.register(config['color_other'])
-  let color.Land = self.mgr.register(config['color_land'])
-  let self.color = color
-endfunction
-
-function! s:Color.get() "{{{1
-  call   self.init()
-  return self.color
-endfunction
-
-function! s:Color.refresh() "{{{1
-  call self.init()
-  call self.mgr.refresh()
+  for [color, spec] in items(colors)
+    call self.mgr.register("ChooseWin" . color, spec)
+  endfor
 endfunction
 "}}}
 
 " API:
-function! choosewin#color#get() "{{{1
-  return s:Color.get()
+function! choosewin#color#init() "{{{1
+  return s:Color.init()
 endfunction
 
 function! choosewin#color#refresh() "{{{1
-  call s:Color.refresh()
+  call self.init()
+  call self.mgr.refresh()
 endfunction
 "}}}
 

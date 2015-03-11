@@ -85,10 +85,10 @@ function! s:cw.start(wins, ...) "{{{1
 endfunction
 
 function! s:cw.init(wins, conf) "{{{1
+  call choosewin#color#init()
   let self.wins        = s:wins.set(a:wins)
   let self.conf        = extend(choosewin#config#get(), a:conf)
   let self.action      = choosewin#action#init(self)
-  let self.color       = choosewin#color#get()
   let self.exception   = ''
   let self.tab_options = {}
   let self.statusline  = {}
@@ -147,7 +147,7 @@ function! s:cw.finish() "{{{1
   echo ''
   redraw
   if self.conf['blink_on_land']
-    call s:_.blink(2, self.color.Land, '\k*\%#\k*')
+    call s:_.blink(2, "ChooseWinLand", '\k*\%#\k*')
   endif
   if !empty(self.exception)
     call s:_.message(self.exception)
@@ -206,20 +206,20 @@ function! s:cw.prepare_label(win) "{{{1
   let pad   = repeat(' ', self.conf['label_padding'])
   let label = self.win2label[a:win]
   let win_s = pad . label . pad
-  let color = self.color[ winnr() is a:win ? "LabelCurrent" : "Label" ]
+  let color = "ChooseWinLabel" . (winnr() is a:win ? "Current" : "")
 
   if align is 'left'
-    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, self.color.Other)
+    return printf('%%#%s# %s %%#%s# %%= ', color, win_s, "ChooseWinOther")
   endif
 
   if align is 'right'
-    return printf('%%#%s# %%= %%#%s# %s ', self.color.Other, color, win_s)
+    return printf('%%#%s# %%= %%#%s# %s ', "ChooseWinOther", color, win_s)
   endif
 
   if align is 'center'
     let padding = repeat(' ', winwidth(a:win)/2-len(win_s))
     return printf('%%#%s# %s %%#%s# %s %%#%s# %%= ',
-          \ self.color.Other, padding, color, win_s, self.color.Other)
+          \ "ChooseWinOther", padding, color, win_s, "ChooseWinOther")
   endif
 endfunction
 "}}}
@@ -228,14 +228,14 @@ endfunction
 function! s:cw.tabline() "{{{1
   let R   = ''
   let pad = repeat(' ', self.conf['label_padding'])
-  let sepalator = printf('%%#%s# ', self.color.Other)
+  let sepalator = printf('%%#%s# ', "ChooseWinOther")
   let tab_all = s:tab_all()
   for tabnum in tab_all
-    let color = self.color[ tabpagenr() is tabnum ? "LabelCurrent" : "Label" ]
+    let color = "ChooseWinLabel" . (tabpagenr() is tabnum ? "Current" : "")
     let R .= printf('%%#%s# %s ', color,  pad . self.get_tablabel(tabnum) . pad)
     let R .= tabnum isnot tab_all[-1] ? sepalator : ''
   endfor
-  let R .= printf('%%#%s#', self.color.Other)
+  let R .= printf('%%#%s#', "ChooseWinOther")
   return R
 endfunction
 

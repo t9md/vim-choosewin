@@ -84,7 +84,6 @@ function! s:Overlay.init() "{{{1
         \ 'small': choosewin#font#small(),
         \ 'large': choosewin#font#large(),
         \ }
-  let self.color = choosewin#color#get()
 endfunction
 
 function! s:Overlay.start(wins, conf) "{{{1
@@ -189,16 +188,17 @@ function! s:Overlay.label_show() "{{{1
     " Shade overall window
     if self.conf['overlay_shade']
       let pattern = '\v%'. w:choosewin['w0'] .'l\_.*%'. w:choosewin['w$'] .'l'
-      call self.matchadd(self.color.Shade, pattern, self.conf['overlay_shade_priority'])
+      call self.matchadd("ChooseWinShade", pattern, self.conf['overlay_shade_priority'])
     endif
 
     " Hide Trailing white space.
-    call self.matchadd(self.color.Shade,'\s\+$', self.conf['overlay_shade_priority'])
+    call self.matchadd("ChooseWinShade",'\s\+$', self.conf['overlay_shade_priority'])
 
     " Show Label
-    let label_color =
-          \ w:choosewin['winnr'] is self.winnr_org ? 'OverlayCurrent': 'Overlay'
-    call self.matchadd(self.color[label_color], w:choosewin.pattern, self.conf['overlay_label_priority'])
+    call self.matchadd(
+          \ "ChooseWinOverlay". ( winnr is self.winnr_org ? 'Current' : ''),
+          \ w:choosewin.pattern,
+          \ self.conf['overlay_label_priority'])
   endfor
   noautocmd execute self.winnr_org 'wincmd w'
   redraw
