@@ -6,7 +6,7 @@ function! s:Color.init() "{{{1
   endif
 
   let config   = choosewin#config#get()
-  let self.mgr = mgr
+  let self.mgr = choosewin#hlmanager#new('')
 
   let colors = {
         \ "Label":          config['color_label'],
@@ -15,7 +15,7 @@ function! s:Color.init() "{{{1
         \ "OverlayCurrent": config['color_overlay_current'],
         \ "Shade":          config['color_shade'],
         \ "Land":           config['color_land'],
-        \ "Other":          config.get(config.label_fill ? "color_label" : "color_other"),
+        \ "Other":          config[ config.label_fill ? "color_label" : "color_other" ],
         \ }
   for [color, spec] in items(colors)
     call self.mgr.register("ChooseWin" . color, spec)
