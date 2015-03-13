@@ -29,8 +29,8 @@ function! choosewin#color#init() "{{{1
 endfunction
 
 function! choosewin#color#refresh() "{{{1
-  call self.init()
-  call self.mgr.refresh()
+  call s:Color.init()
+  call s:Color.mgr.refresh()
 endfunction
 "}}}
 
