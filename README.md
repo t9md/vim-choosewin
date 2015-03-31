@@ -36,19 +36,19 @@ More configuration is explained in help file. See `:help choosewin`.
 
 ## Default keymap in choosewin mode
 
-| Key  | Action     | Description                   |
-| ---- | ---------- | ----------------------------- |
-| 0    | tab_first  | Choose FIRST    tab           |
-| [    | tab_prev   | Choose PREVIOUS tab           |
-| ]    | tab_next   | Choose NEXT     tab           |
-| $    | tab_last   | Choose LAST     tab           |
-| x    | tab_close  | Close current tab             |
-| ;    | win_land   | Land to current window        |
-| -    | previous   | Land to previous window       |
-| s    | swap       | Swap window                #1 |
-| S    | swap_stay  | Swap window but stay       #1 |
-| <CR> | win_land   | Land to current window        |
-|      | <NOP>      | Disable predefined keymap     |
+| Key    | Action    | Description                   |
+| ------ | --------- | ----------------------------- |
+| 0      | tab_first | Choose FIRST    tab           |
+| [      | tab_prev  | Choose PREVIOUS tab           |
+| ]      | tab_next  | Choose NEXT     tab           |
+| $      | tab_last  | Choose LAST     tab           |
+| x      | tab_close | Close current tab             |
+| ;      | win_land  | Land to current window        |
+| -      | previous  | Land to previous window       |
+| s      | swap      | Swap window                #1 |
+| S      | swap_stay | Swap window but stay       #1 |
+| `<CR>` | win_land  | Land to current window        |
+|        | `<NOP>`   | Disable predefined keymap     |
 *1 if you chose 'swap' again, swapping with previous window's buffer
 ex) with default keymap, double 's'(ss) swap with previous buffer.
 
