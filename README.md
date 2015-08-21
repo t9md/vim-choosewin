@@ -62,7 +62,7 @@ nmap - <Plug>(choosewin)
 
 ### Move around tab, and choose window
 
-First of all, open mustiple windows and tabs.  
+First of all, open multiple windows and tabs.
 Invoke choosewin with typing `-` in normal mode.  
 Then you can move around tabs by `]` and `[` or directly choose target tab by number labeled on tabline.  
 After you chose target tab, you can choose target window by typing alphabet which is labeled on statusline or on middle of window(if you enabled overlay feature).  
