@@ -74,6 +74,9 @@ function! s:cw.start(wins, ...) "{{{1
     else
       let self.previous = [ self.src.tab, self.src.win ]
     endif
+  catch /\v^Vim:Interrupt$/
+    call self.label_clear()
+    call self.action.do_cancel()
   catch /\v^(RETURN|CANCELED)$/
   catch
     let self.exception = v:exception
