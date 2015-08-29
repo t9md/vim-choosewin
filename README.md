@@ -2,7 +2,7 @@
 
 # Animated GIF
 
-![Movie](http://gifzo.net/1A8QMzrbRp.gif)
+![gif](https://raw.githubusercontent.com/t9md/t9md/85fd33b76f9a1a8b4d2d6993a6ab443d9cb2aebf/img/vim-smalls.gif)
 
 # Land to window you choose.
 
