@@ -1,4 +1,4 @@
-*choosewin.txt* Land in window you choose like tmux's 'display-pane'.
+*choosewin.txt* Land on window you choose like tmux's 'display-pane'.
 
 Version: 1.8
 Author : t9md <taqumd@gmail.com>
@@ -19,7 +19,7 @@ Changelog				    |choosewin-changelog|
 ==============================================================================
 INTRODUCTION					*choosewin-introduction*
 
-Land in window you choose~
+Land on window you choose~
 
 Aiming to mimic tmux's `display-pane` feature, which enables you to choose a
 window interactively.
@@ -32,7 +32,7 @@ This plugin simplifies windows excursion.
 
 	1. Display window label on statusbar(or middle of window).
 	2. Read input from user.
-	3. Land in window you chose.
+	3. Land on window you chose.
 
 ==============================================================================
 MAPPINGS					*choosewin-mappings*
@@ -69,8 +69,8 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	Set color with following format:
 
 	{
-	  'gui':   [ {guibg}, {guifg}, {gui} ],
-	  'cterm': [ {ctermbg}, {ctermfg}, {cterm} ]
+	  'gui':   [{guibg}, {guifg}, {gui}],
+	  'cterm': [{ctermbg}, {ctermfg}, {cterm}]
 	}
 
 	You can omit unused color, so if you never use Vim from GUI, you don't
@@ -84,12 +84,12 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	Example~
 >
 	let g:choosewin_color_label = {
-	      \ 'gui': [ 'ForestGreen', 'white', 'bold' ],
-	      \ 'cterm': [ 9, 16 ]
+	      \ 'gui': ['ForestGreen', 'white', 'bold'],
+	      \ 'cterm': [9, 16]
 	      \ }
 	let g:choosewin_color_other = {
-	      \ 'gui': [ 'gray20', 'black' ],
-	      \ 'cterm': [ 240, 0 ]
+	      \ 'gui': ['gray20', 'black'],
+	      \ 'cterm': [240, 0]
 	      \ }
 <
 *g:choosewin_color_overlay*
@@ -108,12 +108,12 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	Color of around-label for window/tab
 
 *g:choosewin_color_land*
-	Used to blink cursor word when land on window.
+	Used to blink cursor word when landing on window.
 
 *g:choosewin_blink_on_land*
 	Default: 1
 	Type: |Number| 0 or 1
-	Control whether blinking cursor word when land in window.
+	Control whether blinking cursor word when landing on window.
 	Set to 0 to disable blinking.
 
 *g:choosewin_label*
@@ -150,11 +150,11 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	| ]    | tab_next   | Choose NEXT     tab           |
 	| $    | tab_last   | Choose LAST     tab           |
 	| x    | tab_close  | Close current tab             |
-	| ;    | win_land   | Land to current window        |
-	| -    | previous   | Land to previous window       |
+	| ;    | win_land   | Land on current window        |
+	| -    | previous   | Land on previous window       |
 	| s    | swap       | Swap window                #1 |
 	| S    | swap_stay  | Swap window but stay       #1 |
-	| <CR> | win_land   | Land to current window        |
+	| <CR> | win_land   | Land on current window        |
 	|      | <NOP>      | Disable predefined keymap     |
 
 	[NOTE] #1
@@ -287,7 +287,7 @@ Available Hook Point~
 		|List| of window number which is subject to chose by user.
 
 	[Example]: show label for specific window >
-	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree"]
 
 	let g:choosewin_hook = {}
 	function! g:choosewin_hook.filter_window(winnums)
@@ -300,10 +300,10 @@ Available Hook Point~
 FUNCTIONS						*choosewin-functions*
 
 							   *choosewin#start()*
-choosewin#start({winnum-list}, [ {config} ] )
+choosewin#start({winnum-list}, [{config}] )
 	Return: |List|
 	Value:
-		chose:  [ tabpagenr(), winnr() ]
+		chose:  [tabpagenr(), winnr()]
 		canceled: []
 
 	{winnum-list}:  Required
@@ -338,7 +338,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 <
 	[Example]: automatically choose if candidate window is one. >
 	function! s:is_ignore_window(winnr)
-	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree"]
 	  return index(ignore_filtype, getbufvar(winbufnr(a:winnr), "&filetype")) != -1
 	endfunction
 
@@ -377,12 +377,12 @@ CONFIGURATION EXAMPLE				    *choosewin-example*
 
 	" tmux like overlay color
 	let g:choosewin_color_overlay = {
-	      \ 'gui': ['DodgerBlue3', 'DodgerBlue3' ],
-	      \ 'cterm': [ 25, 25 ]
+	      \ 'gui': ['DodgerBlue3', 'DodgerBlue3'],
+	      \ 'cterm': [25, 25]
 	      \ }
 	let g:choosewin_color_overlay_current = {
-	      \ 'gui': ['firebrick1', 'firebrick1' ],
-	      \ 'cterm': [ 124, 124 ]
+	      \ 'gui': ['firebrick1', 'firebrick1'],
+	      \ 'cterm': [124, 124]
 	      \ }
 
 	let g:choosewin_blink_on_land      = 0 " don't blink at land
@@ -421,7 +421,7 @@ CHANGELOG						*choosewin-changelog*
 2015-01-20: v1.4
 	- verup
 2015-01-08:
-	- [new] land to previous window suggested by @collinpeters
+	- [new] land on previous window suggested by @collinpeters
 	- [enhance] remove swap virtual keymap, now its incorporate into
 	  keymap within choosewin.
 	- [new] create 'ChooseWinSwap' command, you don't necessarily need
