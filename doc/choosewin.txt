@@ -1,99 +1,97 @@
-*choowsewin.txt* land to window you choose like tmux's 'display-pane'.
+*choosewin.txt* Land on window you choose like tmux's 'display-pane'.
 
 Version: 1.8
 Author : t9md <taqumd@gmail.com>
-GitHub : https://github.com/t9md/vim-choowsewin
+GitHub : https://github.com/t9md/vim-choosewin
 ==============================================================================
-CONTENTS					*choowsewin-contents*
+CONTENTS					*choosewin* *choosewin-contents*
 
-Introduction				    |choowsewin-introduction|
-Mapping					    |choowsewin-mapping|
-Commands				    |choowsewin-commands|
-Variables				    |choowsewin-variables|
-Functions				    |choowsewin-functions|
-Configuration Example			    |choowsewin-example|
-Bug					    |choowsewin-bug|
-Todo					    |choowsewin-todo|
-Changelog				    |choowsewin-changelog|
+Introduction				    |choosewin-introduction|
+Mappings				    |choosewin-mappings|
+Commands				    |choosewin-commands|
+Variables				    |choosewin-variables|
+Functions				    |choosewin-functions|
+Configuration Example			    |choosewin-example|
+Bug					    |choosewin-bug|
+Todo					    |choosewin-todo|
+Changelog				    |choosewin-changelog|
 
 ==============================================================================
-INTRODUCTION					*choowsewin-introduction*
+INTRODUCTION					*choosewin-introduction*
 
-Land to window you choose~
+Land on window you choose~
 
-Aiming to mimic tmux's `display-pane` feature, which enables you to choose
+Aiming to mimic tmux's `display-pane` feature, which enables you to choose a
 window interactively.
 
-This plugin should be useful especially when you are working on high
-resolution wide display.
-Since with wide display, you are likely to open multiple windows and
-moving around between windows is a little bit tiresome.
+This plugin should be useful when you're working on a high resolution display.
+You're likely to open multiple windows and moving between them can be a bit
+tiresome.
 
 This plugin simplifies windows excursion.
 
 	1. Display window label on statusbar(or middle of window).
 	2. Read input from user.
-	3. land window you chose.
+	3. Land on window you chose.
 
 ==============================================================================
-MAPPINGS					*choowsewin-mappings*
+MAPPINGS					*choosewin-mappings*
 
 <Plug>(choosewin)
 
 ==============================================================================
-COMMANDS						*choowsewin-commands*
+COMMANDS						*choosewin-commands*
 
 *:ChooseWin*
-	choose window interactively
+	Choose window interactively
 
 *:ChooseWinSwap*
-	swap current window to window you chose
+	Swap current window to window you chose
 
 *:ChooseWinSwapStay*
-	swap current window to window you chose
-	your window remain unchanged
+	Swap current window to window you chose. Your window remain unchanged
 
 ==============================================================================
-VARIABLES						*choowsewin-variables*
+VARIABLES						*choosewin-variables*
 
 [NOTE]
-All config option in this section is set in 'autoload/choosewin/config.vim'.
+All config options in this section are set in 'autoload/choosewin/config.vim'.
 
 *g:choosewin_statusline_replace*
 	Default: 1
-	Type: Number
-	Control whether window label is shown on |&statusline|.
+	Type: |Number|
+	Control whether window label is shown in |&statusline|.
 
 *g:choosewin_color_label*
 	Default: See 'autoload/choosewin/config.vim'
 	Type: |Dictionary|
 
-	Set color with collowing fomrat.
+	Set color with following format:
+
 	{
-	  'gui':   [ {guibg}, {guifg}, {gui} ],
-	  'cterm': [ {ctermbg}, {ctermfg}, {cterm}]
+	  'gui':   [{guibg}, {guifg}, {gui}],
+	  'cterm': [{ctermbg}, {ctermfg}, {cterm}]
 	}
 
-	You can omit unused color, so if you never use vim from CUI, you don't
-	need to configure 'cterm' field.
-	And if you only want to set specific field color, use empty string for
-	other field like following.
+	You can omit unused color, so if you never use Vim from GUI, you don't
+	need to configure 'gui' field.
+
+	If you only want to set a specific color field, use an empty string
+	for the other fields:
 >
 	let g:choosewin_color_label = { 'gui': ['', 'white'] }
 <
-
-	Exeample~
+	Example~
 >
 	let g:choosewin_color_label = {
 	      \ 'gui': ['ForestGreen', 'white', 'bold'],
-	      \ 'cterm': [ 9, 16]
+	      \ 'cterm': [9, 16]
 	      \ }
 	let g:choosewin_color_other = {
 	      \ 'gui': ['gray20', 'black'],
-	      \ 'cterm': [ 240, 0]
+	      \ 'cterm': [240, 0]
 	      \ }
 <
-
 *g:choosewin_color_overlay*
 	Color of overlay window label
 
@@ -104,26 +102,26 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 	Color of shade
 
 *g:choosewin_color_label_current*
-	Color of label for current win/tab used in &statsline and &tabline
+	Color of label for current window/tab used in |&statusline| and |&tabline|
 
 *g:choosewin_color_other*
-	Color of around-label win/tab
+	Color of around-label for window/tab
 
 *g:choosewin_color_land*
-	Used to blink cursor word when land on window.
+	Used to blink cursor word when landing on window.
 
 *g:choosewin_blink_on_land*
 	Default: 1
 	Type: |Number| 0 or 1
-	Control whether blinking cursor word when land on window.
-	Set 0 to disable blinking.
+	Control whether blinking cursor word when landing on window.
+	Set to 0 to disable blinking.
 
 *g:choosewin_label*
 	Default: 'ABCDEFGHIJKLMNOPQRTUVWYZ'
 	Type: |String|
 
-	[NOTE] 'S' and 'X' is intentionally deleted from here.
-	Since its used as keymap.
+	[NOTE] 'S' and 'X' are intentionally deleted from here.
+	Since it's used as keymap.
 
 	[CAUTION] You need to manage to avoid conflict to
 	|g:choosewin_tablabel| or you can't choose label you want.
@@ -135,7 +133,7 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 *g:choosewin_tablabel*
 	Default: '123456789'
 	Type: |String|
-	[CAUNTION] You need to manage to avoid conflict to
+	[CAUTION] You need to manage to avoid conflict to
 	|g:choosewin_label| or you can't choose label you want.
 
 *g:choosewin_keymap*
@@ -152,18 +150,19 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 	| ]    | tab_next   | Choose NEXT     tab           |
 	| $    | tab_last   | Choose LAST     tab           |
 	| x    | tab_close  | Close current tab             |
-	| ;    | win_land   | Land to current window        |
-	| -    | previous   | Land to previous window       |
+	| ;    | win_land   | Land on current window        |
+	| -    | previous   | Land on previous window       |
 	| s    | swap       | Swap window                #1 |
 	| S    | swap_stay  | Swap window but stay       #1 |
-	| <CR> | win_land   | Land to current window        |
+	| <CR> | win_land   | Land on current window        |
 	|      | <NOP>      | Disable predefined keymap     |
+
 	[NOTE] #1
 	If you chose 'swap' again, swapping with previous window's buffer
 	ex) with default keymap, double 's'(ss) swap with previous window.
 
-	How keymap like?~
-	below is excerpto of keymap configurtion.
+	How do you define a keymap?~
+	Below is an excerpt of keymap configuration.
 >
 	let s:keymap = {
 	      \ '0':     'tab_first',
@@ -180,7 +179,7 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 <
 
 	Disabling default keymap~
-	To disable default keymap, you can use special action '<NOP>'.
+	To disable the default keymap, you can use special action '<NOP>'.
 	The key set to '<NOP>' will be deleted(unmapped) from keytable.
 
 	Customization example~
@@ -191,7 +190,7 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 <
 *g:choosewin_label_align*
 	Default: 'center'
-	Type: String
+	Type: |String|
 	Value: 'right', 'center', 'left'
 
 *g:choosewin_label_padding*
@@ -219,7 +218,7 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 	Good: Easy to spot window label than it on |&statusline|.
 	Bad:  Too aggressive for merely show caption and slow.
 
-	What 'too agressive' means,
+	What 'too aggressive' means:
 	- change buffer temporarily
 	  1. Substitute tab to space
 	  2. Append space to rendering area
@@ -230,7 +229,7 @@ All config option in this section is set in 'autoload/choosewin/config.vim'.
 
 *g:choosewin_overlay_font_size*
 	Default: 'auto'
-	Type: String
+	Type: |String|
 	Value: 'auto', 'small', 'large'
 	'auto' determine appropriate font size from window height.
 
@@ -288,7 +287,7 @@ Available Hook Point~
 		|List| of window number which is subject to chose by user.
 
 	[Example]: show label for specific window >
-	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+	let s:ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree"]
 
 	let g:choosewin_hook = {}
 	function! g:choosewin_hook.filter_window(winnums)
@@ -298,13 +297,13 @@ Available Hook Point~
 	endfunction
 <
 ==============================================================================
-FUNCTIONS						*choowsewin-functions*
+FUNCTIONS						*choosewin-functions*
 
 							   *choosewin#start()*
-choosewin#start({winnum-list}, [ {config} ] )
+choosewin#start({winnum-list}, [{config}] )
 	Return: |List|
 	Value:
-		chose:  [ tabpagenr(), winnr() ]
+		chose:  [tabpagenr(), winnr()]
 		canceled: []
 
 	{winnum-list}:  Required
@@ -317,7 +316,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 		The config you passed is merged to default_config,
 		See |choosewin#config#get()|.
 
-	Api-only parameters~
+	API-only parameters~
 	Following config parameter is not provided as global
 	configuration variable. So need to mention here.
 
@@ -339,7 +338,7 @@ choosewin#start({winnum-list}, [ {config} ] )
 <
 	[Example]: automatically choose if candidate window is one. >
 	function! s:is_ignore_window(winnr)
-	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree" ]
+	  let ignore_filtype = ["unite", "vimfiler", "vimshell", "nerdtree"]
 	  return index(ignore_filtype, getbufvar(winbufnr(a:winnr), "&filetype")) != -1
 	endfunction
 
@@ -365,7 +364,7 @@ choosewin#config#get()
 	its respect your customization through global variable.
 
 ==============================================================================
-CONFIGURATION EXAMPLE				    *choowsewin-example*
+CONFIGURATION EXAMPLE				    *choosewin-example*
 >
 	" invoke with '-'
 	nmap  -  <Plug>(choosewin)
@@ -378,23 +377,23 @@ CONFIGURATION EXAMPLE				    *choowsewin-example*
 
 	" tmux like overlay color
 	let g:choosewin_color_overlay = {
-	      \ 'gui': ['DodgerBlue3', 'DodgerBlue3' ],
-	      \ 'cterm': [ 25, 25 ]
+	      \ 'gui': ['DodgerBlue3', 'DodgerBlue3'],
+	      \ 'cterm': [25, 25]
 	      \ }
 	let g:choosewin_color_overlay_current = {
-	      \ 'gui': ['firebrick1', 'firebrick1' ],
-	      \ 'cterm': [ 124, 124 ]
+	      \ 'gui': ['firebrick1', 'firebrick1'],
+	      \ 'cterm': [124, 124]
 	      \ }
 
-	let g:choosewin_blink_on_land      = 0 " dont' blink at land
+	let g:choosewin_blink_on_land      = 0 " don't blink at land
 	let g:choosewin_statusline_replace = 0 " don't replace statusline
 	let g:choosewin_tabline_replace    = 0 " don't replace tabline
 <
 ==============================================================================
-BUG							    *choowsewin-bug*
+BUG							    *choosewin-bug*
 
 ==============================================================================
-TODO							    *choowsewin-todo*
+TODO							    *choosewin-todo*
 
 [x] recover poslist properly in overlay mode
 [x] disable &lcs-trail adviced by manga-osyo
@@ -403,7 +402,7 @@ TODO							    *choowsewin-todo*
 [x] consider offset for overlay when first colmun is not 1.
 
 ==============================================================================
-CHANGELOG						*choowsewin-changelog*
+CHANGELOG						*choosewin-changelog*
 
 2015-03-02:
 	- [fix] Didn't work properly when number of label are shorter than
@@ -422,7 +421,7 @@ CHANGELOG						*choowsewin-changelog*
 2015-01-20: v1.4
 	- verup
 2015-01-08:
-	- [new] land to previous window suggested by @collinpeters
+	- [new] land on previous window suggested by @collinpeters
 	- [enhance] remove swap virtual keymap, now its incorporate into
 	  keymap within choosewin.
 	- [new] create 'ChooseWinSwap' command, you don't necessarily need
@@ -439,9 +438,9 @@ CHANGELOG						*choowsewin-changelog*
 	- [new] g:choosewin_active auto set variable intended within
 	  &statuline plugin(such as disabling trailing space warning).
 2014-01-12:
-	- [improve] disble cursorline while overlay
+	- [improve] disable cursorline while overlay
 	- [new-feature] now support 'small' font for overlay and configurable
-	  size you prefer. by default 'auto' mode determine font size based on
+	  size you prefer. By default 'auto' mode determine font size based on
 	  winheight(0).
 2014-01-11: v1.3
 	- [verup] v1.3
@@ -465,7 +464,7 @@ CHANGELOG						*choowsewin-changelog*
 	- [improve] Add multibyte workaround.
 	- [improve] now overlay not break since &conceallevel = 0 temporarily
 	- [bugfix] validate valid winnum and number of label
-	- [improve] disable fold, wrap, list adviced by manga-osyo.
+	- [improve] disable fold, wrap, list advised by manga-osyo.
 	- [improve] separate keymap variable
 	- [bugfix] properly clear label on tabswitch
 	- [refactor] and stabilize
@@ -485,7 +484,7 @@ CHANGELOG						*choowsewin-changelog*
 	- [bugfix] choosing tab and <Esc> don't revert original tab.
 2013-12-29:
 	- now blinking cursor word at land so that easy to spot cursor.
-	- [api-change] add auto-choose optional args for choowsewin#start()
+	- [api-change] add auto-choose optional args for choosewin#start()
 	  suggested by hrsh7th
 2013-12-28: v0.8
 	- now can choose tab inspired number of advice by manga-osyo
