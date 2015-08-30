@@ -1,6 +1,6 @@
 # アニメーションGIF
 
-![Movie](https://raw.githubusercontent.com/t9md/t9md/1675510eaa1b789aeffbc49c1ae3b1e8e7dceabe/img/vim-choosewin.gif)
+![gif](https://raw.githubusercontent.com/t9md/t9md/1675510eaa1b789aeffbc49c1ae3b1e8e7dceabe/img/vim-choosewin.gif)
 
 # 選択したウィンドウに移動
 tmux の `display-pane` 機能を模倣しようと思い、作りました。  
