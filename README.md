@@ -6,16 +6,16 @@
 
 # Land to window you choose.
 
-Aiming to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
+This plugin aims to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
 
-This plugin should be useful especially when you are working on high resolution wide display.
-Since with wide display, you are likely to open multiple window and moving around window is a little bit tiresome.
+This plugin should be especially useful when you are working on high resolution displays.
+Since with wide displays you are likely to open multiple window and moving around window is a little bit tiresome.
 
-This plugin simplifies window excursion.
+This plugin simplifies window navigation.
 
   1. Display window label on statusline or middle of each window (overlay).
   2. Read input from user.
-  3. land to window.
+  3. Land to window.
 
 ## Example configuration:
 
@@ -62,18 +62,18 @@ nmap - <Plug>(choosewin)
 
 ### Move around tab, and choose window
 
-First of all, open mustiple windows and tabs.  
-Invoke choosewin with typing `-` in normal mode.  
-Then you can move around tabs by `]` and `[` or directly choose target tab by number labeled on tabline.  
-After you chose target tab, you can choose target window by typing alphabet which is labeled on statusline or on middle of window(if you enabled overlay feature).  
+First of all, open multiple windows and tabs.  
+Invoke choosewin by typing `-` in normal mode.  
+Then you can move around tabs by `]` and `[` or directly choose target tab by the number labeled on the tabline.  
+After you chose a target tab, you can choose a target window by typing the letter which is labeled on statusline or in the middle of a window (if you have enabled the overlay feature).  
 
 ### Choose previouse window
 
-Type `-` again to invoke choosewin, then input `-` again to choose previous window, previous window is the window last time you were on before you choose current window.  
+Type `-` again to invoke choosewin, then input `-` again to choose the previous window. The previous window you were on before you choose the current window.  
 
 ### Swap window
 
-Type `-` to invoke choosein, then type `s` to swap window.  
+Type `-` to invoke choosewin, then type `s` to swap windows.  
 Then choose target window label you want to swap content(=buffer) of window with buffer of current window.  
 After you chose, the current window's buffer is swapped with the buffer shown in the window you chose.  
 By combinating swap and previous window, you can easily swap window with previous window like `-s-`, invoking choosewin itself(`-`) then enter swapping mode(`s`), then instruct choosewin that target window is previous(`-`) window. conguratulation!  
