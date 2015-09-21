@@ -167,7 +167,7 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	previous window.
 
 	How do you define a keymap?~
-	Below is an sample of the keymap configuration.
+	Below is a sample of the keymap configuration.
 >
 	let s:keymap = {
 	      \ '0':     'tab_first',
