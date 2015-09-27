@@ -4,18 +4,17 @@
 
 ![gif](https://raw.githubusercontent.com/t9md/t9md/1675510eaa1b789aeffbc49c1ae3b1e8e7dceabe/img/vim-choosewin.gif)
 
-# Land to window you choose.
+# Navigate to the window you choose
 
-This plugin aims to mimic tmux's `display-pane` feature, which enables you to choose window interactively.
+This plugin aims to mimic tmux's `display-pane` feature, which enables you to choose a window interactively.
 
-This plugin should be especially useful when you are working on high resolution displays.
-Since with wide displays you are likely to open multiple window and moving around window is a little bit tiresome.
+This plugin should be especially useful when working on high resolution displays since with wide displays you are likely to open multiple window and moving around window is a little bit tiresome.
 
-This plugin simplifies window navigation.
+This plugin simplifies window navigation with the following functionality:
 
-  1. Display window label on statusline or middle of each window (overlay).
-  2. Read input from user.
-  3. Land to window.
+  1. Displays window label on statusline or middle of each window (overlay).
+  2. Accepts window selection from user.
+  3. Navigates to the specified window.
 
 ## Example configuration:
 
@@ -32,48 +31,48 @@ Optional configuration:
 let g:choosewin_overlay_enable = 1
 ```
 
-More configuration is explained in help file. See `:help choosewin`.
+More configuration options are explained in the help file. See `:help choosewin`.
 
-## Default keymap in choosewin mode
+## Default keymapings in choosewin mode
 
-| Key    | Action    | Description                   |
-| ------ | --------- | ----------------------------- |
-| 0      | tab_first | Choose FIRST    tab           |
-| [      | tab_prev  | Choose PREVIOUS tab           |
-| ]      | tab_next  | Choose NEXT     tab           |
-| $      | tab_last  | Choose LAST     tab           |
-| x      | tab_close | Close current tab             |
-| ;      | win_land  | Land to current window        |
-| `<CR>` | win_land  | Land to current window        |
-| -      | previous  | Land to previous window       |
-| s      | swap      | Swap window                #1 |
-| S      | swap_stay | Swap window but stay       #1 |
-|        | `<NOP>`   | Disable predefined keymap     |
-*1 if you chose 'swap' again, swapping with previous window's buffer
-ex) with default keymap, double 's'(ss) swap with previous buffer.
+| Key  | Action     | Description                   |
+| ---- | ---------- | ----------------------------- |
+| 0    | tab_first  | Select FIRST    tab           |
+| [    | tab_prev   | Select PREVIOUS tab           |
+| ]    | tab_next   | Select NEXT     tab           |
+| $    | tab_last   | Select LAST     tab           |
+| x    | tab_close  | Close current tab             |
+| ;    | win_land   | Navigate to current window    |
+| -    | previous   | Naviage to previous window    |
+| s    | swap       | Swap windows               #1 |
+| S    | swap_stay  | Swap windows but stay      #1 |
+| <CR> | win_land   | Navigate to current window    |
+|      | <NOP>      | Disable predefined keymap     |
 
-## Operational example
+*1 If you select 'swap' again, you will swap with the previous window's buffer ex) using the default keymap, typing double 's'(ss) swaps with the previous window.
 
-Assume you mapped `-` to invoke choosewin feature with following commands,
+## Operational examples
+
+Map `-` to invoke choosewin with the following command:
 
 ```Vim
 nmap - <Plug>(choosewin)
 ```
 
-### Move around tab, and choose window
+### Move around tabs, and choose windows
 
 First of all, open multiple windows and tabs.  
 Invoke choosewin by typing `-` in normal mode.  
-Then you can move around tabs by `]` and `[` or directly choose target tab by the number labeled on the tabline.  
-After you chose a target tab, you can choose a target window by typing the letter which is labeled on statusline or in the middle of a window (if you have enabled the overlay feature).  
+Then you can move around tabs by `]` and `[`, or you cand choose the target tab directly by typing the number labeled in the tabline.  
+After you chose a target tab, you can choose a target window by typing the letter which is labeled in the statusline and in the middle of each window (if you have enabled the overlay feature).  
 
-### Choose previouse window
+### Choose the previouse window
 
 Type `-` again to invoke choosewin, then input `-` again to choose the previous window. The previous window you were on before you choose the current window.  
 
-### Swap window
+### Swap windows
 
 Type `-` to invoke choosewin, then type `s` to swap windows.  
-Then choose target window label you want to swap content(=buffer) of window with buffer of current window.  
+Then type the label of a window to swap content(=buffer) of that window with your current window.  
 After you chose, the current window's buffer is swapped with the buffer shown in the window you chose.  
-By combinating swap and previous window, you can easily swap window with previous window like `-s-`, invoking choosewin itself(`-`) then enter swapping mode(`s`), then instruct choosewin that target window is previous(`-`) window. conguratulation!  
+By combining "swap" and "previous window" features, you can easily swap any window with the previous window like so: `-s-`, invoking choosewin itself(`-`) then entering swapping mode(`s`), then instrucing choosewin to swap the target window with the previous(`-`) window. conguratulation!  
