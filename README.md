@@ -8,7 +8,7 @@
 
 This plugin aims to mimic tmux's `display-pane` feature, which enables you to choose a window interactively.
 
-This plugin should be especially useful when working on high resolution displays since with wide displays you are likely to open multiple window and moving around window is a little bit tiresome.
+This plugin should be especially useful when working on high resolution displays since with wide displays you are likely to open multiple windows and moving around windows with vim is cumbersome.
 
 This plugin simplifies window navigation with the following functionality:
 
@@ -17,7 +17,6 @@ This plugin simplifies window navigation with the following functionality:
   3. Navigates to the specified window.
 
 ## Example configuration:
-
 
 ```Vim
 " invoke with '-'
@@ -66,7 +65,7 @@ Invoke choosewin by typing `-` in normal mode.
 Then you can move around tabs by `]` and `[`, or you cand choose the target tab directly by typing the number labeled in the tabline.  
 After you chose a target tab, you can choose a target window by typing the letter which is labeled in the statusline and in the middle of each window (if you have enabled the overlay feature).  
 
-### Choose the previouse window
+### Choose the previous window
 
 Type `-` again to invoke choosewin, then input `-` again to choose the previous window. The previous window you were on before you choose the current window.  
 
