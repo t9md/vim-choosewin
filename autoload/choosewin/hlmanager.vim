@@ -24,7 +24,7 @@ unlet! s:define_type_checker
 
 let s:SCREEN = (has('gui_running')
       \ || (has('termtruecolor') && &guicolors == 1)
-      \ || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR == 1))
+      \ || (has('nvim') && has('termguicolors') && &termguicolors == 1))
       \ ? 'gui' : 'cterm'
 
 " Main:
