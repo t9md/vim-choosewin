@@ -23,7 +23,7 @@ call s:define_type_checker()
 unlet! s:define_type_checker
 
 let s:SCREEN = (has('gui_running')
-      \ || (has('termtruecolor') && &termguicolors)
+      \ || (has('termtruecolor') && &termguicolors))
       \ ? 'gui' : 'cterm'
 
 " Main:
