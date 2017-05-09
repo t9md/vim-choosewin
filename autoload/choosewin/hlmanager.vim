@@ -22,9 +22,12 @@ endfunction
 call s:define_type_checker()
 unlet! s:define_type_checker
 
-let s:SCREEN = (has('gui_running')
-      \ || (has('termtruecolor') && &termguicolors))
-      \ ? 'gui' : 'cterm'
+" Copied from vim-airline's airline#init#gui_mode function
+let s:SCREEN = (has('gui_running') ||
+      \ (has('termtruecolor') && &guicolors == 1) ||
+      \ (has('termguicolors') && &termguicolors == 1) ||
+      \ (has('nvim') && exists('$NVIM_TUI_ENABLE_TRUE_COLOR')
+      \ && !exists('+termguicolors'))) ? 'gui' : 'cterm'
 
 " Main:
 let s:hlmgr = {}
