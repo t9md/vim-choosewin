@@ -8,9 +8,10 @@ let s:FONT_MAX = {
 " These are variables that need to be changed for overlay work properly.
 let s:vim_options = {}
 let s:vim_options.global = {
-      \ '&cursorline': 0,
-      \ '&scrolloff':  0,
-      \ '&lazyredraw': 1,
+      \ '&cursorline':   0,
+      \ '&cursorcolumn': 0,
+      \ '&scrolloff':    0,
+      \ '&lazyredraw':   1,
       \ }
 let s:vim_options.buffer = {
       \ '&modified':   0,
@@ -23,6 +24,7 @@ let s:vim_options.window = {
       \ '&list':         0,
       \ '&foldenable':   0,
       \ '&conceallevel': 0,
+      \ '&colorcolumn':  '',
       \ }
 
 " Util:
