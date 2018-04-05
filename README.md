@@ -74,4 +74,4 @@ Type `-` again to invoke choosewin, then input `-` again to choose the previous 
 Type `-` to invoke choosewin, then type `s` to swap windows.  
 Then type the label of a window to swap content(=buffer) of that window with your current window.  
 After you chose, the current window's buffer is swapped with the buffer shown in the window you chose.  
-By combining "swap" and "previous window" features, you can easily swap any window with the previous window like so: `-s-`, invoking choosewin itself(`-`) then entering swapping mode(`s`), then instrucing choosewin to swap the target window with the previous(`-`) window. conguratulation!  
+By combining "swap" and "previous window" features, you can easily swap any window with the previous window like so: `-s-`, invoking choosewin itself(`-`) then entering swapping mode(`s`), then instructing choosewin to swap the target window with the previous(`-`) window. Congratulations!  
