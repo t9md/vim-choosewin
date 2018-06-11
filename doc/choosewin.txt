@@ -12,6 +12,7 @@ Commands				    |choosewin-commands|
 Variables				    |choosewin-variables|
 Functions				    |choosewin-functions|
 Configuration Example			    |choosewin-example|
+Integrations				    |choosewin-integrations|
 Bug					    |choosewin-bug|
 Todo					    |choosewin-todo|
 Changelog				    |choosewin-changelog|
@@ -397,6 +398,14 @@ CONFIGURATION EXAMPLE				    *choosewin-example*
 	let g:choosewin_statusline_replace = 0 " don't replace statusline
 	let g:choosewin_tabline_replace    = 0 " don't replace tabline
 <
+==============================================================================
+INTEGRATIONS						*choosewin-integrations*
+
+If have NERDTree (http://github.com/scrooloose/nerdtree) installed and want
+to use it in combination with Choosewin when open files, you can install the
+NERDTree Choosewin plugin (https://github.com/weilbith/nerdtree_choosewin-plugin).
+It adds this feature to NERDTree by default if Choosewin gets detected.
+
 ==============================================================================
 BUG							    *choosewin-bug*
 
