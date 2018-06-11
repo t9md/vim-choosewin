@@ -74,4 +74,8 @@ Type `-` again to invoke choosewin, then input `-` again to choose the previous 
 Type `-` to invoke choosewin, then type `s` to swap windows.  
 Then type the label of a window to swap content(=buffer) of that window with your current window.  
 After you chose, the current window's buffer is swapped with the buffer shown in the window you chose.  
-By combining "swap" and "previous window" features, you can easily swap any window with the previous window like so: `-s-`, invoking choosewin itself(`-`) then entering swapping mode(`s`), then instructing choosewin to swap the target window with the previous(`-`) window. Congratulations!  
+By combining "swap" and "previous window" features, you can easily swap any window with the previous window like so: `-s-`, invoking choosewin itself(`-`) then entering swapping mode(`s`), then instructing choosewin to swap the target window with the previous(`-`) window. Congratulations!
+
+### NERDTree open file
+
+If working with several windows, it is useful to be able to select a specific window when open a file from inside [NERDTree](https://github.com/scrooloose/nerdtree). As default behavior _NERDTree_ use _Vims_ last window, that is often not the favored one. The [NERDTree_choosewin-plugin](https://github.com/weilbith/nerdtree_choosewin-plugin) provide this feature to select a window. Furthermore if the user has installed this Choosewin plugin as well, it is able to detect this and use it instead of the default behavior.
