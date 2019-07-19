@@ -113,7 +113,7 @@ endfunction
 function! s:cw.choose() "{{{1
   while 1
     call self.label_show()
-    let prompt = (self.conf['swap'] ? '[swap] ' : '') . 'chooose > '
+    let prompt = (self.conf['swap'] ? '[swap] ' : '') . 'choose > '
     let char = s:_.read_char(prompt)
 
     call self.label_clear()
