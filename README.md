@@ -62,7 +62,7 @@ nmap - <Plug>(choosewin)
 
 First of all, open multiple windows and tabs.  
 Invoke choosewin by typing `-` in normal mode.  
-Then you can move around tabs by `]` and `[`, or you cand choose the target tab directly by typing the number labeled in the tabline.  
+Then you can move around tabs by `]` and `[`, or you can choose the target tab directly by typing the number labeled in the tabline.  
 After you chose a target tab, you can choose a target window by typing the letter which is labeled in the statusline and in the middle of each window (if you have enabled the overlay feature).  
 
 ### Choose the previous window
@@ -78,4 +78,4 @@ By combining "swap" and "previous window" features, you can easily swap any wind
 
 ### NERDTree open file
 
-If working with several windows, it is useful to be able to select a specific window when open a file from inside [NERDTree](https://github.com/scrooloose/nerdtree). As default behavior _NERDTree_ use _Vims_ last window, that is often not the favored one. The [NERDTree_choosewin-plugin](https://github.com/weilbith/nerdtree_choosewin-plugin) provide this feature to select a window. Furthermore if the user has installed this Choosewin plugin as well, it is able to detect this and use it instead of the default behavior.
+If working with several windows, it is useful to be able to select a specific window when open a file from inside [NERDTree](https://github.com/scrooloose/nerdtree). As default behavior _NERDTree_ use _Vims_ last window, that is often not the favored one. The [NERDTree_choosewin-plugin](https://github.com/weilbith/nerdtree_choosewin-plugin) provide this feature to select a window. Furthermore, if the user has installed this Choosewin plugin as well, it is able to detect this and use it instead of the default behavior.
