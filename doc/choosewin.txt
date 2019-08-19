@@ -229,7 +229,7 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	  1. Substitutes tabs with space
 	  2. Append space to rendering area
 	  3. Replaces multibyte chars.
-	  3. Appends an empty line to the EOF.
+	  4. Appends an empty line to the EOF.
 	- Then it highlights the caption font with matchadd()
 	- When done, it reverts all changes.
 
