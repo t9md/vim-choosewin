@@ -35,17 +35,17 @@ let g:choosewin_overlay_clear_multibyte = 1
 
 ## choosewin 呼び出し後のキーマップのデフォルト
 
-| Key    | Action     | Description                   | 
-| ------ | ---------- | ----------------------------- | 
-| 0      | tab_first  | choose FIRST    tab           | 
-| [      | tab_prev   | choose PREVIOUS tab           | 
-| ]      | tab_next   | choose NEXT     tab           | 
-| $      | tab_last   | choose LAST     tab           | 
-| ;      | win_land   | land to current window        | 
-| -      | previous   | land to previous window       | 
-| s      | swap       | swap buffer with you chose *1 | 
-| `<CR>` | win_land   | land to current window        | 
-|        | <NOP>      | disable predefined keymap     | 
+| Key    | Action     | Description                   |
+| ------ | ---------- | ----------------------------- |
+| 0      | tab_first  | choose FIRST    tab           |
+| [      | tab_prev   | choose PREVIOUS tab           |
+| ]      | tab_next   | choose NEXT     tab           |
+| $      | tab_last   | choose LAST     tab           |
+| ;      | win_land   | land to current window        |
+| -      | previous   | land to previous window       |
+| s      | swap       | swap buffer with you chose *1 |
+| `<CR>` | win_land   | land to current window        |
+|        | `<NOP>`    | disable predefined keymap     |
 
 *1 'swap' を２回連続で呼び出した場合、直前(previous)の window のバッファとスワップします。
 例) デフォルトのキーマップでは、'ss' で直前のバッファとスワップします。
