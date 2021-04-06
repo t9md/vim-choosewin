@@ -54,7 +54,7 @@ if exists('*strchars')
   endfunction
 else
   function! s:strchars(str)
-    return strlen(substitute(str, ".", "x", "g"))
+    return strlen(substitute(a:str, ".", "x", "g"))
   endfunction
 endif
 "}}}
