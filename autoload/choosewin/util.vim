@@ -1,6 +1,6 @@
 function! s:SID() "{{{1
   let fullname = expand("<sfile>")
-  return matchstr(fullname, '<SNR>\d\+_')
+  return matchstr(fullname, '<SNR>\d\+_\zeSID$')
 endfunction
 "}}}
 let s:sid = s:SID()
