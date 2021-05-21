@@ -8,6 +8,10 @@ function! s:Color.init() "{{{1
   let config   = choosewin#config#get()
   let self.mgr = choosewin#hlmanager#new('')
 
+  if !config['highlight_on_init']
+    return
+  endif
+
   let colors = {
         \ "Label":          config['color_label'],
         \ "LabelCurrent":   config['color_label_current'],
