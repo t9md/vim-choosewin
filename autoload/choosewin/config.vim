@@ -21,6 +21,7 @@ let s:default = {
       \ 'active':                  0,
       \ 'debug':                   0,
       \ 'label_fill':              0,
+      \ 'highlight_on_init':       1,
       \ 'color_label':            { 'gui': ['DarkGreen', 'white', 'bold'], 'cterm': [ 22, 15,'bold'] },
       \ 'color_label_current':    { 'gui': ['LimeGreen', 'black', 'bold'], 'cterm': [ 40, 16, 'bold'] },
       \ 'color_overlay':          { 'gui': ['DarkGreen', 'DarkGreen' ], 'cterm': [ 22, 22 ] },
