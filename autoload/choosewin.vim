@@ -74,6 +74,8 @@ function! s:cw.start(wins, ...) "{{{1
     else
       let self.previous = [ self.src.tab, self.src.win ]
     endif
+  catch /\v^CLOSE$/
+    let self.previous = [ self.src.tab, self.src.win ]
   catch /\v^Vim:Interrupt$/
     call self.label_clear()
     call self.action.do_cancel()
@@ -113,7 +115,12 @@ endfunction
 function! s:cw.choose() "{{{1
   while 1
     call self.label_show()
-    let prompt = (self.conf['swap'] ? '[swap] ' : '') . 'choose > '
+    let prompt = 'choose > '
+    if self.conf['swap'] 
+      let prompt = '[swap] ' . prompt
+    elseif self.conf['window_close']
+      let prompt = '[window_close] ' . prompt
+    endif
     let char = s:_.read_char(prompt)
 
     call self.label_clear()
@@ -130,6 +137,8 @@ function! s:cw.choose() "{{{1
     if !empty(num)
       if self.conf['swap']
         call self.action._swap(tabpagenr(), num)
+      elseif self.conf['window_close']
+        call self.action._close(num)
       else
         call self.action.do_win(num)
       endif

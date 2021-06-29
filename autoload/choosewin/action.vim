@@ -35,6 +35,15 @@ function! s:goto_win(num, ...) "{{{1
 endfunction
 "}}}
 
+" exec close window
+function! s:close_win(num, ...) "{{{1
+  if choosewin#noop()
+    return
+  endif
+  silent execute a:num 'wincmd c'
+endfunction
+"}}}
+
 " Action:
 let s:ac = {}
 
@@ -103,6 +112,27 @@ function! s:ac.do_swap() "{{{1
     call self._swap(tab_dst, win_dst)
   else
     let self.app.conf['swap'] = 1
+  endif
+endfunction
+
+" close window by sid
+function! s:ac._close(win) "{{{1
+  call s:close_win(a:win)
+  throw 'CLOSE'
+endfunction
+
+" just like do_swap, handle twice thing
+function! s:ac.do_window_close() "{{{1
+  " make sure that user need this? maybe not
+  if self.app.conf['window_close']
+    " if user invoke do_window_close() twice then close with previous window
+    if empty(self.app.previous)
+      throw 'NO_PREVIOUS_WINDOW'
+    endif
+    let [ tab_dst, win_dst ] = self.app.previous
+    call self._close(win_dst)
+  else
+    let self.app.conf['window_close'] = 1
   endif
 endfunction
 
