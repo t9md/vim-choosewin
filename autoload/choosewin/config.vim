@@ -40,12 +40,14 @@ let s:keymap = {
       \ '-':     'previous',
       \ 's':     'swap',
       \ 'S':     'swap_stay',
+      \ 'z':     'window_close',
       \ "\<CR>": 'win_land',
       \ }
 
 " These are variables cannot set directly via global variable.
 let s:api_options = {
       \ 'swap':        0,
+      \ 'window_close':0,
       \ 'swap_stay':   0,
       \ 'auto_choose': 0,
       \ 'noop':        0,
