@@ -15,6 +15,19 @@ function! s:win_swap(tab, win) "{{{1
   silent execute 'hide buffer' buf_src
 endfunction
 
+function! s:win_copy(tab, win) "{{{1
+  let [ tab_dst, win_dst ] = [ a:tab, a:win]
+  let [ tab_src, win_src ] = [ tabpagenr(), winnr() ]
+  let buf_src = bufnr('')
+  let line_src = line(".")
+  let col_src = col(".")
+
+  " go
+  call s:goto_tabwin(tab_dst, win_dst)
+  silent execute 'hide buffer' buf_src
+  call cursor(line_src, col_src)
+endfunction
+
 function! s:goto_tabwin(tab, win) "{{{1
   call s:goto_tab(a:tab)
   call s:goto_win(a:win)
@@ -93,6 +106,10 @@ function! s:ac._swap(tab, win) "{{{1
   throw 'SWAP'
 endfunction
 
+function! s:ac._copy(tab, win) "{{{1
+  call s:win_copy(a:tab, a:win)
+  throw 'COPY'
+endfunction
 function! s:ac.do_swap() "{{{1
   if self.app.conf['swap']
     " if user invoke do_swap() twice then swap with previous window

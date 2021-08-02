@@ -28,6 +28,8 @@ command! -bar ChooseWin
       \ call choosewin#start(s:win_all())
 command! -bar ChooseWinSwap
       \ call choosewin#start(s:win_all(), {'swap': 1, 'swap_stay': 0 })
+command! -bar ChooseWinCopy
+      \ call choosewin#start(s:win_all(), {'copy': 1})
 command! -bar ChooseWinSwapStay
       \ call choosewin#start(s:win_all(), {'swap': 1, 'swap_stay': 1 })
 
