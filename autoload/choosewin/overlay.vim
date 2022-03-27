@@ -61,8 +61,8 @@ endfunction
 
 function! s:undoclear() "{{{1
   let undolevels_org = &undolevels
-  let &undolevels = -1
-  noautocmd execute "normal! a \<BS>\<Esc>"
+  "let &undolevels = -1
+  "noautocmd execute "normal! a \<BS>\<Esc>"
   let &undolevels = undolevels_org
 endfunction
 "}}}
