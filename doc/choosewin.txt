@@ -31,7 +31,7 @@ moving around window is a little bit tiresome.
 
 This plugin simplifies window navigation with the following functionality:
 
-	1. Displays window label on statusline or middle of each window
+	1. Displays window label on winbar or middle of each window
 	   (overlay).
 	2. Accepts window selection from user.
 	3. Navigates to the specified window.
@@ -60,10 +60,10 @@ VARIABLES						*choosewin-variables*
 [NOTE]
 All config options in this section are set in 'autoload/choosewin/config.vim'.
 
-*g:choosewin_statusline_replace*
+*g:choosewin_winbar_replace*
 	Default: 1
 	Type: |Number|
-	Control whether the window label is shown in the |&statusline|.
+	Control whether the window label is shown in the |&winbar|.
 
 *g:choosewin_color_label*
 	Default: See 'autoload/choosewin/config.vim'
@@ -105,7 +105,7 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 	Color of the shading
 
 *g:choosewin_color_label_current*
-	Color of the label for the current window/tab. Used in |&statusline|
+	Color of the label for the current window/tab. Used in |&winbar|
 	and |&tabline|
 
 *g:choosewin_color_other*
@@ -207,7 +207,7 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 *g:choosewin_label_fill*
 	Default: 0
 	Type: |Number|
-	Set to 1 to fill the statusline
+	Set to 1 to fill the winbar
 
 *g:choosewin_return_on_single_win*
 	Default: 0
@@ -221,7 +221,7 @@ All config options in this section are set in 'autoload/choosewin/config.vim'.
 
 	Trade-off~
 
-	Pro: Easy to spot window label than it on |&statusline|.
+	Pro: Easy to spot window label than it on |&winbar|.
 	Con:  Too aggressive for merely showing the caption and it's slow.
 
 	What does 'too aggressive' means:
@@ -395,7 +395,7 @@ CONFIGURATION EXAMPLE				    *choosewin-example*
 	      \ }
 
 	let g:choosewin_blink_on_land      = 0 " don't blink at land
-	let g:choosewin_statusline_replace = 0 " don't replace statusline
+	let g:choosewin_winbar_replace = 0 " don't replace winbar
 	let g:choosewin_tabline_replace    = 0 " don't replace tabline
 <
 ==============================================================================
@@ -507,7 +507,7 @@ CHANGELOG						*choosewin-changelog*
 	- now can choose tab inspired number of advice by manga-osyo
 2013-12-28: v0.6
 	- cleanup
-	- now independent from &statusline plugin( such as ezbar )
+	- now independent from &winbar plugin( such as ezbar )
 2013-12-21: v0.1
 	- initial release
 

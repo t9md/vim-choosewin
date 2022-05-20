@@ -1,5 +1,5 @@
 let s:default = {
-      \ 'statusline_replace':      1,
+      \ 'winbar_replace':      1,
       \ 'tabline_replace':         1,
       \ 'overlay_enable':          0,
       \ 'overlay_font_size':       'auto',

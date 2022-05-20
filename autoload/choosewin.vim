@@ -94,7 +94,7 @@ function! s:cw.init(wins, conf) "{{{1
   let self.action      = choosewin#action#init(self)
   let self.exception   = ''
   let self.tab_options = {}
-  let self.statusline  = {}
+  let self.winbar  = {}
   let self.src         = {'win': winnr(), 'tab': tabpagenr()}
 endfunction
 
@@ -179,10 +179,10 @@ function! s:cw.label_show() "{{{1
   let self.label2win = s:_.dict_create(self.conf.label, wins)
   let self.win2label = s:_.dict_create(wins, self.conf.label)
 
-  if self.conf['statusline_replace']
+  if self.conf['winbar_replace']
     for n in wins
-      let self.statusline[n] = s:_.window_options_set(n,
-            \ { '&statusline': self.prepare_label(n) })
+      let self.winbar[n] = s:_.window_options_set(n,
+            \ { '&winbar': self.prepare_label(n) })
     endfor
   endif
 
@@ -193,9 +193,9 @@ function! s:cw.label_show() "{{{1
 endfunction
 
 function! s:cw.label_clear() "{{{1
-  if self.conf['statusline_replace']
+  if self.conf['winbar_replace']
     for n in self.wins.get(len(self.conf['label']))
-      call s:_.window_options_set(n, self.statusline[n])
+      call s:_.window_options_set(n, self.winbar[n])
     endfor
   endif
 
