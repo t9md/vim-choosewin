@@ -12,7 +12,7 @@ This plugin should be especially useful when working on high resolution displays
 
 This plugin simplifies window navigation with the following functionality:
 
-  1. Displays window label on statusline or middle of each window (overlay).
+  1. Displays window label on winbar or middle of each window (overlay).
   2. Accepts window selection from user.
   3. Navigates to the specified window.
 
@@ -63,7 +63,7 @@ nmap - <Plug>(choosewin)
 First of all, open multiple windows and tabs.  
 Invoke choosewin by typing `-` in normal mode.  
 Then you can move around tabs by `]` and `[`, or you cand choose the target tab directly by typing the number labeled in the tabline.  
-After you chose a target tab, you can choose a target window by typing the letter which is labeled in the statusline and in the middle of each window (if you have enabled the overlay feature).  
+After you chose a target tab, you can choose a target window by typing the letter which is labeled in the winbar and in the middle of each window (if you have enabled the overlay feature).  
 
 ### Choose the previous window
 

@@ -58,15 +58,11 @@ endfunction
 "}}}
 
 " Undo:
-function! s:undobreak() "{{{1
-  let &undolevels = &undolevels
-  " silent exec 'normal!' "i\<C-g>u\<ESC>"
-endfunction
 
 function! s:undoclear() "{{{1
   let undolevels_org = &undolevels
-  let &undolevels = -1
-  noautocmd execute "normal! a \<BS>\<Esc>"
+  "let &undolevels = -1
+  "noautocmd execute "normal! a \<BS>\<Esc>"
   let &undolevels = undolevels_org
 endfunction
 "}}}
@@ -157,7 +153,6 @@ function! s:Overlay.setup_buffer() "{{{1
 
     execute 'wundo' b:choosewin.undofile
     let b:choosewin.options = s:_.buffer_options_set(bufnr, s:vim_options.buffer)
-    call s:undobreak()
 
     let render_lines = s:_.uniq(b:choosewin.render_lines)
     let append       = max([max(render_lines) - line('$'), 0 ])
