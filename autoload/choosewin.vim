@@ -66,6 +66,7 @@ function! s:cw.start(wins, ...) "{{{1
       let status = [ tabpagenr(), winnr() ]
     endif
     let self.previous = [ self.src.tab, self.src.win ]
+  catch /\v^COPY$/
   catch /\v^SWAP$/
     let status = [ tabpagenr(), winnr() ]
     if self.conf['swap_stay']
@@ -130,6 +131,8 @@ function! s:cw.choose() "{{{1
     if !empty(num)
       if self.conf['swap']
         call self.action._swap(tabpagenr(), num)
+      elseif self.conf['copy']
+        call self.action._copy(tabpagenr(), num)
       else
         call self.action.do_win(num)
       endif

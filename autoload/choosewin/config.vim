@@ -49,6 +49,7 @@ let s:api_options = {
       \ 'swap_stay':   0,
       \ 'auto_choose': 0,
       \ 'noop':        0,
+      \ 'copy':        0,
       \ }
 
 " Config:
