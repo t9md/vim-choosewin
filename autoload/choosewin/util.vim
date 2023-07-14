@@ -29,9 +29,11 @@ endfunction
 function! s:buffer_options_set(bufnr, options) "{{{1
   let R = {}
   for [var, val] in items(a:options)
-    let R[var] = getbufvar(a:bufnr, var)
-    call setbufvar(a:bufnr, var, val)
-    unlet var val
+    try
+      let R[var] = getbufvar(a:bufnr, var)
+      call setbufvar(a:bufnr, var, val)
+      unlet var val
+    endtry 
   endfor
   return R
 endfunction
