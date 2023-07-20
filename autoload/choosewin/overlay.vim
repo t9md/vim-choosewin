@@ -59,15 +59,23 @@ endfunction
 
 " Undo:
 function! s:undobreak() "{{{1
-  let &undolevels = &undolevels
+  try
+    let &undolevels = &undolevels
+  catch
+    let &undolevels = -1
+  endtry
   " silent exec 'normal!' "i\<C-g>u\<ESC>"
 endfunction
 
 function! s:undoclear() "{{{1
-  let undolevels_org = &undolevels
-  let &undolevels = -1
-  noautocmd execute "normal! a \<BS>\<Esc>"
-  let &undolevels = undolevels_org
+  try
+    let undolevels_org = &undolevels
+    let &undolevels = -1
+    noautocmd execute "normal! a \<BS>\<Esc>"
+    let &undolevels = undolevels_org
+  catch
+    let &undolevels = -1
+  endtry
 endfunction
 "}}}
 
